@@ -1,0 +1,3 @@
+module Library where
+-- Empty right now...
+-- Due to https://github.com/haskell/cabal/issues/779

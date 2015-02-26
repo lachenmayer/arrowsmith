@@ -28,20 +28,32 @@ source-repository head
     type:     git
     location: git://github.com/elm-lang/elm-make.git
 
-
-Library
-
-    ghc-options: 
-        -threaded -O2 -W
+-- Due to a silly Cabal bug: executable-only packages can right now not be depended on.
+-- See https://github.com/haskell/cabal/issues/779
+library
 
     hs-source-dirs:
         src
 
     exposed-modules:
-        Elm.Make.Arguments,
-        Elm.Make.Main
+        Library
+
+    build-depends:
+        base >=4.2 && <5
+
+Executable elm-make
+
+    ghc-options:
+        -threaded -O2 -W
+
+    hs-source-dirs:
+        src
+
+    Main-is:
+        Main.hs
 
     other-modules:
+        Arguments,
         Build,
         CrawlPackage,
         CrawlProject,

@@ -1,4 +1,4 @@
-module Elm.Make.Arguments where
+module Arguments where
 
 import Control.Applicative ((<$>), (<*>), many, optional)
 import Data.Monoid ((<>), mconcat, mempty)

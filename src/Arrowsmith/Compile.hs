@@ -21,16 +21,15 @@ import qualified Elm.Package.Name as Name
 import qualified Elm.Package.Paths as Path
 import qualified Elm.Package.Version as Version
 
-compilerPath :: IO FilePath
-compilerPath = do
-  basePath <- getProgPath
-  return $ basePath </> ".." </> "franken-elm" </> "elm-make" </> "dist" </> "build" </> "elm-make" </> "elm-make"
+compilerPath :: FilePath
+compilerPath cwd =
+  cwd </> ".cabal-sandbox" </> "bin" </> "elm-make"
 
 tempDirectory :: FilePath
 tempDirectory = "tmp"
 
---compile backend user project modul =
- 
+compile backend user project modul =
+
 --compile :: BS.ByteString -> ErrorT String IO (BS.ByteString, BS.ByteString)
 --compile program = do
 --  liftIO $ BS.writeFile elmPath program

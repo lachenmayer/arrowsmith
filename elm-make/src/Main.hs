@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
-module Elm.Make.Main where
+module Main where
 
 import Control.Monad (forM)
 import Control.Monad.Error (MonadError, runErrorT, MonadIO, liftIO)
@@ -16,7 +16,7 @@ import qualified Build
 import qualified CrawlPackage
 import qualified CrawlProject
 import qualified LoadInterfaces
-import qualified Elm.Make.Arguments as Arguments
+import qualified Arguments
 import qualified Elm.Package.Description as Desc
 import qualified Elm.Package.Initialize as Initialize
 import qualified Elm.Package.Paths as Path
