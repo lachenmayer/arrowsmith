@@ -29,30 +29,32 @@ compilerPath = do
 tempDirectory :: FilePath
 tempDirectory = "tmp"
 
-compile :: BS.ByteString -> ErrorT String IO (BS.ByteString, BS.ByteString)
-compile program = do
-  liftIO $ BS.writeFile elmPath program
-  (compilerErr, exitCode) <- liftIO $ runCommand tempDirectory compilerPath (compilerFlags elmName jsName)
-  case exitCode of
-    ExitSuccess -> do
-      compiledCode <- liftIO $ BS.readFile jsPath
-      ast <- liftIO $ BS.readFile astPath
-      return (ast, compiledCode)
-    ExitFailure _ -> do
-      err <- liftIO $ hGetContents compilerErr
-      --throwError err
-      throwError . unlines . drop 2 . lines $ err
-  where
-    programHash = showDigest . sha1 . LazyBS.fromStrict $ program
-    elmName = "compiled-program-" ++ programHash <.> "elm"
-    jsName = replaceExtension elmName "js"
-    elmPath = tempDirectory </> elmName
-    jsPath = tempDirectory </> jsName
-    compilerFlags inName outName =
-      [ inName
-      , "--yes"
-      , "--output=" ++ outName
-      ]
+--compile backend user project modul =
+ 
+--compile :: BS.ByteString -> ErrorT String IO (BS.ByteString, BS.ByteString)
+--compile program = do
+--  liftIO $ BS.writeFile elmPath program
+--  (compilerErr, exitCode) <- liftIO $ runCommand tempDirectory compilerPath (compilerFlags elmName jsName)
+--  case exitCode of
+--    ExitSuccess -> do
+--      compiledCode <- liftIO $ BS.readFile jsPath
+--      ast <- liftIO $ BS.readFile astPath
+--      return (ast, compiledCode)
+--    ExitFailure _ -> do
+--      err <- liftIO $ hGetContents compilerErr
+--      --throwError err
+--      throwError . unlines . drop 2 . lines $ err
+--  where
+--    programHash = showDigest . sha1 . LazyBS.fromStrict $ program
+--    elmName = "compiled-program-" ++ programHash <.> "elm"
+--    jsName = replaceExtension elmName "js"
+--    elmPath = tempDirectory </> elmName
+--    jsPath = tempDirectory </> jsName
+--    compilerFlags inName outName =
+--      [ inName
+--      , "--yes"
+--      , "--output=" ++ outName
+--      ]
 
 getInterface :: FilePath -> ErrorT String IO Interface
 getInterface projectRoot = do

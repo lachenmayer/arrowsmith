@@ -11,23 +11,18 @@ import qualified Data.ByteString.UTF8 as UTF8BS
 import Snap.Core
 import Snap.Extras.JSON (writeJSON)
 
-import Arrowsmith.Compile
-  ( ElmCode
-  , Interface
-  , compile
-  )
+import Arrowsmith.Compile (compile)
 
 
 type Route = (BS.ByteString, Snap ())
 
 data CompileResponse
-  = CompileSuccess Interface BS.ByteString
+  = CompileSuccess BS.ByteString BS.ByteString
   | CompileError String
 
 instance ToJSON CompileResponse where
-  toJSON (CompileSuccess _ code) =
-    -- TODO interface serialization
-    object ["code" .= UTF8BS.toString code]
+  toJSON (CompileSuccess ast code) =
+    object ["ast" .= UTF8BS.toString ast, "code" .= UTF8BS.toString code]
   toJSON (CompileError message) =
     object ["error" .= message]
 
@@ -40,11 +35,12 @@ routes =
 compileHandler :: Snap ()
 compileHandler = do
   program <- readRequestBody 50000
-  compiledProgram <- liftIO . runErrorT . compile $ LazyBS.toStrict program
-  case compiledProgram of
-    Right (interface, code) ->
-      writeJSON $ CompileSuccess interface code
-    Left err -> do
-      modifyResponse $ setResponseCode 400 -- Bad Request
-      writeJSON $ CompileError err
+  writeText "foo."
+  --compiledProgram <- liftIO . runErrorT . compile $ LazyBS.toStrict program
+  --case compiledProgram of
+  --  Right (ast, code) ->
+  --    writeJSON $ CompileSuccess ast code
+  --  Left err -> do
+  --    modifyResponse $ setResponseCode 400 -- Bad Request
+  --    writeJSON $ CompileError err
   
