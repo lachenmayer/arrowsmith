@@ -24,7 +24,7 @@ import qualified Elm.Package.Version as Version
 compilerPath :: IO FilePath
 compilerPath = do
   basePath <- getProgPath
-  return $ basePath </> ".cabal-sandbox" </> "bin" </> "elm-make"
+  return $ basePath </> ".." </> "franken-elm" </> "elm-make" </> "dist" </> "build" </> "elm-make" </> "elm-make"
 
 tempDirectory :: FilePath
 tempDirectory = "tmp"

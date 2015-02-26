@@ -29,6 +29,8 @@ executable Arrowsmith
     Cabal,
     containers,
     directory,
+    elm-compiler ==0.14.1,
+    elm-package,
     filepath,
     FindBin,
     mtl ==2.1.3.1,
