@@ -1,0 +1,40 @@
+Elm.Arrowsmith = Elm.Arrowsmith || {};
+Elm.Arrowsmith.Types = Elm.Arrowsmith.Types || {};
+Elm.Arrowsmith.Types.make = function (_elm) {
+   "use strict";
+   _elm.Arrowsmith = _elm.Arrowsmith || {};
+   _elm.Arrowsmith.Types = _elm.Arrowsmith.Types || {};
+   if (_elm.Arrowsmith.Types.values)
+   return _elm.Arrowsmith.Types.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Arrowsmith.Types",
+   $Dict = Elm.Dict.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm);
+   var Module = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,adts: c
+             ,defs: d
+             ,imports: b
+             ,name: a};
+   });
+   var Definition = F3(function (a,
+   b,
+   c) {
+      return {_: {}
+             ,binding: c
+             ,name: a
+             ,tipe: b};
+   });
+   _elm.Arrowsmith.Types.values = {_op: _op
+                                  ,Definition: Definition
+                                  ,Module: Module};
+   return _elm.Arrowsmith.Types.values;
+};

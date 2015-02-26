@@ -1,0 +1,232 @@
+Elm.List = Elm.List || {};
+Elm.List.make = function (_elm) {
+   "use strict";
+   _elm.List = _elm.List || {};
+   if (_elm.List.values)
+   return _elm.List.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "List",
+   $Basics = Elm.Basics.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$List = Elm.Native.List.make(_elm);
+   var sortWith = $Native$List.sortWith;
+   var sortBy = $Native$List.sortBy;
+   var sort = $Native$List.sort;
+   var repeat = $Native$List.repeat;
+   var drop = $Native$List.drop;
+   var take = $Native$List.take;
+   var map5 = $Native$List.map5;
+   var map4 = $Native$List.map4;
+   var map3 = $Native$List.map3;
+   var map2 = $Native$List.map2;
+   var append = $Native$List.append;
+   var any = $Native$List.any;
+   var all = $Native$List.all;
+   var length = $Native$List.length;
+   var filter = $Native$List.filter;
+   var scanl1 = $Native$List.scanl1;
+   var scanl = $Native$List.scanl;
+   var foldr1 = $Native$List.foldr1;
+   var foldl1 = $Native$List.foldl1;
+   var maximum = foldl1($Basics.max);
+   var minimum = foldl1($Basics.min);
+   var foldr = $Native$List.foldr;
+   var concat = function (lists) {
+      return A3(foldr,
+      append,
+      _L.fromArray([]),
+      lists);
+   };
+   var foldl = $Native$List.foldl;
+   var sum = function (numbers) {
+      return A3(foldl,
+      F2(function (x,y) {
+         return x + y;
+      }),
+      0,
+      numbers);
+   };
+   var product = function (numbers) {
+      return A3(foldl,
+      F2(function (x,y) {
+         return x * y;
+      }),
+      1,
+      numbers);
+   };
+   var indexedMap = F2(function (f,
+   xs) {
+      return A3(map2,
+      f,
+      _L.range(0,length(xs) - 1),
+      xs);
+   });
+   var map = $Native$List.map;
+   var concatMap = F2(function (f,
+   list) {
+      return concat(A2(map,
+      f,
+      list));
+   });
+   var member = $Native$List.member;
+   var isEmpty = function (xs) {
+      return function () {
+         switch (xs.ctor)
+         {case "[]": return true;}
+         return false;
+      }();
+   };
+   var tail = $Native$List.tail;
+   var head = $Native$List.head;
+   _op["::"] = $Native$List.cons;
+   var maybeCons = F3(function (f,
+   mx,
+   xs) {
+      return function () {
+         var _v1 = f(mx);
+         switch (_v1.ctor)
+         {case "Just":
+            return A2(_op["::"],_v1._0,xs);
+            case "Nothing": return xs;}
+         _U.badCase($moduleName,
+         "between lines 162 and 169");
+      }();
+   });
+   var filterMap = F2(function (f,
+   xs) {
+      return A3(foldr,
+      maybeCons(f),
+      _L.fromArray([]),
+      xs);
+   });
+   var reverse = A2(foldl,
+   F2(function (x,y) {
+      return A2(_op["::"],x,y);
+   }),
+   _L.fromArray([]));
+   var partition = F2(function (pred,
+   list) {
+      return function () {
+         var step = F2(function (x,
+         _v3) {
+            return function () {
+               switch (_v3.ctor)
+               {case "_Tuple2":
+                  return pred(x) ? {ctor: "_Tuple2"
+                                   ,_0: A2(_op["::"],x,_v3._0)
+                                   ,_1: _v3._1} : {ctor: "_Tuple2"
+                                                  ,_0: _v3._0
+                                                  ,_1: A2(_op["::"],x,_v3._1)};}
+               _U.badCase($moduleName,
+               "between lines 271 and 273");
+            }();
+         });
+         return A3(foldr,
+         step,
+         {ctor: "_Tuple2"
+         ,_0: _L.fromArray([])
+         ,_1: _L.fromArray([])},
+         list);
+      }();
+   });
+   var unzip = function (pairs) {
+      return function () {
+         var step = F2(function (_v7,
+         _v8) {
+            return function () {
+               switch (_v8.ctor)
+               {case "_Tuple2":
+                  return function () {
+                       switch (_v7.ctor)
+                       {case "_Tuple2":
+                          return {ctor: "_Tuple2"
+                                 ,_0: A2(_op["::"],_v7._0,_v8._0)
+                                 ,_1: A2(_op["::"],
+                                 _v7._1,
+                                 _v8._1)};}
+                       _U.badCase($moduleName,
+                       "on line 309, column 12 to 28");
+                    }();}
+               _U.badCase($moduleName,
+               "on line 309, column 12 to 28");
+            }();
+         });
+         return A3(foldr,
+         step,
+         {ctor: "_Tuple2"
+         ,_0: _L.fromArray([])
+         ,_1: _L.fromArray([])},
+         pairs);
+      }();
+   };
+   var intersperse = F2(function (sep,
+   xs) {
+      return function () {
+         switch (xs.ctor)
+         {case "::": return function () {
+                 var step = F2(function (x,
+                 rest) {
+                    return A2(_op["::"],
+                    sep,
+                    A2(_op["::"],x,rest));
+                 });
+                 var spersed = A3(foldr,
+                 step,
+                 _L.fromArray([]),
+                 xs._1);
+                 return A2(_op["::"],
+                 xs._0,
+                 spersed);
+              }();
+            case "[]":
+            return _L.fromArray([]);}
+         _U.badCase($moduleName,
+         "between lines 320 and 331");
+      }();
+   });
+   _elm.List.values = {_op: _op
+                      ,head: head
+                      ,tail: tail
+                      ,isEmpty: isEmpty
+                      ,member: member
+                      ,map: map
+                      ,indexedMap: indexedMap
+                      ,foldl: foldl
+                      ,foldr: foldr
+                      ,foldl1: foldl1
+                      ,foldr1: foldr1
+                      ,scanl: scanl
+                      ,scanl1: scanl1
+                      ,filter: filter
+                      ,filterMap: filterMap
+                      ,maybeCons: maybeCons
+                      ,length: length
+                      ,reverse: reverse
+                      ,all: all
+                      ,any: any
+                      ,append: append
+                      ,concat: concat
+                      ,concatMap: concatMap
+                      ,sum: sum
+                      ,product: product
+                      ,maximum: maximum
+                      ,minimum: minimum
+                      ,partition: partition
+                      ,map2: map2
+                      ,map3: map3
+                      ,map4: map4
+                      ,map5: map5
+                      ,unzip: unzip
+                      ,intersperse: intersperse
+                      ,take: take
+                      ,drop: drop
+                      ,repeat: repeat
+                      ,sort: sort
+                      ,sortBy: sortBy
+                      ,sortWith: sortWith};
+   return _elm.List.values;
+};

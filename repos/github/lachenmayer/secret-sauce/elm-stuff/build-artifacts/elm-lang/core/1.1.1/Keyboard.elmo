@@ -1,0 +1,49 @@
+Elm.Keyboard = Elm.Keyboard || {};
+Elm.Keyboard.make = function (_elm) {
+   "use strict";
+   _elm.Keyboard = _elm.Keyboard || {};
+   if (_elm.Keyboard.values)
+   return _elm.Keyboard.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Keyboard",
+   $Native$Keyboard = Elm.Native.Keyboard.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var lastPressed = $Native$Keyboard.lastPressed;
+   var keysDown = $Native$Keyboard.keysDown;
+   var meta = $Native$Keyboard.meta;
+   var alt = $Native$Keyboard.alt;
+   var isDown = $Native$Keyboard.isDown;
+   var ctrl = isDown(17);
+   var shift = isDown(16);
+   var space = isDown(32);
+   var enter = isDown(13);
+   var directions = $Native$Keyboard.directions;
+   var arrows = A4(directions,
+   38,
+   40,
+   37,
+   39);
+   var wasd = A4(directions,
+   87,
+   83,
+   65,
+   68);
+   _elm.Keyboard.values = {_op: _op
+                          ,directions: directions
+                          ,arrows: arrows
+                          ,wasd: wasd
+                          ,isDown: isDown
+                          ,alt: alt
+                          ,ctrl: ctrl
+                          ,meta: meta
+                          ,shift: shift
+                          ,space: space
+                          ,enter: enter
+                          ,keysDown: keysDown
+                          ,lastPressed: lastPressed};
+   return _elm.Keyboard.values;
+};

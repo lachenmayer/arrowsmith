@@ -1,0 +1,100 @@
+Elm.Signal = Elm.Signal || {};
+Elm.Signal.make = function (_elm) {
+   "use strict";
+   _elm.Signal = _elm.Signal || {};
+   if (_elm.Signal.values)
+   return _elm.Signal.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Signal",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Native$Signal = Elm.Native.Signal.make(_elm);
+   var subscribe = $Native$Signal.subscribe;
+   var send = $Native$Signal.send;
+   var channel = $Native$Signal.input;
+   var Message = {ctor: "Message"};
+   var Channel = {ctor: "Channel"};
+   _op["~"] = F2(function (sf,s) {
+      return A3($Native$Signal.map2,
+      F2(function (f,x) {
+         return f(x);
+      }),
+      sf,
+      s);
+   });
+   _op["<~"] = F2(function (f,s) {
+      return A2($Native$Signal.map,
+      f,
+      s);
+   });
+   var sampleOn = $Native$Signal.sampleOn;
+   var dropRepeats = $Native$Signal.dropRepeats;
+   var dropIf = $Native$Signal.dropIf;
+   var keepIf = $Native$Signal.keepIf;
+   var keepWhen = F3(function (bs,
+   def,
+   sig) {
+      return A2(_op["<~"],
+      $Basics.snd,
+      A3(keepIf,
+      $Basics.fst,
+      {ctor: "_Tuple2"
+      ,_0: false
+      ,_1: def},
+      A2(_op["~"],
+      A2(_op["<~"],
+      F2(function (v0,v1) {
+         return {ctor: "_Tuple2"
+                ,_0: v0
+                ,_1: v1};
+      }),
+      A2(sampleOn,sig,bs)),
+      sig)));
+   });
+   var dropWhen = function (bs) {
+      return keepWhen(A2(_op["<~"],
+      $Basics.not,
+      bs));
+   };
+   var merge = $Native$Signal.merge;
+   var mergeMany = function (signals) {
+      return A2($List.foldr1,
+      merge,
+      signals);
+   };
+   var foldp = $Native$Signal.foldp;
+   var map5 = $Native$Signal.map5;
+   var map4 = $Native$Signal.map4;
+   var map3 = $Native$Signal.map3;
+   var map2 = $Native$Signal.map2;
+   var map = $Native$Signal.map;
+   var constant = $Native$Signal.constant;
+   var Signal = {ctor: "Signal"};
+   _elm.Signal.values = {_op: _op
+                        ,Signal: Signal
+                        ,constant: constant
+                        ,map: map
+                        ,map2: map2
+                        ,map3: map3
+                        ,map4: map4
+                        ,map5: map5
+                        ,foldp: foldp
+                        ,merge: merge
+                        ,mergeMany: mergeMany
+                        ,keepIf: keepIf
+                        ,dropIf: dropIf
+                        ,keepWhen: keepWhen
+                        ,dropWhen: dropWhen
+                        ,dropRepeats: dropRepeats
+                        ,sampleOn: sampleOn
+                        ,Channel: Channel
+                        ,Message: Message
+                        ,channel: channel
+                        ,send: send
+                        ,subscribe: subscribe};
+   return _elm.Signal.values;
+};

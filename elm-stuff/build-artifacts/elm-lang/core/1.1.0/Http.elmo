@@ -1,0 +1,69 @@
+Elm.Http = Elm.Http || {};
+Elm.Http.make = function (_elm) {
+   "use strict";
+   _elm.Http = _elm.Http || {};
+   if (_elm.Http.values)
+   return _elm.Http.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Http",
+   $Native$Http = Elm.Native.Http.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var send = $Native$Http.send;
+   var Request = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,body: c
+             ,headers: d
+             ,url: b
+             ,verb: a};
+   });
+   var request = Request;
+   var get = function (url) {
+      return A4(Request,
+      "GET",
+      url,
+      "",
+      _L.fromArray([]));
+   };
+   var sendGet = function (requestStrings) {
+      return send(A2($Signal.map,
+      get,
+      requestStrings));
+   };
+   var post = F2(function (url,
+   body) {
+      return A4(Request,
+      "POST",
+      url,
+      body,
+      _L.fromArray([]));
+   });
+   var Failure = F2(function (a,
+   b) {
+      return {ctor: "Failure"
+             ,_0: a
+             ,_1: b};
+   });
+   var Waiting = {ctor: "Waiting"};
+   var Success = function (a) {
+      return {ctor: "Success"
+             ,_0: a};
+   };
+   _elm.Http.values = {_op: _op
+                      ,Success: Success
+                      ,Waiting: Waiting
+                      ,Failure: Failure
+                      ,Request: Request
+                      ,request: request
+                      ,get: get
+                      ,post: post
+                      ,send: send
+                      ,sendGet: sendGet};
+   return _elm.Http.values;
+};

@@ -1,0 +1,73 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'info' ]
+2 info using npm@2.1.5
+3 info using node@v0.10.32
+4 verbose node symlink /usr/local/bin/node
+5 verbose mapToRegistry name Arrowsmith
+6 verbose mapToRegistry uri https://registry.npmjs.org/Arrowsmith
+7 verbose request on initialization, where is /Arrowsmith
+8 verbose request after pass 1, where is /Arrowsmith
+9 verbose request url raw /Arrowsmith
+10 verbose request resolving registry [ 'https://registry.npmjs.org/', './Arrowsmith' ]
+11 verbose request after pass 2, where is https://registry.npmjs.org/Arrowsmith
+12 verbose request no auth needed
+13 info attempt registry request try #1 at 17:19:10
+14 verbose request id f1e0552fab48f817
+15 http request GET https://registry.npmjs.org/Arrowsmith
+16 http 404 https://registry.npmjs.org/Arrowsmith
+17 verbose headers { date: 'Wed, 04 Feb 2015 17:19:11 GMT',
+17 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+17 verbose headers   'content-type': 'application/json',
+17 verbose headers   'cache-control': 'max-age=0',
+17 verbose headers   'content-length': '52',
+17 verbose headers   'accept-ranges': 'bytes',
+17 verbose headers   via: '1.1 varnish',
+17 verbose headers   age: '0',
+17 verbose headers   'x-served-by': 'cache-fra1242-FRA',
+17 verbose headers   'x-cache': 'MISS',
+17 verbose headers   'x-cache-hits': '0',
+17 verbose headers   'x-timer': 'S1423070350.948384,VS0,VE426',
+17 verbose headers   'keep-alive': 'timeout=10, max=50',
+17 verbose headers   connection: 'Keep-Alive' }
+18 silly registry.get cb [ 404,
+18 silly registry.get   { date: 'Wed, 04 Feb 2015 17:19:11 GMT',
+18 silly registry.get     server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+18 silly registry.get     'content-type': 'application/json',
+18 silly registry.get     'cache-control': 'max-age=0',
+18 silly registry.get     'content-length': '52',
+18 silly registry.get     'accept-ranges': 'bytes',
+18 silly registry.get     via: '1.1 varnish',
+18 silly registry.get     age: '0',
+18 silly registry.get     'x-served-by': 'cache-fra1242-FRA',
+18 silly registry.get     'x-cache': 'MISS',
+18 silly registry.get     'x-cache-hits': '0',
+18 silly registry.get     'x-timer': 'S1423070350.948384,VS0,VE426',
+18 silly registry.get     'keep-alive': 'timeout=10, max=50',
+18 silly registry.get     connection: 'Keep-Alive' } ]
+19 verbose stack Error: 404 Not Found: Arrowsmith
+19 verbose stack     at RegClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:258:14)
+19 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:197:65)
+19 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:199:22)
+19 verbose stack     at Request.emit (events.js:98:17)
+19 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1160:14)
+19 verbose stack     at Request.emit (events.js:117:20)
+19 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1111:12)
+19 verbose stack     at IncomingMessage.emit (events.js:117:20)
+19 verbose stack     at _stream_readable.js:943:16
+19 verbose stack     at process._tickCallback (node.js:419:13)
+20 verbose statusCode 404
+21 verbose pkgid Arrowsmith
+22 verbose cwd /Users/harry/Dropbox/uni/personalproject/code
+23 error Darwin 13.4.0
+24 error argv "node" "/usr/local/bin/npm" "info"
+25 error node v0.10.32
+26 error npm  v2.1.5
+27 error code E404
+28 error 404 Not Found: Arrowsmith
+28 error 404
+28 error 404 'Arrowsmith' is not in the npm registry.
+28 error 404 You should bug the author to publish it (or use the name yourself!)
+28 error 404
+28 error 404 Note that you can also install from a
+28 error 404 tarball, folder, http url, or git url.
+29 verbose exit [ 1, true ]

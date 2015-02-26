@@ -1,0 +1,19 @@
+Elm.WebSocket = Elm.WebSocket || {};
+Elm.WebSocket.make = function (_elm) {
+   "use strict";
+   _elm.WebSocket = _elm.WebSocket || {};
+   if (_elm.WebSocket.values)
+   return _elm.WebSocket.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "WebSocket",
+   $Native$WebSocket = Elm.Native.WebSocket.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var connect = $Native$WebSocket.connect;
+   _elm.WebSocket.values = {_op: _op
+                           ,connect: connect};
+   return _elm.WebSocket.values;
+};

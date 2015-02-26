@@ -1,0 +1,69 @@
+Name:                snap-extras
+Version:             0.9
+x-revision: 1
+Synopsis:            A collection of useful helpers and utilities for Snap web applications.
+Description:         This package contains a collection of helper functions
+                     that come in handy in most practical, real-world
+                     applications. Check individual modules to understand
+                     what's here. You can simply import Snap.Extras and use
+                     the initializer in there to get them all at once.
+License:             BSD3
+License-file:        LICENSE
+Author:              Ozgun Ataman, Doug Beardsley
+Maintainer:          oz@soostone.com
+Category:            Web, Snap
+Build-type:          Simple
+Cabal-version:       >= 1.10
+
+
+data-files:
+  resources/templates/*.tpl
+
+Library
+  Exposed-modules:     
+    Snap.Extras
+    Snap.Extras.Ajax
+    Snap.Extras.CoreUtils
+    Snap.Extras.CSRF
+    Snap.Extras.TextUtils
+    Snap.Extras.JSON
+    Snap.Extras.FlashNotice
+    Snap.Extras.SpliceUtils.Compiled
+    Snap.Extras.SpliceUtils.Interpreted
+    Snap.Extras.FormUtils
+    Snap.Extras.Tabs
+    Snap.Extras.NavTrails
+  other-modules:
+    Snap.Extras.SpliceUtils.Common
+    Paths_snap_extras
+
+  hs-source-dirs: src
+  Build-depends:
+      aeson                    >= 0.6   && < 0.9
+    , base                     >= 4     && < 5
+    , blaze-builder            >= 0.3   && < 0.4
+    , blaze-html               >= 0.6   && < 0.8
+    , bytestring               >= 0.9.1 && < 0.11
+    , configurator             >= 0.2   && < 0.3
+    , containers               >= 0.3   && < 0.6
+    , data-default             >= 0.5   && < 0.6
+    , digestive-functors       >= 0.3   && < 0.8
+    , digestive-functors-heist >= 0.8   && < 0.9
+    , digestive-functors-snap  >= 0.3   && < 0.7
+    , directory-tree           >= 0.10  && < 0.12
+    , errors                   >= 1.4   && < 1.5
+    , filepath                 >= 1.1   && < 1.4
+    , heist                    >= 0.13  && < 0.14
+    , mtl                      >= 2.0   && < 2.2
+    , readable                 >= 0.1   && < 0.3
+    , safe                     >= 0.3   && < 0.4
+    , snap                     >= 0.13  && < 0.14
+    , snap-core                >= 0.7   && < 0.10
+    , text                     >= 0.11  && < 1.2
+    , transformers             >= 0.2   && < 0.4
+    , xmlhtml                  >= 0.1.6 && < 0.3
+    , jmacro                   >= 0.6   && < 0.7
+  
+  ghc-options: -Wall -fwarn-tabs
+  default-language: Haskell2010
+  

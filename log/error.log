@@ -1,0 +1,529 @@
+[08/Jan/2015:23:58:31 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:00:03:42 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:00:03:42 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:00:11:41 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:00:41:56 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:00:41:56 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:02:49:26 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:13:30:53 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:13:30:53 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:00:01 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:04:26 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:04:26 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:04:42 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:09:10 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:09:10 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:09:48 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:12:17 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:12:17 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:15:01 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:15:16 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:15:16 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:29:47 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:30:50 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:30:50 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:30:54 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:33:55 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:33:55 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:36:06 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:41:17 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:41:17 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:41:18 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:42:15 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:42:15 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:42:55 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:44:03 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:44:03 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:15:44:28 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:15:44:30 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:15:44:30 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:16:10:54 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:16:13:14 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:16:13:14 +0000] Server.httpServe: BACKEND STOPPED
+[09/Jan/2015:16:13:46 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[09/Jan/2015:16:22:13 +0000] Server.httpServe: SHUTDOWN
+[09/Jan/2015:16:22:13 +0000] Server.httpServe: BACKEND STOPPED
+[10/Jan/2015:19:22:31 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[10/Jan/2015:19:22:53 +0000] During processing of request from 127.0.0.1:49962
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:49962\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 171\n User-Agent: HTTPie/0.8.0\n Host: localhost:8000\n Accept: application/json\n Content-Type: application/json; charset=utf-8\n Accept-Encoding: gzip, deflate\n      ========================================\n    content-length: Just 171\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[10/Jan/2015:19:24:11 +0000] Server.httpServe: SHUTDOWN
+[10/Jan/2015:19:24:11 +0000] Server.httpServe: BACKEND STOPPED
+[10/Jan/2015:19:24:15 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[10/Jan/2015:19:24:19 +0000] During processing of request from 127.0.0.1:49968
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:49968\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 171\n User-Agent: HTTPie/0.8.0\n Host: localhost:8000\n Accept: application/json\n Content-Type: application/json; charset=utf-8\n Accept-Encoding: gzip, deflate\n      ========================================\n    content-length: Just 171\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+compiled-program.js: openFile: does not exist (No such file or directory)
+[10/Jan/2015:19:25:46 +0000] Server.httpServe: SHUTDOWN
+[10/Jan/2015:19:25:46 +0000] Server.httpServe: BACKEND STOPPED
+[10/Jan/2015:19:25:49 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[10/Jan/2015:19:25:52 +0000] During processing of request from 127.0.0.1:49969
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:49969\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 171\n User-Agent: HTTPie/0.8.0\n Host: localhost:8000\n Accept: application/json\n Content-Type: application/json; charset=utf-8\n Accept-Encoding: gzip, deflate\n      ========================================\n    content-length: Just 171\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+elm-stuff/build-artifacts/USER/PROJECT/1.0.0/Program.elmi: openBinaryFile: does not exist (No such file or directory)
+[10/Jan/2015:19:31:53 +0000] Server.httpServe: SHUTDOWN
+[10/Jan/2015:19:31:53 +0000] Server.httpServe: BACKEND STOPPED
+[10/Jan/2015:19:32:53 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[10/Jan/2015:19:32:55 +0000] During processing of request from 127.0.0.1:50002
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50002\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 171\n User-Agent: HTTPie/0.8.0\n Host: localhost:8000\n Accept: application/json\n Content-Type: application/json; charset=utf-8\n Accept-Encoding: gzip, deflate\n      ========================================\n    content-length: Just 171\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/elm-package.json: openBinaryFile: does not exist (No such file or directory)
+[10/Jan/2015:19:33:12 +0000] Server.httpServe: SHUTDOWN
+[10/Jan/2015:19:33:12 +0000] Server.httpServe: BACKEND STOPPED
+[10/Jan/2015:19:33:14 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[10/Jan/2015:21:49:44 +0000] Server.httpServe: SHUTDOWN
+[10/Jan/2015:21:49:44 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:01:14:52 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:01:16:09 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:01:16:09 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:01:40:42 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:01:40:45 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:01:40:45 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:01:49:21 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:02:15:55 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:02:15:55 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:02:16:03 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:16:47:43 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:16:47:43 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:16:47:47 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:22:53:28 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:22:53:28 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:23:02:23 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:23:03:49 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:23:03:49 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:23:05:38 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[11/Jan/2015:23:06:31 +0000] Server.httpServe: SHUTDOWN
+[11/Jan/2015:23:06:31 +0000] Server.httpServe: BACKEND STOPPED
+[11/Jan/2015:23:06:35 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[12/Jan/2015:00:00:05 +0000] Server.httpServe: SHUTDOWN
+[12/Jan/2015:00:00:05 +0000] Server.httpServe: BACKEND STOPPED
+[12/Jan/2015:00:00:10 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[12/Jan/2015:00:00:46 +0000] Server.httpServe: SHUTDOWN
+[12/Jan/2015:00:00:46 +0000] Server.httpServe: BACKEND STOPPED
+[12/Jan/2015:00:00:50 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[12/Jan/2015:00:03:15 +0000] Server.httpServe: SHUTDOWN
+[12/Jan/2015:00:03:15 +0000] Server.httpServe: BACKEND STOPPED
+[12/Jan/2015:00:03:19 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[12/Jan/2015:00:09:54 +0000] Server.httpServe: SHUTDOWN
+[12/Jan/2015:00:09:54 +0000] Server.httpServe: BACKEND STOPPED
+[12/Jan/2015:00:10:15 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[13/Jan/2015:14:53:45 +0000] Server.httpServe: SHUTDOWN
+[13/Jan/2015:14:53:45 +0000] Server.httpServe: BACKEND STOPPED
+[13/Jan/2015:14:53:52 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[13/Jan/2015:15:04:24 +0000] Server.httpServe: SHUTDOWN
+[13/Jan/2015:15:04:24 +0000] Server.httpServe: BACKEND STOPPED
+[13/Jan/2015:15:04:31 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[13/Jan/2015:18:02:45 +0000] Server.httpServe: SHUTDOWN
+[13/Jan/2015:18:02:45 +0000] Server.httpServe: BACKEND STOPPED
+[13/Jan/2015:18:02:51 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[14/Jan/2015:01:31:06 +0000] Server.httpServe: SHUTDOWN
+[14/Jan/2015:01:31:06 +0000] Server.httpServe: BACKEND STOPPED
+[14/Jan/2015:16:18:18 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[14/Jan/2015:16:18:21 +0000] Server.httpServe: SHUTDOWN
+[14/Jan/2015:16:18:21 +0000] Server.httpServe: BACKEND STOPPED
+[14/Jan/2015:16:18:27 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[14/Jan/2015:18:03:37 +0000] During processing of request from 127.0.0.1:60224
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:60224\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 192\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 192\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp: changeWorkingDirectory: does not exist (No such file or directory)
+[15/Jan/2015:00:00:12 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:00:12:38 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:00:12:38 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:00:12:42 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:01:00:53 +0000] During processing of request from 127.0.0.1:62296
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:62296\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 192\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 192\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp: changeWorkingDirectory: does not exist (No such file or directory)
+[15/Jan/2015:12:51:37 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:15:25:31 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:15:25:31 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:15:25:56 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:15:58:45 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:15:58:45 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:15:59:18 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:15:59:58 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:15:59:58 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:16:00:03 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:16:06:29 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:16:06:29 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:16:06:32 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:16:20:02 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:16:20:02 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:16:20:18 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:16:20:30 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:16:20:30 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:16:23:05 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:16:23:23 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:16:23:23 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:16:23:27 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:16:25:56 +0000] During processing of request from 127.0.0.1:52460
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:52460\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:15:03 +0000] During processing of request from 127.0.0.1:53784
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:53784\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:37:04 +0000] During processing of request from 127.0.0.1:54102
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54102\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:38:12 +0000] During processing of request from 127.0.0.1:54105
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54105\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 224\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 224\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:38:12 +0000] During processing of request from 127.0.0.1:54102
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54102\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 224\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 224\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:38:39 +0000] During processing of request from 127.0.0.1:54102
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54102\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:41:54 +0000] During processing of request from 127.0.0.1:54148
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54148\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:18:41:57 +0000] During processing of request from 127.0.0.1:54144
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54144\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:36:01 +0000] During processing of request from 127.0.0.1:54819
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54819\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:36:04 +0000] During processing of request from 127.0.0.1:54816
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54816\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:43:17 +0000] During processing of request from 127.0.0.1:54851
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54851\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:44:17 +0000] During processing of request from 127.0.0.1:54851
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54851\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:44:28 +0000] During processing of request from 127.0.0.1:54851
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54851\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:46:05 +0000] During processing of request from 127.0.0.1:54885
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54885\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:46:18 +0000] During processing of request from 127.0.0.1:54890
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54890\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:49:12 +0000] During processing of request from 127.0.0.1:54917
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54917\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:20:49:14 +0000] During processing of request from 127.0.0.1:54917
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:54917\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 238\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 238\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[15/Jan/2015:21:22:00 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:21:22:00 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:21:38:55 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[15/Jan/2015:21:38:58 +0000] Server.httpServe: SHUTDOWN
+[15/Jan/2015:21:38:58 +0000] Server.httpServe: BACKEND STOPPED
+[15/Jan/2015:22:55:47 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[16/Jan/2015:11:27:10 +0000] During processing of request from 127.0.0.1:57519
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:57519\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 154\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 154\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:11:27:11 +0000] During processing of request from 127.0.0.1:57519
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:57519\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 154\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 154\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:11:34:22 +0000] During processing of request from 127.0.0.1:57540
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:57540\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 136\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 136\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:11:39:07 +0000] During processing of request from 127.0.0.1:57626
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:57626\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 153\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 153\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:11:39:36 +0000] Server.httpServe: SHUTDOWN
+[16/Jan/2015:11:39:36 +0000] Server.httpServe: BACKEND STOPPED
+[16/Jan/2015:12:03:12 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[16/Jan/2015:12:28:08 +0000] During processing of request from 127.0.0.1:58745
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58745\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:31:05 +0000] During processing of request from 127.0.0.1:59041
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:59041\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:31:50 +0000] During processing of request from 127.0.0.1:58773
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58773\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:29 +0000] During processing of request from 127.0.0.1:61986
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:61986\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:29 +0000] During processing of request from 127.0.0.1:61988
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:61988\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:29 +0000] During processing of request from 127.0.0.1:59041
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:59041\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:30 +0000] During processing of request from 127.0.0.1:61986
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:61986\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:30 +0000] During processing of request from 127.0.0.1:61988
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:61988\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:30 +0000] During processing of request from 127.0.0.1:58773
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58773\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:30 +0000] During processing of request from 127.0.0.1:59041
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:59041\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:32:30 +0000] During processing of request from 127.0.0.1:58774
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58774\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:49:34 +0000] During processing of request from 127.0.0.1:63051
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:63051\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:49:43 +0000] During processing of request from 127.0.0.1:63051
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:63051\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:12:49:44 +0000] During processing of request from 127.0.0.1:63051
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:63051\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 146\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 146\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:13:10:04 +0000] Server.httpServe: SHUTDOWN
+[16/Jan/2015:13:10:04 +0000] Server.httpServe: BACKEND STOPPED
+[16/Jan/2015:13:10:10 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[16/Jan/2015:13:10:24 +0000] During processing of request from 127.0.0.1:63130
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:63130\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 141\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 141\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:13:10:24 +0000] During processing of request from 127.0.0.1:63129
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:63129\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 148\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 148\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[16/Jan/2015:13:12:19 +0000] Server.httpServe: SHUTDOWN
+[16/Jan/2015:13:12:19 +0000] Server.httpServe: BACKEND STOPPED
+[16/Jan/2015:13:26:16 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[16/Jan/2015:13:26:57 +0000] During processing of request from 127.0.0.1:63234
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:63234\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 123\n User-Agent: HTTPie/0.8.0\n Host: localhost:8000\n Accept: application/json\n Content-Type: application/json; charset=utf-8\n Accept-Encoding: gzip, deflate\n      ========================================\n    content-length: Just 123\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[17/Jan/2015:16:27:20 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:16:27:20 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:16:31:01 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:16:31:09 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:16:31:09 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:16:31:13 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:16:32:08 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:16:32:08 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:16:32:20 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:16:33:07 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:16:33:07 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:16:33:26 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:17:09:04 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:17:09:04 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:20:59:14 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:20:59:17 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:20:59:17 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:21:06:17 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:21:09:13 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:21:09:13 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:21:09:53 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:21:10:20 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:21:10:20 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:21:10:24 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:21:10:47 +0000] During processing of request from 127.0.0.1:55518
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:55518\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 144\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 144\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[17/Jan/2015:21:12:48 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:21:12:48 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:21:13:31 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:21:14:30 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:21:14:30 +0000] Server.httpServe: BACKEND STOPPED
+[17/Jan/2015:21:14:34 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[17/Jan/2015:21:14:44 +0000] During processing of request from 127.0.0.1:55582
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:55582\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 144\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 144\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[17/Jan/2015:21:15:14 +0000] During processing of request from 127.0.0.1:55583
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:55583\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 148\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 148\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[17/Jan/2015:21:47:18 +0000] Server.httpServe: SHUTDOWN
+[17/Jan/2015:21:47:18 +0000] Server.httpServe: BACKEND STOPPED
+[18/Jan/2015:00:22:34 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Jan/2015:00:22:43 +0000] During processing of request from 127.0.0.1:58807
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58807\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 153\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 153\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[18/Jan/2015:00:23:09 +0000] During processing of request from 127.0.0.1:58810
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58810\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 140\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 140\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[18/Jan/2015:00:23:41 +0000] During processing of request from 127.0.0.1:58810
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:58810\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 140\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 140\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/compiled-program.js: openFile: does not exist (No such file or directory)
+[18/Jan/2015:00:24:23 +0000] Server.httpServe: SHUTDOWN
+[18/Jan/2015:00:24:23 +0000] Server.httpServe: BACKEND STOPPED
+[18/Jan/2015:16:18:01 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Jan/2015:17:05:37 +0000] Server.httpServe: SHUTDOWN
+[18/Jan/2015:17:05:37 +0000] Server.httpServe: BACKEND STOPPED
+[18/Jan/2015:18:22:22 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Jan/2015:18:55:04 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Jan/2015:18:55:04 +0000] Error on startup: 
+bind: resource busy (Address already in use)
+[18/Jan/2015:18:56:32 +0000] Server.httpServe: SHUTDOWN
+[18/Jan/2015:18:56:32 +0000] Server.httpServe: BACKEND STOPPED
+[18/Jan/2015:18:56:50 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[19/Jan/2015:01:13:36 +0000] Server.httpServe: SHUTDOWN
+[19/Jan/2015:01:13:36 +0000] Server.httpServe: BACKEND STOPPED
+[19/Jan/2015:01:16:05 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[19/Jan/2015:01:17:23 +0000] During processing of request from 127.0.0.1:62399
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:62399\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 124\n User-Agent: HTTPie/0.8.0\n Host: localhost:8000\n Accept: application/json\n Content-Type: application/json; charset=utf-8\n Accept-Encoding: gzip, deflate\n      ========================================\n    content-length: Just 124\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+tmp/elm-stuff/build-artifacts/USER/PROJECT/1.0.0/Program.elmi: openBinaryFile: does not exist (No such file or directory)
+[19/Jan/2015:01:20:50 +0000] Server.httpServe: SHUTDOWN
+[19/Jan/2015:01:20:50 +0000] Server.httpServe: BACKEND STOPPED
+[19/Jan/2015:01:20:54 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[19/Jan/2015:01:21:01 +0000] Server.httpServe: SHUTDOWN
+[19/Jan/2015:01:21:01 +0000] Server.httpServe: BACKEND STOPPED
+[19/Jan/2015:01:21:28 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[19/Jan/2015:01:40:12 +0000] Server.httpServe: SHUTDOWN
+[19/Jan/2015:01:40:12 +0000] Server.httpServe: BACKEND STOPPED
+[19/Jan/2015:01:44:01 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[19/Jan/2015:01:44:09 +0000] ["127.0.0.1"]: an exception escaped to toplevel:
+recv: resource vanished (Connection reset by peer)
+[19/Jan/2015:02:14:54 +0000] Server.httpServe: SHUTDOWN
+[19/Jan/2015:02:14:54 +0000] Server.httpServe: BACKEND STOPPED
+[02/Feb/2015:14:20:36 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Feb/2015:22:37:01 +0000] Server.httpServe: SHUTDOWN
+[02/Feb/2015:22:37:01 +0000] Server.httpServe: BACKEND STOPPED
+[02/Feb/2015:23:43:27 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Feb/2015:23:48:27 +0000] Server.httpServe: SHUTDOWN
+[02/Feb/2015:23:48:27 +0000] Server.httpServe: BACKEND STOPPED
+[02/Feb/2015:23:48:33 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Feb/2015:23:50:01 +0000] Server.httpServe: SHUTDOWN
+[02/Feb/2015:23:50:01 +0000] Server.httpServe: BACKEND STOPPED
+[02/Feb/2015:23:52:09 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[03/Feb/2015:00:17:00 +0000] Server.httpServe: SHUTDOWN
+[03/Feb/2015:00:17:00 +0000] Server.httpServe: BACKEND STOPPED
+[03/Feb/2015:00:17:05 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[03/Feb/2015:12:34:39 +0000] Server.httpServe: SHUTDOWN
+[03/Feb/2015:12:34:39 +0000] Server.httpServe: BACKEND STOPPED
+[03/Feb/2015:12:42:18 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[03/Feb/2015:12:51:38 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:64483
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:64483\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 153\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 153\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+send: resource vanished (Broken pipe)
+[03/Feb/2015:12:51:38 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:64483
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:64483\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          Content-Length: 153\n User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Origin: http://localhost:8000\n Connection: keep-alive\n Host: localhost:8000\n Accept: */*\n Content-Type: text/plain;charset=UTF-8\n Accept-Encoding: gzip, deflate\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Just 153\n    method: POST\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: compile\n    contextpath: /\n    URI: /compile\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+ExceptionAlreadyCaught
+[03/Feb/2015:12:52:08 +0000] ["127.0.0.1"]: an exception escaped to toplevel:
+recv: resource vanished (Connection reset by peer)
+[03/Feb/2015:13:32:06 +0000] ["127.0.0.1"]: an exception escaped to toplevel:
+recv: resource vanished (Connection reset by peer)
+[03/Feb/2015:15:22:41 +0000] ["127.0.0.1"]: an exception escaped to toplevel:
+recv: resource vanished (Connection reset by peer)
+[04/Feb/2015:00:04:24 +0000] Server.httpServe: SHUTDOWN
+[04/Feb/2015:00:04:24 +0000] Server.httpServe: BACKEND STOPPED
+[04/Feb/2015:13:25:00 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[04/Feb/2015:14:19:50 +0000] Server.httpServe: SHUTDOWN
+[04/Feb/2015:14:19:50 +0000] Server.httpServe: BACKEND STOPPED
+[04/Feb/2015:14:35:43 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[04/Feb/2015:15:50:15 +0000] ["127.0.0.1"]: an exception escaped to toplevel:
+recv: resource vanished (Connection reset by peer)
+[05/Feb/2015:10:55:07 +0000] Server.httpServe: SHUTDOWN
+[05/Feb/2015:10:55:07 +0000] Server.httpServe: BACKEND STOPPED
+[05/Feb/2015:11:56:32 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[05/Feb/2015:15:07:37 +0000] Server.httpServe: SHUTDOWN
+[05/Feb/2015:15:07:37 +0000] Server.httpServe: BACKEND STOPPED
+[06/Feb/2015:10:13:26 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[06/Feb/2015:11:16:14 +0000] Server.httpServe: SHUTDOWN
+[06/Feb/2015:11:16:14 +0000] Server.httpServe: BACKEND STOPPED
+[06/Feb/2015:12:45:56 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Feb/2015:21:10:58 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Feb/2015:21:11:08 +0000] Server.httpServe: SHUTDOWN
+[18/Feb/2015:21:11:08 +0000] Server.httpServe: BACKEND STOPPED
+[18/Feb/2015:21:13:09 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[18/Feb/2015:22:27:27 +0000] Server.httpServe: SHUTDOWN
+[18/Feb/2015:22:27:27 +0000] Server.httpServe: BACKEND STOPPED
+[19/Feb/2015:12:47:51 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[19/Feb/2015:13:49:24 +0000] Server.httpServe: SHUTDOWN
+[19/Feb/2015:13:49:24 +0000] Server.httpServe: BACKEND STOPPED
+[21/Feb/2015:15:30:16 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[21/Feb/2015:15:31:36 +0000] Server.httpServe: SHUTDOWN
+[21/Feb/2015:15:31:36 +0000] Server.httpServe: BACKEND STOPPED

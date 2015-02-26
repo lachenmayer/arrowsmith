@@ -1,0 +1,75 @@
+@import 'nib'
+@import 'lib/material-color'
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic)
+@import url(http://fonts.googleapis.com/css?family=Inconsolata)
+
+body
+  margin 0
+  background black
+  color white
+  font-family Roboto, sans-serif
+  cursor pointer
+
+.module-header
+  background $clr-red-500
+  height 48px
+  line-height 48px
+  padding 0 16px
+
+.module-imports
+  background $clr-red-900
+  padding 16px
+
+.module-defs
+  padding 16px
+  background $clr-grey-900
+
+.module-name
+  color white
+  font-size 20px
+  font-weight 500
+  
+.compile-button
+  float right
+
+.tag
+  height 40px
+  font-size 16px
+  padding 0 16px
+  vertical-align center
+
+.definition
+  margin 32px 0
+
+// .definition-header
+//   height 40px
+
+table
+  border-collapse collapse
+
+.definition-name
+  color $clr-grey-900
+  background-color $clr-grey-200
+
+.definition-type
+  background-color $clr-blue-500
+
+.definition-code
+  background-color $clr-grey-800
+  font-family Inconsolata, monospace
+  padding 16px
+
+.definition-value
+  color $clr-grey-900
+  background-color $clr-grey-200
+  padding 16px
+
+.undefined-definition
+  color $clr-grey-600
+  font-style italic
+
+.new-def-button
+  background-color $clr-grey-800
+  font-size 36px
+  text-align center
+  font-weight bold

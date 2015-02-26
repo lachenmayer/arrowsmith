@@ -1,0 +1,12 @@
+{
+  "imports":
+    [ "import Graphics.Element (..)"
+    , "import Text (..)"
+    ]
+, "adts":
+    []
+, "defs":
+    ["main : Element
+main =
+  plainText \"Hello, World!\""]
+}

@@ -1,0 +1,53 @@
+Elm.Arrowsmith = Elm.Arrowsmith || {};
+Elm.Arrowsmith.Definition = Elm.Arrowsmith.Definition || {};
+Elm.Arrowsmith.Definition.make = function (_elm) {
+   "use strict";
+   _elm.Arrowsmith = _elm.Arrowsmith || {};
+   _elm.Arrowsmith.Definition = _elm.Arrowsmith.Definition || {};
+   if (_elm.Arrowsmith.Definition.values)
+   return _elm.Arrowsmith.Definition.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Arrowsmith.Definition",
+   $Arrowsmith$Types = Elm.Arrowsmith.Types.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $String = Elm.String.make(_elm);
+   var toString = function (_v0) {
+      return function () {
+         return function () {
+            var rhs = A2($Basics._op["++"],
+            "  ",
+            _v0.binding);
+            var lhs = A2($Basics._op["++"],
+            _v0.name,
+            " =");
+            var def = function () {
+               var _v2 = _v0.tipe;
+               switch (_v2.ctor)
+               {case "Just":
+                  return _L.fromArray([A2($Basics._op["++"],
+                                      _v0.name,
+                                      A2($Basics._op["++"],
+                                      " : ",
+                                      _v2._0))
+                                      ,lhs
+                                      ,rhs]);
+                  case "Nothing":
+                  return _L.fromArray([lhs,rhs]);}
+               _U.badCase($moduleName,
+               "between lines 12 and 17");
+            }();
+            return A2($String.join,
+            "\n",
+            def);
+         }();
+      }();
+   };
+   _elm.Arrowsmith.Definition.values = {_op: _op
+                                       ,toString: toString};
+   return _elm.Arrowsmith.Definition.values;
+};

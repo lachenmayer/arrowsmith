@@ -1,0 +1,168 @@
+Elm.Arrowsmith = Elm.Arrowsmith || {};
+Elm.Arrowsmith.Module = Elm.Arrowsmith.Module || {};
+Elm.Arrowsmith.Module.make = function (_elm) {
+   "use strict";
+   _elm.Arrowsmith = _elm.Arrowsmith || {};
+   _elm.Arrowsmith.Module = _elm.Arrowsmith.Module || {};
+   if (_elm.Arrowsmith.Module.values)
+   return _elm.Arrowsmith.Module.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Arrowsmith.Module",
+   $Array = Elm.Array.make(_elm),
+   $Arrowsmith$Definition = Elm.Arrowsmith.Definition.make(_elm),
+   $Arrowsmith$Types = Elm.Arrowsmith.Types.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $String = Elm.String.make(_elm);
+   var undefinedBinding = "\"__undefined__\"";
+   var helloWorld = {_: {}
+                    ,adts: _L.fromArray([])
+                    ,defs: _L.fromArray([{_: {}
+                                         ,binding: "1 + 2"
+                                         ,name: "numbers"
+                                         ,tipe: $Maybe.Just("number")}
+                                        ,{_: {}
+                                         ,binding: "numbers * 2"
+                                         ,name: "doubles"
+                                         ,tipe: $Maybe.Just("number")}])
+                    ,imports: _L.fromArray(["Graphics.Element (..)"
+                                           ,"Text (..)"])
+                    ,name: _L.fromArray(["Foo"
+                                        ,"HelloWorld"])};
+   var empty = {_: {}
+               ,adts: _L.fromArray([])
+               ,defs: _L.fromArray([])
+               ,imports: _L.fromArray([])
+               ,name: _L.fromArray(["Program"])};
+   var nameToString = function (name) {
+      return $List.isEmpty(name) ? "Program" : $String.concat(A2($List.intersperse,
+      ".",
+      name));
+   };
+   var toString = function (_v0) {
+      return function () {
+         return function () {
+            var definitions = A2($List.map,
+            $Arrowsmith$Definition.toString,
+            _v0.defs);
+            var moduleDeclaration = A2($Basics._op["++"],
+            "module ",
+            A2($Basics._op["++"],
+            nameToString(_v0.name),
+            " where"));
+            var lines = $String.join("\n");
+            return A2($String.join,
+            "\n\n",
+            _L.fromArray([moduleDeclaration
+                         ,lines(A2($List.map,
+                         F2(function (x,y) {
+                            return A2($Basics._op["++"],
+                            x,
+                            y);
+                         })("import "),
+                         _v0.imports))
+                         ,lines(_v0.adts)
+                         ,lines(definitions)]));
+         }();
+      }();
+   };
+   var replaceDefinition = F3(function (program,
+   name,
+   newDefinition) {
+      return function () {
+         var update = function (oldDefinition) {
+            return _U.eq(oldDefinition.name,
+            name) ? newDefinition : oldDefinition;
+         };
+         return _U.replace([["defs"
+                            ,A2($List.map,
+                            update,
+                            program.defs)]],
+         program);
+      }();
+   });
+   var removeDefinition = F2(function (program,
+   toRemove) {
+      return _U.replace([["defs"
+                         ,A2($List.filter,
+                         function (_v2) {
+                            return function () {
+                               return !_U.eq(_v2.name,
+                               toRemove);
+                            }();
+                         },
+                         program.defs)]],
+      program);
+   });
+   var freshName = function (fresh) {
+      return function () {
+         var names = $Array.fromList(_L.fromArray(["foo"
+                                                  ,"bar"
+                                                  ,"baz"
+                                                  ,"buz"
+                                                  ,"qux"
+                                                  ,"quux"
+                                                  ,"corge"
+                                                  ,"grault"
+                                                  ,"garply"
+                                                  ,"waldo"
+                                                  ,"fred"
+                                                  ,"plugh"
+                                                  ,"xyzzy"
+                                                  ,"thud"]));
+         var nameCount = $Array.length(names);
+         var name = function (idx) {
+            return function () {
+               var _v4 = A2($Array.get,
+               idx,
+               names);
+               switch (_v4.ctor)
+               {case "Just": return _v4._0;
+                  case "Nothing":
+                  return A2($Basics._op["++"],
+                    name((idx / nameCount | 0) - 1),
+                    name(A2($Basics._op["%"],
+                    idx,
+                    nameCount)));}
+               _U.badCase($moduleName,
+               "between lines 19 and 22");
+            }();
+         };
+         return name(fresh);
+      }();
+   };
+   var newDefinition = F2(function (program,
+   def) {
+      return _U.replace([["defs"
+                         ,A2($Basics._op["++"],
+                         program.defs,
+                         _L.fromArray([def]))]],
+      program);
+   });
+   var freshDefinition = F2(function (program,
+   fresh) {
+      return A2(newDefinition,
+      program,
+      {_: {}
+      ,binding: undefinedBinding
+      ,name: freshName(fresh)
+      ,tipe: $Maybe.Nothing});
+   });
+   _elm.Arrowsmith.Module.values = {_op: _op
+                                   ,newDefinition: newDefinition
+                                   ,freshName: freshName
+                                   ,freshDefinition: freshDefinition
+                                   ,removeDefinition: removeDefinition
+                                   ,replaceDefinition: replaceDefinition
+                                   ,nameToString: nameToString
+                                   ,toString: toString
+                                   ,empty: empty
+                                   ,helloWorld: helloWorld
+                                   ,undefinedBinding: undefinedBinding};
+   return _elm.Arrowsmith.Module.values;
+};

@@ -1,0 +1,38 @@
+Elm.Char = Elm.Char || {};
+Elm.Char.make = function (_elm) {
+   "use strict";
+   _elm.Char = _elm.Char || {};
+   if (_elm.Char.values)
+   return _elm.Char.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   _P = _N.Ports.make(_elm),
+   $moduleName = "Char",
+   $Native$Char = Elm.Native.Char.make(_elm);
+   var fromCode = $Native$Char.fromCode;
+   var toCode = $Native$Char.toCode;
+   var toLocaleLower = $Native$Char.toLocaleLower;
+   var toLocaleUpper = $Native$Char.toLocaleUpper;
+   var toLower = $Native$Char.toLower;
+   var toUpper = $Native$Char.toUpper;
+   var isHexDigit = $Native$Char.isHexDigit;
+   var isOctDigit = $Native$Char.isOctDigit;
+   var isDigit = $Native$Char.isDigit;
+   var isLower = $Native$Char.isLower;
+   var isUpper = $Native$Char.isUpper;
+   _elm.Char.values = {_op: _op
+                      ,isUpper: isUpper
+                      ,isLower: isLower
+                      ,isDigit: isDigit
+                      ,isOctDigit: isOctDigit
+                      ,isHexDigit: isHexDigit
+                      ,toUpper: toUpper
+                      ,toLower: toLower
+                      ,toLocaleUpper: toLocaleUpper
+                      ,toLocaleLower: toLocaleLower
+                      ,toCode: toCode
+                      ,fromCode: fromCode};
+   return _elm.Char.values;
+};
