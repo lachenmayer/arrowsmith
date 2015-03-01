@@ -533,3 +533,27 @@ recv: resource vanished (Connection reset by peer)
 [27/Feb/2015:11:50:02 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
 [27/Feb/2015:11:53:54 +0000] Server.httpServe: SHUTDOWN
 [27/Feb/2015:11:53:54 +0000] Server.httpServe: BACKEND STOPPED
+[01/Mar/2015:23:48:31 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[01/Mar/2015:23:48:37 +0000] During processing of request from 127.0.0.1:53409
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:53409\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+/Users/harry/Documents/Code/personalproject/arrowsmith/repos/github/lachenmayer/secret-sauce/USER/PROJECT/1.0.0/Foo.elma: openBinaryFile: does not exist (No such file or directory)
+[01/Mar/2015:23:49:16 +0000] Server.httpServe: SHUTDOWN
+[01/Mar/2015:23:49:16 +0000] Server.httpServe: BACKEND STOPPED
+[01/Mar/2015:23:49:30 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[01/Mar/2015:23:49:33 +0000] During processing of request from 127.0.0.1:53422
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:53422\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+/elm-stuff/build-artifacts/USER/PROJECT/1.0.0/Foo.elma: openBinaryFile: does not exist (No such file or directory)
+[01/Mar/2015:23:49:41 +0000] Server.httpServe: SHUTDOWN
+[01/Mar/2015:23:49:41 +0000] Server.httpServe: BACKEND STOPPED
+[01/Mar/2015:23:49:48 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[01/Mar/2015:23:51:32 +0000] During processing of request from 127.0.0.1:53467
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:53467\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Bar\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Bar\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+/Users/harry/Documents/Code/personalproject/arrowsmith/repos/github/lachenmayer/secret-sauce/elm-stuff/build-artifacts/USER/PROJECT/1.0.0/Bar.elma: openBinaryFile: does not exist (No such file or directory)
+[01/Mar/2015:23:52:27 +0000] Server.httpServe: SHUTDOWN
+[01/Mar/2015:23:52:27 +0000] Server.httpServe: BACKEND STOPPED

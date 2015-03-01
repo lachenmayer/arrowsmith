@@ -16,7 +16,7 @@ import qualified AST.Module
 import qualified AST.Pattern as Pattern
 import qualified AST.PrettyPrint
 
-import qualified Arrowsmith.Paths as Paths
+import Arrowsmith.Repo (Repo, repoPath)
 
 type Definition =
   ( String -- name
@@ -33,10 +33,10 @@ data Module = Module
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
 
-getModule :: String -> String -> String -> String -> IO (Maybe Module)
-getModule backend user project modul = do
+getModule :: Repo -> String -> IO (Maybe Module)
+getModule repo modul = do
   basePath <- getCurrentDirectory
-  astFile <- LazyBS.readFile $ (Paths.repoPath basePath backend user project) </> "USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
+  astFile <- LazyBS.readFile $ (repoPath basePath repo) </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
   return $ (fromAstFile astFile) >>= Just . makeModule
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule

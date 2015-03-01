@@ -18,6 +18,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import Arrowsmith.Compile (compile)
 import qualified Arrowsmith.Module as Module
+import Arrowsmith.Repo
 
 
 type Route = (BS.ByteString, Snap ())
@@ -52,15 +53,21 @@ editor contents =
       H.script ! A.src "/app/env.js" $ return ()
       contents
 
+getRepo :: Snap Repo
+getRepo = do
+  b <- urlFragment "backend"
+  u <- urlFragment "user"
+  p <- urlFragment "project"
+  return Repo { backend = b, user = u, project = p }
 
 editorHandler :: Snap ()
 editorHandler = do
-  backend <- getParam "backend"
-  user <- getParam "user"
-  project <- getParam "project"
-  modul <- getParam "module"
-  m <- Module.getModule backend user project modul
-  (writeText . toStrict . renderHtml) (editor $ return ())
+  repo <- getRepo
+  modul <- urlFragment "module"
+  m <- liftIO $ Module.getModule repo modul
+  let moduleJson = UTF8BS.toString . LazyBS.toStrict . encode . toJSON $ m
+  let moduleScript = H.p $ toMarkup moduleJson
+  writeText . toStrict . renderHtml $ editor moduleScript
 
 updateHandler :: Snap ()
 updateHandler = do
@@ -77,3 +84,10 @@ compileHandler = do
   --  Left err -> do
   --    modifyResponse $ setResponseCode 400 -- Bad Request
   --    writeJSON $ CompileError err
+
+urlFragment :: BS.ByteString -> Snap String
+urlFragment name = do
+  param <- getParam name
+  case param of
+    Just value -> return $ UTF8BS.toString value
+    Nothing -> error "URL handling is broken in Snap... (Arrowsmith.Api)"
