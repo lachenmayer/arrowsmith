@@ -39,19 +39,12 @@ Library
         src
 
     exposed-modules:
-        Elm.Compiler,
-        Elm.Compiler.Module,
-        Elm.Compiler.Type,
-        Elm.Docs,
-        Elm.Utils
-
-    other-modules:
         AST.Annotation,
         AST.Declaration,
+        AST.Expression.Canonical,
         AST.Expression.General,
         AST.Expression.Source,
         AST.Expression.Valid,
-        AST.Expression.Canonical,
         AST.Helpers,
         AST.JSON,
         AST.Literal,
@@ -60,6 +53,13 @@ Library
         AST.PrettyPrint,
         AST.Type,
         AST.Variable,
+        Elm.Compiler,
+        Elm.Compiler.Module,
+        Elm.Compiler.Type,
+        Elm.Docs,
+        Elm.Utils
+
+    other-modules:
         Compile,
         Elm.Compiler.Type.Extract,
         Elm.Compiler.Version,

@@ -30,8 +30,7 @@ index =
       H.link ! A.rel "stylesheet" ! A.href "/app/style.css"
       H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     H.body $ do
-      H.script ! A.src "/app/editor.js" $ return ()
-      H.script ! A.src "/app/env.js" $ return ()
+      H.a ! A.href "/github/lachenmayer/secret-sauce/Foo" $ "go to the example module."
 
 app :: Snap ()
 app =

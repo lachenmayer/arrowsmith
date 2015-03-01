@@ -527,3 +527,9 @@ recv: resource vanished (Connection reset by peer)
 [21/Feb/2015:15:30:16 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
 [21/Feb/2015:15:31:36 +0000] Server.httpServe: SHUTDOWN
 [21/Feb/2015:15:31:36 +0000] Server.httpServe: BACKEND STOPPED
+[27/Feb/2015:11:49:13 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[27/Feb/2015:11:49:58 +0000] Server.httpServe: SHUTDOWN
+[27/Feb/2015:11:49:58 +0000] Server.httpServe: BACKEND STOPPED
+[27/Feb/2015:11:50:02 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[27/Feb/2015:11:53:54 +0000] Server.httpServe: SHUTDOWN
+[27/Feb/2015:11:53:54 +0000] Server.httpServe: BACKEND STOPPED
