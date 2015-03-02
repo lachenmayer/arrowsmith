@@ -72,16 +72,3 @@ runCommand workingDirectory command args = do
   (_, _, Just stderr, handle) <- createProcess (proc command args) { cwd = Just workingDirectory, std_err = CreatePipe }
   exitCode <- waitForProcess handle
   return (stderr, exitCode)
-
---helloWorld :: Program
---helloWorld =
---  Program
---    { imports =
---      [ "import Graphics.Element (..)"
---      , "import Text (..)"
---      ]
---    , adts = []
---    , defs =
---      [ "main : Element\nmain = plainText \"Hello, World!\""
---      ]
---    }

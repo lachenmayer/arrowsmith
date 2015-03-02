@@ -3,7 +3,7 @@ compileClient = require 'rest'
   .wrap require('rest/interceptor/errorCode')
   .wrap require('rest/interceptor/defaultRequest'),
     method: 'POST'
-    path: '/compile'
+    path: "#{document.location.pathname}/compile"
 
 compileRequest = (elmCode) ->
   compileClient entity: elmCode

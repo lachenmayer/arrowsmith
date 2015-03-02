@@ -12,12 +12,12 @@ type alias Value = String
 type alias Values = Dict Name Value
 type alias Type = String -- TODO...
 
-type alias Definition = 
-  { name : Name
-  , tipe : Maybe Type
-  , binding : ElmCode
-  }
-  
+type alias Definition =
+  ( Name
+  , Maybe Type
+  , ElmCode
+  )
+
 type alias Module =
   { name : ModuleName
   , imports : List ElmCode

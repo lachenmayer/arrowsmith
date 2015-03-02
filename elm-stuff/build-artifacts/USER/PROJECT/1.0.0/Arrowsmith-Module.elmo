@@ -20,20 +20,6 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $String = Elm.String.make(_elm);
    var undefinedBinding = "\"__undefined__\"";
-   var helloWorld = {_: {}
-                    ,adts: _L.fromArray([])
-                    ,defs: _L.fromArray([{_: {}
-                                         ,binding: "1 + 2"
-                                         ,name: "numbers"
-                                         ,tipe: $Maybe.Just("number")}
-                                        ,{_: {}
-                                         ,binding: "numbers * 2"
-                                         ,name: "doubles"
-                                         ,tipe: $Maybe.Just("number")}])
-                    ,imports: _L.fromArray(["Graphics.Element (..)"
-                                           ,"Text (..)"])
-                    ,name: _L.fromArray(["Foo"
-                                        ,"HelloWorld"])};
    var empty = {_: {}
                ,adts: _L.fromArray([])
                ,defs: _L.fromArray([])
@@ -76,8 +62,17 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    newDefinition) {
       return function () {
          var update = function (oldDefinition) {
-            return _U.eq(oldDefinition.name,
-            name) ? newDefinition : oldDefinition;
+            return function () {
+               var _ = oldDefinition;
+               var oldName = function () {
+                  switch (_.ctor)
+                  {case "_Tuple3": return _._0;}
+                  _U.badCase($moduleName,
+                  "on line 38, column 29 to 42");
+               }();
+               return _U.eq(oldName,
+               name) ? newDefinition : oldDefinition;
+            }();
          };
          return _U.replace([["defs"
                             ,A2($List.map,
@@ -90,10 +85,13 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    toRemove) {
       return _U.replace([["defs"
                          ,A2($List.filter,
-                         function (_v2) {
+                         function (_v6) {
                             return function () {
-                               return !_U.eq(_v2.name,
-                               toRemove);
+                               switch (_v6.ctor)
+                               {case "_Tuple3":
+                                  return !_U.eq(_v6._0,toRemove);}
+                               _U.badCase($moduleName,
+                               "on line 32, column 48 to 64");
                             }();
                          },
                          program.defs)]],
@@ -118,11 +116,11 @@ Elm.Arrowsmith.Module.make = function (_elm) {
          var nameCount = $Array.length(names);
          var name = function (idx) {
             return function () {
-               var _v4 = A2($Array.get,
+               var _v11 = A2($Array.get,
                idx,
                names);
-               switch (_v4.ctor)
-               {case "Just": return _v4._0;
+               switch (_v11.ctor)
+               {case "Just": return _v11._0;
                   case "Nothing":
                   return A2($Basics._op["++"],
                     name((idx / nameCount | 0) - 1),
@@ -148,10 +146,10 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    fresh) {
       return A2(newDefinition,
       program,
-      {_: {}
-      ,binding: undefinedBinding
-      ,name: freshName(fresh)
-      ,tipe: $Maybe.Nothing});
+      {ctor: "_Tuple3"
+      ,_0: freshName(fresh)
+      ,_1: $Maybe.Nothing
+      ,_2: undefinedBinding});
    });
    _elm.Arrowsmith.Module.values = {_op: _op
                                    ,newDefinition: newDefinition
@@ -162,7 +160,6 @@ Elm.Arrowsmith.Module.make = function (_elm) {
                                    ,nameToString: nameToString
                                    ,toString: toString
                                    ,empty: empty
-                                   ,helloWorld: helloWorld
                                    ,undefinedBinding: undefinedBinding};
    return _elm.Arrowsmith.Module.values;
 };

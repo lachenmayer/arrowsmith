@@ -33,7 +33,7 @@ type alias State =
   , dirty : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
 
   , editing : Maybe Name
-  
+
   , values : Dict Name Value
   , toEvaluate : Maybe (ModuleName, Name)
 
@@ -56,9 +56,11 @@ type Action
   | NewDefinition
   | RemoveDefinition Name
 
+port initialProgram : Module
+
 initialState : State
 initialState =
-  { program = Module.helloWorld
+  { program = initialProgram
 
   , isCompiling = False
   , compilationStatus = Ok ""
@@ -102,10 +104,10 @@ step action state =
     FinishEditing (newName, newBinding) ->
       case state.editing of
         Just oldName ->
-          { state 
+          { state
           | editing <- Nothing
           , dirty <- True
-          , program <- Module.replaceDefinition state.program oldName { name = newName, tipe = Nothing, binding = newBinding }
+          , program <- Module.replaceDefinition state.program oldName (newName, Nothing, newBinding)
           }
         Nothing -> Debug.crash "FinishEditing should never happen if not editing something!"
 
@@ -130,8 +132,8 @@ state =
   let
     events = S.mergeMany [ S.subscribe actions
                          , FinishCompiling <~ compileResponse
-                         , FinishEditing <~ editorValue
-                         , FinishEvaluating <~ evaluatedValue 
+                         , FinishEditing <~ editedValue
+                         , FinishEvaluating <~ evaluatedValue
                          ]
   in
     S.foldp step initialState events
@@ -141,9 +143,9 @@ state =
 --
 
 -- Editing cycle:
--- Elm:StopEditing --stopEditing--> JS:get textfield value --editorValue--> Elm:FinishEditing
+-- Elm:StopEditing --stopEditing--> JS:get textfield value --editedValue--> Elm:FinishEditing
 
-port editorValue : Signal (Name, Value)
+port editedValue : Signal (Name, Value)
 
 port stopEditing : Signal ()
 port stopEditing =
@@ -215,7 +217,7 @@ editEvent isEditing name =
 
 
 codeView : Bool -> Definition -> Html
-codeView isEditing {name, binding} =
+codeView isEditing (name, tipe, binding) =
   let
     content =
       if (binding == Module.undefinedBinding) || (binding == "") then
@@ -228,9 +230,9 @@ codeView isEditing {name, binding} =
       [ content ]
 
 defHeaderView : ModuleName -> Bool -> Definition -> Html
-defHeaderView moduleName isEditing {name, tipe} =
+defHeaderView moduleName isEditing (name, tipe, _) =
   let
-    nameTag = editable isEditing name "td" [ A.class "tag definition-name" ] [ H.text name ] 
+    nameTag = editable isEditing name "td" [ A.class "tag definition-name" ] [ H.text name ]
     evalTag = H.td [ A.class "tag definition-evaluate", E.onClick (action (Evaluate (moduleName, name))) ] [ H.text "eval" ]
     header = case tipe of
       Just t ->
@@ -244,7 +246,7 @@ defHeaderView moduleName isEditing {name, tipe} =
 defView : Values -> ModuleName -> Maybe Name -> Definition -> Html
 defView values moduleName editing definition =
   let
-    {name, tipe, binding} = definition
+    (name, tipe, binding) = definition
     isEditing = Just name == editing
     class = if isEditing then "definition editing" else "definition"
     valueView = case (Dict.get name values) of
@@ -272,7 +274,7 @@ moduleView values editing program =
       , div "module-adts" <| List.map adtView adts
       , div "module-defs" <| List.map (defView values name editing) defs ++ [button "new-def-button" "+" NewDefinition]
       ]
-  
+
 errorView : CompilationStatus -> Html
 errorView status =
   case status of
@@ -308,7 +310,7 @@ button className buttonText act =
 editable : Bool -> Name -> String -> List H.Attribute -> List Html -> Html
 editable isEditing name tagName additionalAttrs contents =
   let
-    attrs = [ A.contenteditable isEditing, editEvent isEditing name ] ++ additionalAttrs 
+    attrs = [ A.contenteditable isEditing, editEvent isEditing name ] ++ additionalAttrs
   in
     H.node tagName attrs contents
 

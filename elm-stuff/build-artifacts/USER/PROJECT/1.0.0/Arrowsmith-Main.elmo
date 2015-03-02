@@ -47,7 +47,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          ,_0: false
                          ,_1: $default};}
                _U.badCase($moduleName,
-               "between lines 294 and 297");
+               "between lines 296 and 299");
             }();
          };
          return A2($Signal._op["<~"],
@@ -74,7 +74,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
               "no-error",
               _L.fromArray([]));}
          _U.badCase($moduleName,
-         "between lines 278 and 280");
+         "between lines 280 and 282");
       }();
    };
    var adtView = function (code) {
@@ -112,7 +112,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                                            v[2])} : _U.badPort("an array",
       v);
    }));
-   var editorValue = _P.portIn("editorValue",
+   var editedValue = _P.portIn("editedValue",
    _P.incomingSignal(function (v) {
       return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple2"
                                                            ,_0: typeof v[0] === "string" || typeof v[0] === "object" && v[0] instanceof String ? v[0] : _U.badPort("a string",
@@ -154,7 +154,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                           case "Ok":
                                           return $Result.Ok(_v5._0._1);}
                                        _U.badCase($moduleName,
-                                       "between lines 94 and 96");
+                                       "between lines 96 and 98");
                                     }()]],
                    state);}
               break;
@@ -172,15 +172,15 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                             ,A3($Arrowsmith$Module.replaceDefinition,
                                             state.program,
                                             _v21._0,
-                                            {_: {}
-                                            ,binding: _v5._0._1
-                                            ,name: _v5._0._0
-                                            ,tipe: $Maybe.Nothing})]],
+                                            {ctor: "_Tuple3"
+                                            ,_0: _v5._0._0
+                                            ,_1: $Maybe.Nothing
+                                            ,_2: _v5._0._1})]],
                            state);
                          case "Nothing":
                          return $Debug.crash("FinishEditing should never happen if not editing something!");}
                       _U.badCase($moduleName,
-                      "between lines 103 and 112");
+                      "between lines 105 and 114");
                    }();}
               break;
             case "FinishEvaluating":
@@ -212,8 +212,39 @@ Elm.Arrowsmith.Main.make = function (_elm) {
             case "StopEditing":
             return state;}
          _U.badCase($moduleName,
-         "between lines 85 and 124");
+         "between lines 87 and 126");
       }();
+   });
+   var initialProgram = _P.portIn("initialProgram",
+   function (v) {
+      return typeof v === "object" && "name" in v && "imports" in v && "adts" in v && "defs" in v ? {_: {}
+                                                                                                    ,name: typeof v.name === "object" && v.name instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.name.map(function (v) {
+                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.name)
+                                                                                                    ,imports: typeof v.imports === "object" && v.imports instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.imports.map(function (v) {
+                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.imports)
+                                                                                                    ,adts: typeof v.adts === "object" && v.adts instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.adts.map(function (v) {
+                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.adts)
+                                                                                                    ,defs: typeof v.defs === "object" && v.defs instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.defs.map(function (v) {
+                                                                                                       return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple3"
+                                                                                                                                                            ,_0: typeof v[0] === "string" || typeof v[0] === "object" && v[0] instanceof String ? v[0] : _U.badPort("a string",
+                                                                                                                                                            v[0])
+                                                                                                                                                            ,_1: v[1] === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v[1] === "string" || typeof v[1] === "object" && v[1] instanceof String ? v[1] : _U.badPort("a string",
+                                                                                                                                                            v[1]))
+                                                                                                                                                            ,_2: typeof v[2] === "string" || typeof v[2] === "object" && v[2] instanceof String ? v[2] : _U.badPort("a string",
+                                                                                                                                                            v[2])} : _U.badPort("an array",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.defs)} : _U.badPort("an object with fields \'name\', \'imports\', \'adts\', \'defs\'",
+      v);
    });
    var initialState = {_: {}
                       ,compilationStatus: $Result.Ok("")
@@ -221,7 +252,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                       ,editing: $Maybe.Nothing
                       ,fresh: 0
                       ,isCompiling: false
-                      ,program: $Arrowsmith$Module.helloWorld
+                      ,program: initialProgram
                       ,toEvaluate: $Maybe.Nothing
                       ,values: $Dict.empty};
    var RemoveDefinition = function (a) {
@@ -279,59 +310,66 @@ Elm.Arrowsmith.Main.make = function (_elm) {
    var codeView = F2(function (isEditing,
    _v23) {
       return function () {
-         return function () {
-            var content = _U.eq(_v23.binding,
-            $Arrowsmith$Module.undefinedBinding) || _U.eq(_v23.binding,
-            "") ? A2($Html.span,
-            _L.fromArray([$Html$Attributes.$class("undefined-definition")]),
-            _L.fromArray([$Html.text(isEditing ? "" : "undefined")])) : $Html.text(_v23.binding);
-            return A5(editable,
-            isEditing,
-            _v23.name,
-            "div",
-            _L.fromArray([$Html$Attributes.$class("definition-code")]),
-            _L.fromArray([content]));
-         }();
+         switch (_v23.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var content = _U.eq(_v23._2,
+                 $Arrowsmith$Module.undefinedBinding) || _U.eq(_v23._2,
+                 "") ? A2($Html.span,
+                 _L.fromArray([$Html$Attributes.$class("undefined-definition")]),
+                 _L.fromArray([$Html.text(isEditing ? "" : "undefined")])) : $Html.text(_v23._2);
+                 return A5(editable,
+                 isEditing,
+                 _v23._0,
+                 "div",
+                 _L.fromArray([$Html$Attributes.$class("definition-code")]),
+                 _L.fromArray([content]));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 221 and 230");
       }();
    });
    var defHeaderView = F3(function (moduleName,
    isEditing,
-   _v25) {
+   _v28) {
       return function () {
-         return function () {
-            var evalTag = A2($Html.td,
-            _L.fromArray([$Html$Attributes.$class("tag definition-evaluate")
-                         ,$Html$Events.onClick(action(Evaluate({ctor: "_Tuple2"
-                                                               ,_0: moduleName
-                                                               ,_1: _v25.name})))]),
-            _L.fromArray([$Html.text("eval")]));
-            var nameTag = A5(editable,
-            isEditing,
-            _v25.name,
-            "td",
-            _L.fromArray([$Html$Attributes.$class("tag definition-name")]),
-            _L.fromArray([$Html.text(_v25.name)]));
-            var header = function () {
-               var _v27 = _v25.tipe;
-               switch (_v27.ctor)
-               {case "Just":
-                  return _L.fromArray([nameTag
-                                      ,A2($Html.td,
-                                      _L.fromArray([$Html$Attributes.$class("tag definition-type")]),
-                                      _L.fromArray([$Html.text(_v27._0)]))
-                                      ,evalTag]);
-                  case "Nothing":
-                  return _L.fromArray([nameTag
-                                      ,evalTag]);}
-               _U.badCase($moduleName,
-               "between lines 235 and 240");
-            }();
-            return A2($Html.table,
-            _L.fromArray([$Html$Attributes.$class("definition-header")]),
-            _L.fromArray([A2($Html.tr,
-            _L.fromArray([]),
-            header)]));
-         }();
+         switch (_v28.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var evalTag = A2($Html.td,
+                 _L.fromArray([$Html$Attributes.$class("tag definition-evaluate")
+                              ,$Html$Events.onClick(action(Evaluate({ctor: "_Tuple2"
+                                                                    ,_0: moduleName
+                                                                    ,_1: _v28._0})))]),
+                 _L.fromArray([$Html.text("eval")]));
+                 var nameTag = A5(editable,
+                 isEditing,
+                 _v28._0,
+                 "td",
+                 _L.fromArray([$Html$Attributes.$class("tag definition-name")]),
+                 _L.fromArray([$Html.text(_v28._0)]));
+                 var header = function () {
+                    switch (_v28._1.ctor)
+                    {case "Just":
+                       return _L.fromArray([nameTag
+                                           ,A2($Html.td,
+                                           _L.fromArray([$Html$Attributes.$class("tag definition-type")]),
+                                           _L.fromArray([$Html.text(_v28._1._0)]))
+                                           ,evalTag]);
+                       case "Nothing":
+                       return _L.fromArray([nameTag
+                                           ,evalTag]);}
+                    _U.badCase($moduleName,
+                    "between lines 237 and 242");
+                 }();
+                 return A2($Html.table,
+                 _L.fromArray([$Html$Attributes.$class("definition-header")]),
+                 _L.fromArray([A2($Html.tr,
+                 _L.fromArray([]),
+                 header)]));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 234 and 244");
       }();
    });
    var defView = F4(function (values,
@@ -340,25 +378,25 @@ Elm.Arrowsmith.Main.make = function (_elm) {
    definition) {
       return function () {
          var $ = definition,
-         name = $.name,
-         tipe = $.tipe,
-         binding = $.binding;
+         name = $._0,
+         tipe = $._1,
+         binding = $._2;
          var isEditing = _U.eq($Maybe.Just(name),
          editing);
          var $class = isEditing ? "definition editing" : "definition";
          var valueView = function () {
-            var _v29 = A2($Dict.get,
+            var _v35 = A2($Dict.get,
             name,
             values);
-            switch (_v29.ctor)
+            switch (_v35.ctor)
             {case "Just":
                return _L.fromArray([A2(div,
                  "definition-value",
-                 _L.fromArray([$Html.text(_v29._0)]))]);
+                 _L.fromArray([$Html.text(_v35._0)]))]);
                case "Nothing":
                return _L.fromArray([]);}
             _U.badCase($moduleName,
-            "between lines 250 and 253");
+            "between lines 252 and 255");
          }();
          return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]))(A2($Basics._op["++"],
          _L.fromArray([A3(defHeaderView,
@@ -418,15 +456,15 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                       NewDefinition)])))]));
       }();
    });
-   var view = function (_v31) {
+   var view = function (_v37) {
       return function () {
          return A2(div,
          "modules",
          _L.fromArray([A3(moduleView,
-                      _v31.values,
-                      _v31.editing,
-                      _v31.program)
-                      ,errorView(_v31.compilationStatus)]));
+                      _v37.values,
+                      _v37.editing,
+                      _v37.program)
+                      ,errorView(_v37.compilationStatus)]));
       }();
    };
    var state = function () {
@@ -436,7 +474,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                                   compileResponse)
                                                   ,A2($Signal._op["<~"],
                                                   FinishEditing,
-                                                  editorValue)
+                                                  editedValue)
                                                   ,A2($Signal._op["<~"],
                                                   FinishEvaluating,
                                                   evaluatedValue)]));

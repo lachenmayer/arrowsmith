@@ -4,24 +4,22 @@ module Arrowsmith.Module where
 import Data.Aeson
 import Data.Aeson.TH
 import qualified Data.ByteString.Lazy as LazyBS
-import System.Directory (getCurrentDirectory)
-import System.FilePath ((</>), (<.>))
 
 -- elm-compiler
 import qualified AST.Annotation
 import qualified AST.Expression.Canonical as Canonical
-import qualified AST.Expression.General
+import qualified AST.Expression.General as General
 import qualified AST.JSON ()
 import qualified AST.Module
 import qualified AST.Pattern as Pattern
-import qualified AST.PrettyPrint
+import qualified AST.PrettyPrint as PP
+import qualified AST.Variable as Var
 
-import Arrowsmith.Repo (Repo, repoPath)
 
 type Definition =
   ( String -- name
+  , Maybe String -- type
   , String -- binding
-  , String -- type
   )
 
 data Module = Module
@@ -32,12 +30,6 @@ data Module = Module
   }
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
-
-getModule :: Repo -> String -> IO (Maybe Module)
-getModule repo modul = do
-  basePath <- getCurrentDirectory
-  astFile <- LazyBS.readFile $ (repoPath basePath repo) </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
-  return $ (fromAstFile astFile) >>= Just . makeModule
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
 fromAstFile astFile =
@@ -53,17 +45,20 @@ makeModule m =
 
 definitions :: AST.Module.CanonicalModule -> [Definition]
 definitions modoole =
-  map definition programDefs
+  reverse . map definition $ letDefs program_
   where
-    AST.Annotation.A _ (AST.Expression.General.Let programDefs _) = program_
     program_ = AST.Module.program (AST.Module.body modoole)
 
+    -- Definitions are in one big 'let' block, which is in fact a list of lets.
+    letDefs (AST.Annotation.A _ defs) =
+      case defs of
+        General.Var _ -> [] -- should be the "_save_the_environment!!!" varaible.
+        General.Let [def] next -> def : letDefs next
+    letDefs _ =
+      error "unexpected AST structure"
+
 definition :: Canonical.Def -> Definition
-definition (Canonical.Definition (Pattern.Var varName) binding maybeTipe) =
-  (varName, AST.PrettyPrint.renderPretty binding, tipe)
-  where
-    tipe = case maybeTipe of
-      Just t -> AST.PrettyPrint.renderPretty t
-      Nothing -> "a"
+definition (Canonical.Definition (Pattern.Var varName) binding tipe) =
+  (varName, tipe >>= Just . PP.renderPretty, PP.renderPretty binding)
 definition _ =
-  ("___not_implemented!!!", "not implemented! (Arrowsmith.Module)", "nothing")
+  ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module)")

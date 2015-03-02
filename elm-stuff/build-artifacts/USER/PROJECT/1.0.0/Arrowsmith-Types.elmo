@@ -25,16 +25,7 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,imports: b
              ,name: a};
    });
-   var Definition = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,binding: c
-             ,name: a
-             ,tipe: b};
-   });
    _elm.Arrowsmith.Types.values = {_op: _op
-                                  ,Definition: Definition
                                   ,Module: Module};
    return _elm.Arrowsmith.Types.values;
 };

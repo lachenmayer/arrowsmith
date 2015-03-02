@@ -557,3 +557,35 @@ A web handler threw an exception. Details:
 /Users/harry/Documents/Code/personalproject/arrowsmith/repos/github/lachenmayer/secret-sauce/elm-stuff/build-artifacts/USER/PROJECT/1.0.0/Bar.elma: openBinaryFile: does not exist (No such file or directory)
 [01/Mar/2015:23:52:27 +0000] Server.httpServe: SHUTDOWN
 [01/Mar/2015:23:52:27 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:11:31:49 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:12:00:37 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:12:00:37 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:12:05:41 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:12:20:29 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:12:20:29 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:12:22:32 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:12:27:54 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:12:27:54 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:12:27:56 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:12:27:59 +0000] During processing of request from 127.0.0.1:57088
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:57088\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+/Users/harry/Documents/Code/personalproject/arrowsmith/repos/github/lachenmayer/secret-sauce/elm-stuff/build-artifacts/USER/PROJECT/1.0.0/Foo.elma: openBinaryFile: does not exist (No such file or directory)
+[02/Mar/2015:12:29:34 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:12:29:34 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:12:31:34 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:12:31:35 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:12:31:35 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:12:37:57 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:12:39:17 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:12:39:17 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:12:39:23 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:13:39:53 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:13:39:53 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:13:40:01 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:13:41:04 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:13:41:04 +0000] Server.httpServe: BACKEND STOPPED
+[02/Mar/2015:13:41:27 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[02/Mar/2015:13:42:07 +0000] Server.httpServe: SHUTDOWN
+[02/Mar/2015:13:42:07 +0000] Server.httpServe: BACKEND STOPPED

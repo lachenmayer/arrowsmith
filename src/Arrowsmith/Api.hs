@@ -1,9 +1,10 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Arrowsmith.Api (routes) where
 
 import Control.Monad.Error (runErrorT)
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class
 import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LazyBS
@@ -15,9 +16,11 @@ import Text.Blaze.Html
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
+import System.Directory (getCurrentDirectory)
+import System.FilePath ((</>), (<.>))
 
 import Arrowsmith.Compile (compile)
-import qualified Arrowsmith.Module as Module
+import Arrowsmith.Module
 import Arrowsmith.Repo
 
 
@@ -60,13 +63,24 @@ getRepo = do
   p <- urlFragment "project"
   return Repo { backend = b, user = u, project = p }
 
+getModule :: Repo -> String -> IO (Maybe Module)
+getModule repo modul = do
+  basePath <- getCurrentDirectory
+  astFile <- LazyBS.readFile $ (repoPath basePath repo) </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
+  return $ (fromAstFile astFile) >>= Just . makeModule
+
+runCompile :: (MonadIO m) => Repo -> String -> m (Either String (UTF8BS.ByteString, UTF8BS.ByteString))
+runCompile repo modul =
+  liftIO . runErrorT $ compile repo modul
+
 editorHandler :: Snap ()
 editorHandler = do
   repo <- getRepo
   modul <- urlFragment "module"
-  m <- liftIO $ Module.getModule repo modul
+  compiledProgram <- runCompile repo modul -- TODO properly: probably shouldn't have to recompile every time.
+  m <- liftIO $ getModule repo modul
   let moduleJson = UTF8BS.toString . LazyBS.toStrict . encode . toJSON $ m
-  let moduleScript = H.p $ toMarkup moduleJson
+  let moduleScript = H.script ! A.class_ "initial-program" ! A.type_ "text/json" $ toMarkup moduleJson
   writeText . toStrict . renderHtml $ editor moduleScript
 
 updateHandler :: Snap ()
@@ -75,15 +89,15 @@ updateHandler = do
 
 compileHandler :: Snap ()
 compileHandler = do
-  writeText "not implemented yet."
-  --program <- readRequestBody 50000
-  --compiledProgram <- liftIO . runErrorT . compile $ LazyBS.toStrict program
-  --case compiledProgram of
-  --  Right (ast, code) ->
-  --    writeJSON $ CompileSuccess ast code
-  --  Left err -> do
-  --    modifyResponse $ setResponseCode 400 -- Bad Request
-  --    writeJSON $ CompileError err
+  repo <- getRepo
+  modul <- urlFragment "module"
+  compiledProgram <- runCompile repo modul
+  case compiledProgram of
+    Right (ast, code) ->
+      writeJSON $ CompileSuccess ast code
+    Left err -> do
+      modifyResponse $ setResponseCode 400 -- Bad Request
+      writeJSON $ CompileError err
 
 urlFragment :: BS.ByteString -> Snap String
 urlFragment name = do

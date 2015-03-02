@@ -18,33 +18,36 @@ Elm.Arrowsmith.Definition.make = function (_elm) {
    $String = Elm.String.make(_elm);
    var toString = function (_v0) {
       return function () {
-         return function () {
-            var rhs = A2($Basics._op["++"],
-            "  ",
-            _v0.binding);
-            var lhs = A2($Basics._op["++"],
-            _v0.name,
-            " =");
-            var def = function () {
-               var _v2 = _v0.tipe;
-               switch (_v2.ctor)
-               {case "Just":
-                  return _L.fromArray([A2($Basics._op["++"],
-                                      _v0.name,
-                                      A2($Basics._op["++"],
-                                      " : ",
-                                      _v2._0))
-                                      ,lhs
-                                      ,rhs]);
-                  case "Nothing":
-                  return _L.fromArray([lhs,rhs]);}
-               _U.badCase($moduleName,
-               "between lines 12 and 17");
-            }();
-            return A2($String.join,
-            "\n",
-            def);
-         }();
+         switch (_v0.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var rhs = A2($Basics._op["++"],
+                 "  ",
+                 _v0._2);
+                 var lhs = A2($Basics._op["++"],
+                 _v0._0,
+                 " =");
+                 var def = function () {
+                    switch (_v0._1.ctor)
+                    {case "Just":
+                       return _L.fromArray([A2($Basics._op["++"],
+                                           _v0._0,
+                                           A2($Basics._op["++"],
+                                           " : ",
+                                           _v0._1._0))
+                                           ,lhs
+                                           ,rhs]);
+                       case "Nothing":
+                       return _L.fromArray([lhs,rhs]);}
+                    _U.badCase($moduleName,
+                    "between lines 12 and 17");
+                 }();
+                 return A2($String.join,
+                 "\n",
+                 def);
+              }();}
+         _U.badCase($moduleName,
+         "between lines 9 and 18");
       }();
    };
    _elm.Arrowsmith.Definition.values = {_op: _op

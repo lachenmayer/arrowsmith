@@ -5,7 +5,7 @@ import String (join)
 import Arrowsmith.Types (..)
 
 toString : Definition -> String
-toString {name, tipe, binding} =
+toString (name, tipe, binding) =
   let
     lhs = name ++ " =" -- TODO arguments?
     rhs = "  " ++ binding -- TODO proper indentation

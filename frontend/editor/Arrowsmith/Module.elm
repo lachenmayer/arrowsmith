@@ -25,20 +25,21 @@ freshName fresh =
 
 freshDefinition : Module -> Int -> Module
 freshDefinition program fresh =
-  newDefinition program { name = freshName fresh, tipe = Nothing, binding = undefinedBinding }
+  newDefinition program (freshName fresh, Nothing, undefinedBinding)
 
 removeDefinition : Module -> Name -> Module
 removeDefinition program toRemove =
-  { program | defs <- filter (\{name} -> name /= toRemove) program.defs }
+  { program | defs <- filter (\(name, _, _) -> name /= toRemove) program.defs }
 
 replaceDefinition : Module -> Name -> Definition -> Module
 replaceDefinition program name newDefinition =
   let
     update oldDefinition =
-      if oldDefinition.name == name then
-        newDefinition
-      else
-        oldDefinition
+      let (oldName, _, _) = oldDefinition in
+        if oldName == name then
+          newDefinition
+        else
+          oldDefinition
   in
     { program | defs <- map update program.defs }
 
@@ -68,19 +69,19 @@ empty =
   , defs = []
   }
 
-helloWorld : Module
-helloWorld =
-  { name = ["Foo", "HelloWorld"]
-  , imports =
-    [ "Graphics.Element (..)"
-    , "Text (..)"
-    ]
-  , adts = []
-  , defs =
-    [ {name = "numbers", tipe = Just "number", binding = "1 + 2"}
-    , {name = "doubles", tipe = Just "number", binding = "numbers * 2"}
-    ]
-  }
+--helloWorld : Module
+--helloWorld =
+--  { name = ["Foo", "HelloWorld"]
+--  , imports =
+--    [ "Graphics.Element (..)"
+--    , "Text (..)"
+--    ]
+--  , adts = []
+--  , defs =
+--    [ {name = "numbers", tipe = Just "number", binding = "1 + 2"}
+--    , {name = "doubles", tipe = Just "number", binding = "numbers * 2"}
+--    ]
+--  }
 
 undefinedBinding : String
 undefinedBinding =
