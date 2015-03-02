@@ -1,2 +1,4 @@
 dist/
 elm-stuff/
+access.log
+error.log
