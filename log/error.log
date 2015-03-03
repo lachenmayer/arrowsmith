@@ -595,3 +595,171 @@ A web handler threw an exception. Details:
 [02/Mar/2015:16:55:53 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
 [02/Mar/2015:19:15:14 +0000] Server.httpServe: SHUTDOWN
 [02/Mar/2015:19:15:14 +0000] Server.httpServe: BACKEND STOPPED
+[03/Mar/2015:12:36:28 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[03/Mar/2015:12:36:30 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50381
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50381\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:30 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50383
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50383\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n Referer: http://localhost:8000/\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:30 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50385
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50385\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:33 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50389
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50389\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:33 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50390
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50390\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:34 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50391
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50391\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:34 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50393
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50393\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:36:39 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50397
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50397\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:37:09 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50409
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50409\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:38:09 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50429
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50429\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:38:28 +0000] Server.httpServe: SHUTDOWN
+[03/Mar/2015:12:38:28 +0000] Server.httpServe: BACKEND STOPPED
+[03/Mar/2015:12:41:40 +0000] Server.httpServe: START, binding to [http://0.0.0.0:8000/]
+[03/Mar/2015:12:41:44 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50486
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50486\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:44 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50487
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50487\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:44 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50488
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50488\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:44 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50490
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50490\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:48 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50492
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50492\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:48 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50494
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50494\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:50 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50496
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50496\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:41:50 +0000] httpSession caught an exception during sending response phase:
+During processing of request from 127.0.0.1:50498
+request:
+"Request <\n    server-name: localhost\n    remote: 127.0.0.1:50498\n    local: 127.0.0.1:8000\n    Headers:\n      ========================================\n          User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.94 Safari/537.36\n Connection: keep-alive\n Host: localhost:8000\n Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\n Accept-Encoding: gzip, deflate, sdch\n Cache-Control: max-age=0\n Accept-Language: en-US,en;q=0.8,de;q=0.6\n      ========================================\n    content-length: Nothing\n    method: GET\n    version: (1,1)\n    cookies:\n      ========================================\n      \n      ========================================\n    pathinfo: github/lachenmayer/secret-sauce/Foo\n    contextpath: /\n    URI: /github/lachenmayer/secret-sauce/Foo\n    params:\n      ========================================\n      \n      ========================================\n>"
+A web handler threw an exception. Details:
+src/Arrowsmith/Module.hs:98:5-60: Irrefutable pattern failed for pattern AST.Annotation.Span startPosition
+                                                     endPosition
+                                                     _
+
+[03/Mar/2015:12:43:20 +0000] Server.httpServe: SHUTDOWN
+[03/Mar/2015:12:43:20 +0000] Server.httpServe: BACKEND STOPPED

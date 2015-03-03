@@ -3,6 +3,8 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Arrowsmith.Api (routes) where
 
+import Debug.Trace
+
 import Control.Monad.Error (runErrorT)
 import Control.Monad.IO.Class
 import Data.Aeson
@@ -68,7 +70,7 @@ getModule repo modul = do
   basePath <- getCurrentDirectory
   astFile <- LazyBS.readFile $ (repoPath basePath repo) </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
   source <- readFile $ (repoPath basePath repo) </> modul <.> "elm"
-  return $ (fromAstFile astFile) >>= Just . moduleSourceDefs source
+  return $ (fromAstFile astFile) >>= Just . (\m -> trace ("getModule: " ++ show (moduleSourceDefs source m)) $ moduleSourceDefs source m)
 
 runCompile :: (MonadIO m) => Repo -> String -> m (Either String (UTF8BS.ByteString, UTF8BS.ByteString))
 runCompile repo modul =
