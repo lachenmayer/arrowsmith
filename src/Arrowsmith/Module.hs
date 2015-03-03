@@ -24,6 +24,9 @@ type Definition =
   , String -- binding
   )
 
+-- Converts an elm-compiler Def to an Arrowsmith Definition.
+type DefTransform = (Canonical.Def, AST.Annotation.Region) -> Definition
+
 data Module = Module
   { name :: AST.Module.Name
   , imports :: [String]
@@ -33,13 +36,24 @@ data Module = Module
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
 
-makeModule :: AST.Module.CanonicalModule -> Module
-makeModule m =
+-- Converts an elm-compiler Module to an Arrowsmith Module.
+type ModuleTransform = AST.Module.CanonicalModule -> Module
+
+makeModule :: DefTransform -> ModuleTransform
+makeModule defTransform m =
   Module { name = AST.Module.names m
          , imports = []
          , adts = []
-         , defs = map (defPrettyPrinted . fst) (definitions m)
+         , defs = map defTransform (definitions m)
          }
+
+modulePrettyPrintedDefs :: ModuleTransform
+modulePrettyPrintedDefs =
+  makeModule defPrettyPrinted
+
+moduleSourceDefs :: String -> ModuleTransform
+moduleSourceDefs source =
+  makeModule (defFromSource source)
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
 fromAstFile astFile =
@@ -61,24 +75,25 @@ definitions modoole =
       error "unexpected AST structure. (1)"
 
 -- Uses the built-in pretty printer to give a textual representation of the definition.
-defPrettyPrinted :: Canonical.Def -> Definition
-defPrettyPrinted (Canonical.Definition (Pattern.Var varName) binding tipe) =
+defPrettyPrinted :: DefTransform
+defPrettyPrinted (def, _) =
   ( varName
   , tipe >>= Just . PP.renderPretty
   , PP.renderPretty binding
   )
+  where
+    Canonical.Definition (Pattern.Var varName) binding tipe = def
 defPrettyPrinted _ =
   ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module.defPrettyPrinted)")
 
 -- Looks up the regions in the code itself to match the style the code was written in originally.
-defFromSource :: LazyBS.ByteString -> (Canonical.Def, AST.Annotation.Region) -> Definition
+defFromSource :: String -> DefTransform
 defFromSource source (def, region) =
   ( varName
   , tipe >>= Just . PP.renderPretty
-  , sourceRegion stringSource (unpos startPosition) (unpos endPosition)
+  , sourceRegion source (unpos startPosition) (unpos endPosition)
   )
   where
-    stringSource = UTF8BS.toString . LazyBS.toStrict $ source -- TODO find a way to avoid this painlessly?
     Canonical.Definition (Pattern.Var varName) _{-binding-} tipe = def
     AST.Annotation.Span startPosition endPosition _ = region
     unpos p = (AST.Annotation.line p, AST.Annotation.column p)

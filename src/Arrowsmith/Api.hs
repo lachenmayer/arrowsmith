@@ -67,7 +67,8 @@ getModule :: Repo -> String -> IO (Maybe Module)
 getModule repo modul = do
   basePath <- getCurrentDirectory
   astFile <- LazyBS.readFile $ (repoPath basePath repo) </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
-  return $ (fromAstFile astFile) >>= Just . makeModule
+  source <- readFile $ (repoPath basePath repo) </> modul <.> "elm"
+  return $ (fromAstFile astFile) >>= Just . moduleSourceDefs source
 
 runCompile :: (MonadIO m) => Repo -> String -> m (Either String (UTF8BS.ByteString, UTF8BS.ByteString))
 runCompile repo modul =
