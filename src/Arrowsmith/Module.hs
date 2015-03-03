@@ -8,7 +8,7 @@ import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.ByteString.UTF8 as UTF8BS
 
 -- elm-compiler
-import qualified AST.Annotation
+import qualified AST.Annotation as Annotation
 import qualified AST.Expression.Canonical as Canonical
 import qualified AST.Expression.General as General
 import qualified AST.JSON ()
@@ -25,7 +25,7 @@ type Definition =
   )
 
 -- Converts an elm-compiler Def to an Arrowsmith Definition.
-type DefTransform = (Canonical.Def, AST.Annotation.Region) -> Definition
+type DefTransform = Canonical.Def -> Definition
 
 data Module = Module
   { name :: AST.Module.Name
@@ -59,24 +59,24 @@ fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
 fromAstFile astFile =
   (decode astFile :: Maybe AST.Module.CanonicalModule)
 
-definitions :: AST.Module.CanonicalModule -> [(Canonical.Def, AST.Annotation.Region)]
+definitions :: AST.Module.CanonicalModule -> [Canonical.Def]
 definitions modoole =
   reverse $ letDefs program_
   where
     program_ = AST.Module.program (AST.Module.body modoole)
 
     -- Definitions are in one big 'let' block, turn them into a list.
-    letDefs (AST.Annotation.A region ds) =
+    letDefs (Annotation.A _ ds) =
       case ds of
         General.Var _ -> [] -- should be the "_save_the_environment!!!" varaible.
-        General.Let [def] next -> (def, region) : letDefs next
+        General.Let [def] next -> def : letDefs next
         _ -> error "unexpected AST structure. (2)"
     letDefs _ =
       error "unexpected AST structure. (1)"
 
 -- Uses the built-in pretty printer to give a textual representation of the definition.
 defPrettyPrinted :: DefTransform
-defPrettyPrinted (def, _) =
+defPrettyPrinted def =
   ( varName
   , tipe >>= Just . PP.renderPretty
   , PP.renderPretty binding
@@ -88,17 +88,15 @@ defPrettyPrinted _ =
 
 -- Looks up the regions in the code itself to match the style the code was written in originally.
 defFromSource :: String -> DefTransform
-defFromSource source (def, region) =
+defFromSource source def =
   ( varName
   , tipe >>= Just . PP.renderPretty
   , sourceRegion source (unpos startPosition) (unpos endPosition)
   )
   where
-    Canonical.Definition (Pattern.Var varName) _{-binding-} tipe = def
-    AST.Annotation.Span startPosition endPosition _ = region
-    unpos p = (AST.Annotation.line p, AST.Annotation.column p)
-defFromSource _ _ =
-  ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module.defFromSource)")
+    Canonical.Definition (Pattern.Var varName) binding tipe = def
+    Annotation.A (Annotation.Span startPosition endPosition _) _ = binding
+    unpos p = (Annotation.line p, Annotation.column p)
 
 sourceRegion :: String -> (Int, Int) -> (Int, Int) -> String
 sourceRegion source (startLine, startColumn) (endLine, endColumn) =
