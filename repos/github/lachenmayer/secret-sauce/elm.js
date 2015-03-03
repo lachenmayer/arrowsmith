@@ -653,6 +653,11 @@ Elm.Foo.make = function (_elm) {
    $Graphics$Element = Elm.Graphics.Element.make(_elm),
    $Text = Elm.Text.make(_elm);
    var main = $Text.plainText("Hello, World!");
+   var bigger = F2(function (first,
+   second) {
+      return _U.cmp(first,
+      second) > 0 ? first : second;
+   });
    var $double = function (x) {
       return x * 2;
    };
@@ -660,6 +665,7 @@ Elm.Foo.make = function (_elm) {
    _elm.Foo.values = {_op: _op
                      ,bleep: bleep
                      ,$double: $double
+                     ,bigger: bigger
                      ,main: main};
    return _elm.Foo.values;
 };

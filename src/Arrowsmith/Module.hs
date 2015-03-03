@@ -4,6 +4,8 @@ module Arrowsmith.Module where
 import Data.Aeson
 import Data.Aeson.TH
 import qualified Data.ByteString.Lazy as LazyBS
+--import qualified Data.ByteString.Lazy.Char8 as C8
+import qualified Data.ByteString.UTF8 as UTF8BS
 
 -- elm-compiler
 import qualified AST.Annotation
@@ -13,7 +15,7 @@ import qualified AST.JSON ()
 import qualified AST.Module
 import qualified AST.Pattern as Pattern
 import qualified AST.PrettyPrint as PP
-import qualified AST.Variable as Var
+--import qualified AST.Variable as Var
 
 
 type Definition =
@@ -31,34 +33,68 @@ data Module = Module
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
 
-fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
-fromAstFile astFile =
-  (decode astFile :: Maybe AST.Module.CanonicalModule)
-
 makeModule :: AST.Module.CanonicalModule -> Module
 makeModule m =
   Module { name = AST.Module.names m
          , imports = []
          , adts = []
-         , defs = definitions m
+         , defs = map (defPrettyPrinted . fst) (definitions m)
          }
 
-definitions :: AST.Module.CanonicalModule -> [Definition]
+fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
+fromAstFile astFile =
+  (decode astFile :: Maybe AST.Module.CanonicalModule)
+
+definitions :: AST.Module.CanonicalModule -> [(Canonical.Def, AST.Annotation.Region)]
 definitions modoole =
-  reverse . map definition $ letDefs program_
+  reverse $ letDefs program_
   where
     program_ = AST.Module.program (AST.Module.body modoole)
 
-    -- Definitions are in one big 'let' block, which is in fact a list of lets.
-    letDefs (AST.Annotation.A _ defs) =
-      case defs of
+    -- Definitions are in one big 'let' block, turn them into a list.
+    letDefs (AST.Annotation.A region ds) =
+      case ds of
         General.Var _ -> [] -- should be the "_save_the_environment!!!" varaible.
-        General.Let [def] next -> def : letDefs next
+        General.Let [def] next -> (def, region) : letDefs next
+        _ -> error "unexpected AST structure. (2)"
     letDefs _ =
-      error "unexpected AST structure"
+      error "unexpected AST structure. (1)"
 
-definition :: Canonical.Def -> Definition
-definition (Canonical.Definition (Pattern.Var varName) binding tipe) =
-  (varName, tipe >>= Just . PP.renderPretty, PP.renderPretty binding)
-definition _ =
-  ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module)")
+-- Uses the built-in pretty printer to give a textual representation of the definition.
+defPrettyPrinted :: Canonical.Def -> Definition
+defPrettyPrinted (Canonical.Definition (Pattern.Var varName) binding tipe) =
+  ( varName
+  , tipe >>= Just . PP.renderPretty
+  , PP.renderPretty binding
+  )
+defPrettyPrinted _ =
+  ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module.defPrettyPrinted)")
+
+-- Looks up the regions in the code itself to match the style the code was written in originally.
+defFromSource :: LazyBS.ByteString -> (Canonical.Def, AST.Annotation.Region) -> Definition
+defFromSource source (def, region) =
+  ( varName
+  , tipe >>= Just . PP.renderPretty
+  , sourceRegion stringSource (unpos startPosition) (unpos endPosition)
+  )
+  where
+    stringSource = UTF8BS.toString . LazyBS.toStrict $ source -- TODO find a way to avoid this painlessly?
+    Canonical.Definition (Pattern.Var varName) _{-binding-} tipe = def
+    AST.Annotation.Span startPosition endPosition _ = region
+    unpos p = (AST.Annotation.line p, AST.Annotation.column p)
+defFromSource _ _ =
+  ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module.defFromSource)")
+
+sourceRegion :: String -> (Int, Int) -> (Int, Int) -> String
+sourceRegion source (startLine, startColumn) (endLine, endColumn) =
+  columnRange (region startLine endLine (lines source))
+  where
+    -- Lines are 1-indexed.
+    region start end xs = take ((end - start) + 1) $ drop (start - 1) xs
+    columnRange lines' =
+      case lines' of
+        [] -> ""
+        [x] -> region startColumn endColumn x
+        (x:xs) ->
+          let (middle, lastLine) = (init xs, last xs) in
+            unlines $ [drop (startColumn - 1) x] ++ middle ++ [take endColumn lastLine]
