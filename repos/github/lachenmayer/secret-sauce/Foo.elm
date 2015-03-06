@@ -3,17 +3,16 @@ module Foo where
 import Graphics.Element (..)
 import Text (..)
 
-bleep : number
-bleep =
-  42
+modulus : number
+modulus =
+  bigger 103 107
 
-double : number -> number
-double x =
-  x * 2
+encrypt : number -> number -> number
+encrypt m e =
+  m ^ e % modulus
 
-bigger : number -> number -> number
-bigger first second =
-  if
+--bigger : number -> number -> number
+bigger first second =if
     first > second
   then first
   else second
