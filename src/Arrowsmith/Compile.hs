@@ -16,7 +16,8 @@ import qualified Elm.Package.Name as Name
 import qualified Elm.Package.Paths as ElmPaths
 import qualified Elm.Package.Version as Version
 
-import Arrowsmith.Repo (Repo, repoPath)
+import Arrowsmith.Repo
+import Arrowsmith.Types
 
 compilerPath :: FilePath -> FilePath
 compilerPath projectRoot =

@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Arrowsmith.Module where
 
 import Data.Aeson
@@ -17,24 +16,10 @@ import qualified AST.Pattern as Pattern
 import qualified AST.PrettyPrint as PP
 --import qualified AST.Variable as Var
 
-
-type Definition =
-  ( String -- name
-  , Maybe String -- type
-  , String -- binding
-  )
+import Arrowsmith.Types
 
 -- Converts an elm-compiler Def to an Arrowsmith Definition.
 type DefTransform = Canonical.Def -> Definition
-
-data Module = Module
-  { name :: AST.Module.Name
-  , imports :: [String]
-  , adts :: [String]
-  , defs :: [Definition]
-  }
-  deriving (Show, Eq)
-$(deriveJSON defaultOptions ''Module)
 
 -- Converts an elm-compiler Module to an Arrowsmith Module.
 type ModuleTransform = AST.Module.CanonicalModule -> Module

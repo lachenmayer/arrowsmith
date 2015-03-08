@@ -2,11 +2,7 @@ module Arrowsmith.Repo where
 
 import System.FilePath ((</>))
 
-data Repo = Repo
-  { backend :: String
-  , user :: String
-  , project :: String
-  }
+import Arrowsmith.Types
 
 repoPath :: FilePath -> Repo -> FilePath
 repoPath basePath repo =

@@ -1,3 +1,4 @@
+-- This should mirror src/Arrowsmith/Types.hs
 module Arrowsmith.Types where
 
 import Dict (Dict)
@@ -12,11 +13,7 @@ type alias Value = String
 type alias Values = Dict Name Value
 type alias Type = String -- TODO...
 
-type alias Definition =
-  ( Name
-  , Maybe Type
-  , ElmCode
-  )
+type alias Definition = (Name, Maybe Type, ElmCode)
 
 type alias Module =
   { name : ModuleName

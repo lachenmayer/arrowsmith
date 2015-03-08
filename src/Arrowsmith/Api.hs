@@ -12,7 +12,7 @@ import qualified Data.ByteString.UTF8 as UTF8BS
 import Data.Text.Lazy (toStrict)
 import Snap.Core
 import Snap.Extras.JSON (writeJSON)
-import Text.Blaze.Html
+import Text.Blaze.Html (Html, (!), toMarkup)
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
@@ -22,6 +22,7 @@ import System.FilePath ((</>), (<.>))
 import Arrowsmith.Compile (compile)
 import Arrowsmith.Module
 import Arrowsmith.Repo
+import Arrowsmith.Types
 
 
 type Route = (BS.ByteString, Snap ())
@@ -101,8 +102,8 @@ compileHandler = do
       writeJSON $ CompileError err
 
 urlFragment :: BS.ByteString -> Snap String
-urlFragment name = do
-  param <- getParam name
+urlFragment paramName = do
+  param <- getParam paramName
   case param of
     Just value -> return $ UTF8BS.toString value
     Nothing -> error "URL handling is broken in Snap... (Arrowsmith.Api)"
