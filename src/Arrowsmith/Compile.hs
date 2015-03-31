@@ -23,10 +23,12 @@ compilerPath :: FilePath -> FilePath
 compilerPath projectRoot =
   projectRoot </> ".cabal-sandbox" </> "bin" </> "elm-make"
 
-compile :: (MonadIO m, MonadError String m) => Repo -> String -> m (BS.ByteString, BS.ByteString)
-compile repo moduleName = do
+compile :: (MonadIO m, MonadError String m) => RepoInfo -> String -> m (BS.ByteString, BS.ByteString)
+compile repoInfo moduleName = do
   basePath <- liftIO getCurrentDirectory -- everything will break if we don't execute from the project root
-  let projectRoot = repoPath basePath repo
+  repo <- getRepo basePath repoInfo
+  -- TODO
+  let projectRoot = "foo" -- TODO
   let command = compilerPath basePath
   (compilerErr, exitCode) <- liftIO $ runCommand projectRoot command (compilerFlags moduleName)
   case exitCode of

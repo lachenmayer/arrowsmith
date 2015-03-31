@@ -2,8 +2,8 @@ module Update where
 
 import Arrowsmith.Types
 
-update modul action =
+update action =
   case action of
-    AddDefinition def -> undefined
-    ChangeDefinition name partialDef -> undefined
-    RemoveDefinition name -> undefined
+    AddDefinition moduleName def ->
+    ChangeDefinition moduleName defName partialDef -> undefined
+    RemoveDefinition moduleName defName -> undefined

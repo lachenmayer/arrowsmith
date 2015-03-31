@@ -18,11 +18,13 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), (<.>))
+import System.IO.Error (tryIOError)
 
 import Arrowsmith.Compile (compile)
 import Arrowsmith.Module
 import Arrowsmith.Repo
 import Arrowsmith.Types
+import Arrowsmith.Project
 
 
 type Route = (BS.ByteString, Snap ())
@@ -67,9 +69,12 @@ getRepo = do
 getModule :: Repo -> String -> IO (Maybe Module)
 getModule repo modul = do
   basePath <- getCurrentDirectory
-  astFile <- LazyBS.readFile $ (repoPath basePath repo) </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
-  source <- readFile $ (repoPath basePath repo) </> modul <.> "elm"
-  return $ (fromAstFile astFile) >>= Just . moduleSourceDefs source
+  let repoPath' = repoPath basePath repo
+  astFile <- tryIOError . LazyBS.readFile $ repoPath' </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
+  source <- readFile $ repoPath' </> modul <.> "elm"
+  return $ case astFile of
+    Left err -> Nothing
+    Right astFile' -> (fromAstFile astFile') >>= Just . moduleSourceDefs source
 
 runCompile :: (MonadIO m) => Repo -> String -> m (Either String (UTF8BS.ByteString, UTF8BS.ByteString))
 runCompile repo modul =

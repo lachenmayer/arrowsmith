@@ -2,6 +2,9 @@
 module Arrowsmith.Types where
 
 import Data.Aeson.TH
+import qualified Data.ByteString.Lazy as LazyBS
+import qualified Data.FileStore
+import Elm.Package.Description
 
 type ElmCode = String
 type Name = String
@@ -27,9 +30,34 @@ data Update
   deriving (Show, Eq)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Update)
 
-data Repo = Repo
+data RepoInfo = RepoInfo
   { backend :: String
   , user :: String
   , project :: String
   }
   deriving (Show, Eq)
+
+type RevisionId = Data.FileStore.RevisionId
+
+data Repo = Repo
+  { repoPath :: FilePath
+  , repoInfo :: RepoInfo
+  , index :: IO [FilePath]
+  , retrieve :: FilePath -> Maybe RevisionId -> IO LazyBS.ByteString
+  }
+
+data Project = Project
+  { repo :: Repo
+  , description :: Description
+  , sources :: [ElmFile]
+  }
+
+data ElmFile = ElmFile
+  { filePath :: FilePath -- relative to project root
+  , compiled :: Bool
+  , modul :: Maybe Module
+  }
+
+data CompileStatus
+  = CompileSuccess
+  | CompileError String

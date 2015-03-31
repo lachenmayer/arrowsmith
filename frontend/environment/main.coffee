@@ -12,7 +12,8 @@ ready ->
   console.log program
 
   ports =
-    initialProgram: program
+    initialModule: program # : Module
+    moduleUpdates: [program, ["Ok", ""]] # : (Module, Result Error ElmCode)
     editedValue: ["", ""] # : (Name, Value)
     evaluatedValue: [[], "", ""] # : (ModuleName, Name, Value)
     compileResponse: ["Ok", ""] # : Result ElmError ElmCode (~ish)

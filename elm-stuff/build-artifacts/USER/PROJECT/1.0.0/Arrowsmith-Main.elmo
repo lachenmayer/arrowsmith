@@ -47,7 +47,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          ,_0: false
                          ,_1: $default};}
                _U.badCase($moduleName,
-               "between lines 296 and 299");
+               "between lines 303 and 306");
             }();
          };
          return A2($Signal._op["<~"],
@@ -74,7 +74,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
               "no-error",
               _L.fromArray([]));}
          _U.badCase($moduleName,
-         "between lines 280 and 282");
+         "between lines 287 and 289");
       }();
    };
    var adtView = function (code) {
@@ -89,6 +89,76 @@ Elm.Arrowsmith.Main.make = function (_elm) {
       "import",
       _L.fromArray([$Html.text(code)]));
    };
+   var moduleUpdates = _P.portIn("moduleUpdates",
+   _P.incomingSignal(function (v) {
+      return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple2"
+                                                           ,_0: typeof v[0] === "object" && "name" in v[0] && "imports" in v[0] && "adts" in v[0] && "defs" in v[0] ? {_: {}
+                                                                                                                                                                      ,name: typeof v[0].name === "object" && v[0].name instanceof Array ? Elm.Native.List.make(_elm).fromArray(v[0].name.map(function (v) {
+                                                                                                                                                                         return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                                                                                         v);
+                                                                                                                                                                      })) : _U.badPort("an array",
+                                                                                                                                                                      v[0].name)
+                                                                                                                                                                      ,imports: typeof v[0].imports === "object" && v[0].imports instanceof Array ? Elm.Native.List.make(_elm).fromArray(v[0].imports.map(function (v) {
+                                                                                                                                                                         return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                                                                                         v);
+                                                                                                                                                                      })) : _U.badPort("an array",
+                                                                                                                                                                      v[0].imports)
+                                                                                                                                                                      ,adts: typeof v[0].adts === "object" && v[0].adts instanceof Array ? Elm.Native.List.make(_elm).fromArray(v[0].adts.map(function (v) {
+                                                                                                                                                                         return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                                                                                         v);
+                                                                                                                                                                      })) : _U.badPort("an array",
+                                                                                                                                                                      v[0].adts)
+                                                                                                                                                                      ,defs: typeof v[0].defs === "object" && v[0].defs instanceof Array ? Elm.Native.List.make(_elm).fromArray(v[0].defs.map(function (v) {
+                                                                                                                                                                         return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple3"
+                                                                                                                                                                                                                              ,_0: typeof v[0] === "string" || typeof v[0] === "object" && v[0] instanceof String ? v[0] : _U.badPort("a string",
+                                                                                                                                                                                                                              v[0])
+                                                                                                                                                                                                                              ,_1: v[1] === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v[1] === "string" || typeof v[1] === "object" && v[1] instanceof String ? v[1] : _U.badPort("a string",
+                                                                                                                                                                                                                              v[1]))
+                                                                                                                                                                                                                              ,_2: typeof v[2] === "string" || typeof v[2] === "object" && v[2] instanceof String ? v[2] : _U.badPort("a string",
+                                                                                                                                                                                                                              v[2])} : _U.badPort("an array",
+                                                                                                                                                                         v);
+                                                                                                                                                                      })) : _U.badPort("an array",
+                                                                                                                                                                      v[0].defs)} : _U.badPort("an object with fields \'name\', \'imports\', \'adts\', \'defs\'",
+                                                           v[0])
+                                                           ,_1: typeof v[1] === "object" && v[1] instanceof Array ? {ctor: "_Tuple2"
+                                                                                                                    ,_0: typeof v[1][0] === "string" || typeof v[1][0] === "object" && v[1][0] instanceof String ? v[1][0] : _U.badPort("a string",
+                                                                                                                    v[1][0])
+                                                                                                                    ,_1: typeof v[1][1] === "string" || typeof v[1][1] === "object" && v[1][1] instanceof String ? v[1][1] : _U.badPort("a string",
+                                                                                                                    v[1][1])} : _U.badPort("an array",
+                                                           v[1])} : _U.badPort("an array",
+      v);
+   }));
+   var initialModule = _P.portIn("initialModule",
+   function (v) {
+      return typeof v === "object" && "name" in v && "imports" in v && "adts" in v && "defs" in v ? {_: {}
+                                                                                                    ,name: typeof v.name === "object" && v.name instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.name.map(function (v) {
+                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.name)
+                                                                                                    ,imports: typeof v.imports === "object" && v.imports instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.imports.map(function (v) {
+                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.imports)
+                                                                                                    ,adts: typeof v.adts === "object" && v.adts instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.adts.map(function (v) {
+                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.adts)
+                                                                                                    ,defs: typeof v.defs === "object" && v.defs instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.defs.map(function (v) {
+                                                                                                       return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple3"
+                                                                                                                                                            ,_0: typeof v[0] === "string" || typeof v[0] === "object" && v[0] instanceof String ? v[0] : _U.badPort("a string",
+                                                                                                                                                            v[0])
+                                                                                                                                                            ,_1: v[1] === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v[1] === "string" || typeof v[1] === "object" && v[1] instanceof String ? v[1] : _U.badPort("a string",
+                                                                                                                                                            v[1]))
+                                                                                                                                                            ,_2: typeof v[2] === "string" || typeof v[2] === "object" && v[2] instanceof String ? v[2] : _U.badPort("a string",
+                                                                                                                                                            v[2])} : _U.badPort("an array",
+                                                                                                       v);
+                                                                                                    })) : _U.badPort("an array",
+                                                                                                    v.defs)} : _U.badPort("an object with fields \'name\', \'imports\', \'adts\', \'defs\'",
+      v);
+   });
    var compileResponse = _P.portIn("compileResponse",
    _P.incomingSignal(function (v) {
       return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple2"
@@ -154,7 +224,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                           case "Ok":
                                           return $Result.Ok(_v5._0._1);}
                                        _U.badCase($moduleName,
-                                       "between lines 96 and 98");
+                                       "between lines 95 and 97");
                                     }()]],
                    state);}
               break;
@@ -168,9 +238,9 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          return _U.replace([["editing"
                                             ,$Maybe.Nothing]
                                            ,["dirty",true]
-                                           ,["program"
+                                           ,["modul"
                                             ,A3($Arrowsmith$Module.replaceDefinition,
-                                            state.program,
+                                            state.modul,
                                             _v21._0,
                                             {ctor: "_Tuple3"
                                             ,_0: _v5._0._0
@@ -180,7 +250,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          case "Nothing":
                          return $Debug.crash("FinishEditing should never happen if not editing something!");}
                       _U.badCase($moduleName,
-                      "between lines 105 and 114");
+                      "between lines 104 and 113");
                    }();}
               break;
             case "FinishEvaluating":
@@ -195,56 +265,25 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                    state);}
               break;
             case "NewDefinition":
-            return _U.replace([["program"
+            return _U.replace([["modul"
                                ,A2($Arrowsmith$Module.freshDefinition,
-                               state.program,
+                               state.modul,
                                state.fresh)]
                               ,["fresh",state.fresh + 1]],
               state);
             case "NoOp": return state;
             case "RemoveDefinition":
-            return _U.replace([["program"
+            return _U.replace([["modul"
                                ,A2($Arrowsmith$Module.removeDefinition,
-                               state.program,
+                               state.modul,
                                _v5._0)]
                               ,["dirty",true]],
               state);
             case "StopEditing":
             return state;}
          _U.badCase($moduleName,
-         "between lines 87 and 126");
+         "between lines 86 and 125");
       }();
-   });
-   var initialProgram = _P.portIn("initialProgram",
-   function (v) {
-      return typeof v === "object" && "name" in v && "imports" in v && "adts" in v && "defs" in v ? {_: {}
-                                                                                                    ,name: typeof v.name === "object" && v.name instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.name.map(function (v) {
-                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
-                                                                                                       v);
-                                                                                                    })) : _U.badPort("an array",
-                                                                                                    v.name)
-                                                                                                    ,imports: typeof v.imports === "object" && v.imports instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.imports.map(function (v) {
-                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
-                                                                                                       v);
-                                                                                                    })) : _U.badPort("an array",
-                                                                                                    v.imports)
-                                                                                                    ,adts: typeof v.adts === "object" && v.adts instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.adts.map(function (v) {
-                                                                                                       return typeof v === "string" || typeof v === "object" && v instanceof String ? v : _U.badPort("a string",
-                                                                                                       v);
-                                                                                                    })) : _U.badPort("an array",
-                                                                                                    v.adts)
-                                                                                                    ,defs: typeof v.defs === "object" && v.defs instanceof Array ? Elm.Native.List.make(_elm).fromArray(v.defs.map(function (v) {
-                                                                                                       return typeof v === "object" && v instanceof Array ? {ctor: "_Tuple3"
-                                                                                                                                                            ,_0: typeof v[0] === "string" || typeof v[0] === "object" && v[0] instanceof String ? v[0] : _U.badPort("a string",
-                                                                                                                                                            v[0])
-                                                                                                                                                            ,_1: v[1] === null ? Elm.Maybe.make(_elm).Nothing : Elm.Maybe.make(_elm).Just(typeof v[1] === "string" || typeof v[1] === "object" && v[1] instanceof String ? v[1] : _U.badPort("a string",
-                                                                                                                                                            v[1]))
-                                                                                                                                                            ,_2: typeof v[2] === "string" || typeof v[2] === "object" && v[2] instanceof String ? v[2] : _U.badPort("a string",
-                                                                                                                                                            v[2])} : _U.badPort("an array",
-                                                                                                       v);
-                                                                                                    })) : _U.badPort("an array",
-                                                                                                    v.defs)} : _U.badPort("an object with fields \'name\', \'imports\', \'adts\', \'defs\'",
-      v);
    });
    var initialState = {_: {}
                       ,compilationStatus: $Result.Ok("")
@@ -252,7 +291,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                       ,editing: $Maybe.Nothing
                       ,fresh: 0
                       ,isCompiling: false
-                      ,program: initialProgram
+                      ,modul: initialModule
                       ,toEvaluate: $Maybe.Nothing
                       ,values: $Dict.empty};
    var RemoveDefinition = function (a) {
@@ -326,7 +365,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  _L.fromArray([content]));
               }();}
          _U.badCase($moduleName,
-         "between lines 221 and 230");
+         "between lines 228 and 237");
       }();
    });
    var defHeaderView = F3(function (moduleName,
@@ -360,7 +399,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                        return _L.fromArray([nameTag
                                            ,evalTag]);}
                     _U.badCase($moduleName,
-                    "between lines 237 and 242");
+                    "between lines 244 and 249");
                  }();
                  return A2($Html.table,
                  _L.fromArray([$Html$Attributes.$class("definition-header")]),
@@ -369,7 +408,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  header)]));
               }();}
          _U.badCase($moduleName,
-         "between lines 234 and 244");
+         "between lines 241 and 251");
       }();
    });
    var defView = F4(function (values,
@@ -396,7 +435,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                case "Nothing":
                return _L.fromArray([]);}
             _U.badCase($moduleName,
-            "between lines 252 and 255");
+            "between lines 259 and 262");
          }();
          return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]))(A2($Basics._op["++"],
          _L.fromArray([A3(defHeaderView,
@@ -417,17 +456,17 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                    ,$Html$Events.onClick(action(act))]),
       _L.fromArray([$Html.text(buttonText)]));
    });
-   var compileButton = function (program) {
+   var compileButton = function (modul) {
       return A3(button,
       "compile-button",
       "compile",
-      Compile(program));
+      Compile(modul));
    };
    var moduleView = F3(function (values,
    editing,
-   program) {
+   modul) {
       return function () {
-         var $ = program,
+         var $ = modul,
          name = $.name,
          imports = $.imports,
          adts = $.adts,
@@ -439,7 +478,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                       _L.fromArray([A2($Html.span,
                                    _L.fromArray([$Html$Attributes.$class("module-name")]),
                                    _L.fromArray([$Html.text($Arrowsmith$Module.nameToString(name))]))
-                                   ,compileButton(program)]))
+                                   ,compileButton(modul)]))
                       ,div("module-imports")(A2($List.map,
                       importView,
                       imports))
@@ -463,7 +502,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
          _L.fromArray([A3(moduleView,
                       _v37.values,
                       _v37.editing,
-                      _v37.program)
+                      _v37.modul)
                       ,errorView(_v37.compilationStatus)]));
       }();
    };
@@ -536,7 +575,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
    function () {
       var dirtyState = A2($Signal._op["<~"],
       function (_) {
-         return _.program;
+         return _.modul;
       },
       A3($Signal.keepIf,
       function (_) {
@@ -584,7 +623,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
              ,editing: e
              ,fresh: h
              ,isCompiling: b
-             ,program: a
+             ,modul: a
              ,toEvaluate: g
              ,values: f};
    });

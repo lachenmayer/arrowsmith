@@ -26,7 +26,7 @@ import Arrowsmith.Types (..)
 --
 
 type alias State =
-  { program : Module
+  { modul : Module
 
   , isCompiling : Bool
   , compilationStatus : CompilationStatus
@@ -37,7 +37,7 @@ type alias State =
   , values : Dict Name Value
   , toEvaluate : Maybe (ModuleName, Name)
 
-  , fresh : Int -- Used to generate fresh variable names.
+  , fresh : Int
   }
 
 type Action
@@ -56,11 +56,10 @@ type Action
   | NewDefinition
   | RemoveDefinition Name
 
-port initialProgram : Module
 
 initialState : State
 initialState =
-  { program = initialProgram
+  { modul = initialModule
 
   , isCompiling = False
   , compilationStatus = Ok ""
@@ -107,7 +106,7 @@ step action state =
           { state
           | editing <- Nothing
           , dirty <- True
-          , program <- Module.replaceDefinition state.program oldName (newName, Nothing, newBinding)
+          , modul <- Module.replaceDefinition state.modul oldName (newName, Nothing, newBinding)
           }
         Nothing -> Debug.crash "FinishEditing should never happen if not editing something!"
 
@@ -118,11 +117,11 @@ step action state =
               , toEvaluate <- Nothing }
 
     NewDefinition ->
-      { state | program <- Module.freshDefinition state.program state.fresh
+      { state | modul <- Module.freshDefinition state.modul state.fresh
               , fresh <- state.fresh + 1 }
 
     RemoveDefinition name ->
-      { state | program <- Module.removeDefinition state.program name
+      { state | modul <- Module.removeDefinition state.modul name
               , dirty <- True }
 
 -- State can be updated either by "in-house" actions or by events from the environment.
@@ -192,9 +191,17 @@ port compileProgram =
         Compile _ -> True
         _ -> False
     compileAction = extractValue <~ S.keepIf isCompileAction NoOp (S.subscribe actions)
-    dirtyState = .program <~ S.keepIf .dirty initialState state
+    dirtyState = .modul <~ S.keepIf .dirty initialState state
   in
     Module.toString <~ S.merge compileAction dirtyState
+
+--
+-- Update
+--
+
+port initialModule : Module
+port moduleUpdates : Signal (Module, (CompileResponse, String))
+
 
 --
 -- Views
@@ -259,17 +266,17 @@ defView values moduleName editing definition =
       ] ++ valueView
 
 compileButton : Module -> Html
-compileButton program =
-  button "compile-button" "compile" (Compile program)
+compileButton modul =
+  button "compile-button" "compile" (Compile modul)
 
 moduleView : Values -> Maybe Name -> Module -> Html
-moduleView values editing program =
+moduleView values editing modul =
   let
-    {name, imports, adts, defs} = program
+    {name, imports, adts, defs} = modul
   in
     div "module"
       [ div "module-header"
-        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ], compileButton program ]
+        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ], compileButton modul ]
       , div "module-imports" <| List.map importView imports
       , div "module-adts" <| List.map adtView adts
       , div "module-defs" <| List.map (defView values name editing) defs ++ [button "new-def-button" "+" NewDefinition]
@@ -282,8 +289,8 @@ errorView status =
     Err err -> div "error" [ H.pre [] [ H.text err ] ]
 
 view : State -> Html
-view {program, values, editing, compilationStatus} =
-  div "modules" [ moduleView values editing program, errorView compilationStatus ]
+view {modul, values, editing, compilationStatus} =
+  div "modules" [ moduleView values editing modul, errorView compilationStatus ]
 
 --
 -- Util
