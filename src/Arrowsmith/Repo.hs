@@ -6,6 +6,7 @@ import System.Directory (doesDirectoryExist)
 import System.FilePath ((</>))
 
 import qualified Elm.Package.Description as Desc
+import qualified Elm.Package.Paths as ElmPaths
 
 import Arrowsmith.Paths (reposPath)
 import Arrowsmith.Types
@@ -27,9 +28,3 @@ getRepo repoInfo' = do
           }
     else
       Left "unimplemented: get it from github?"
-
-
-getDescription :: Repo -> IO (Either String Desc.Description)
-getDescription repo' = do
-  let packagePath = repoPath repo' </> "elm-package.json"
-  runErrorT $ Desc.read packagePath

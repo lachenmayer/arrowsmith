@@ -8,6 +8,7 @@ import System.Directory (doesFileExist)
 import System.Exit (ExitCode(..))
 import System.FilePath ((</>), (<.>))
 import System.FilePath.Posix (dropExtension, splitDirectories)
+import System.IO.Error (tryIOError)
 
 import Elm.Package.Description (Description, sourceDirs)
 
@@ -33,13 +34,13 @@ elmFile repo' description' filePath' = do
     else
       Nothing
 
-
 compile :: ElmFile -> IO (CompileStatus, ElmFile)
 compile elmFile' = do
   let repo' = inRepo elmFile'
   let filePath' = filePath elmFile'
   revision <- latest repo' filePath'
-  let tempPath = let ri = repoInfo repo' in backend ri </> user ri </> project ri </> revision
+  let tempPath = let ri = repoInfo repo'
+                 in backend ri </> user ri </> project ri </> revision
   tempDirectory <- temporaryDirectory tempPath
 
   let projectRoot = repoPath repo'
@@ -52,15 +53,25 @@ compile elmFile' = do
     ExitSuccess -> do
       compiledCode' <- LazyBS.readFile outFile
       astFile <- getAstFile elmFile'
-      let modul' = modulePrettyPrintedDefs <$> fromAstFile astFile
-      let newFile = elmFile' { compiledCode = Just compiledCode'
-                             , lastCompiled = Just revision
-                             , modul = modul'
-                             }
-      return (CompileSuccess, newFile)
+      return $ case astFile of
+        Right astFile' ->
+          let
+            modul' = modulePrettyPrintedDefs <$> fromAstFile astFile'
+            newFile = elmFile' { compiledCode = Just compiledCode'
+                               , lastCompiled = Just revision
+                               , modul = modul'
+                               }
+          in
+            (CompileSuccess, newFile)
+        Left err ->
+          compileFailure (C8.pack ("ast file could not be loaded: " ++ err))
     ExitFailure _ -> do
       err <- LazyBS.hGetContents compilerErr
-      return (CompileFailure (C8.unlines . drop 2 . C8.lines $ err), elmFile')
+      return $ compileFailure (C8.unlines . drop 2 . C8.lines $ err)
+  where
+    -- A compile failure will always keep the elm file unchanged.
+    compileFailure message =
+      (CompileFailure message, elmFile')
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =
@@ -70,7 +81,14 @@ fileNameFromPath :: [FilePath] -> FilePath -> QualifiedName
 fileNameFromPath sourceDirs' filePath' =
   splitDirectories . dropExtension $ stripLongestPrefix sourceDirs' filePath'
 
-getAstFile :: ElmFile -> IO LazyBS.ByteString
+getAstFile :: ElmFile -> IO (Either String LazyBS.ByteString)
 getAstFile elmFile' = do
-  --description <- getDescription (inRepo elmFile')
-  return LazyBS.empty
+  let repo' = inRepo elmFile'
+  description' <- getDescription (repoPath repo')
+  case description' of
+    Left err -> return . Left $ "repo is not valid: " ++ err
+    Right description'' -> do
+      ast <- tryIOError . LazyBS.readFile $ astPath description'' (fileName elmFile')
+      return $ case ast of
+        Left err -> Left $ show err
+        Right astContents -> Right astContents
