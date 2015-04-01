@@ -7,31 +7,27 @@ import System.FilePath ((</>))
 import System.FilePath.Posix (takeExtension)
 
 import Arrowsmith.ElmFile
+import Arrowsmith.Repo
 import Arrowsmith.Types
 
 getProject :: Repo -> IO (Either String Project)
 getProject repo' = do
   d <- getDescription repo'
-  sources' <- elmFiles repo'
   return $ case d of
-    Left err -> Left $ "repo at " ++ (repoPath repo') ++ " is not a valid elm repo: " ++ err
-    Right description' ->
-      Right Project
+    Left err -> Left $ "repo at " ++ (repoPath repo') ++ " is not a valid elm project: " ++ err
+    Right description' -> do
+      sources' <- elmFiles repo' description'
+      return Project
         { Arrowsmith.Types.repo = repo'
         , description = description'
         , sources = sources'
         }
 
-getDescription :: Repo -> IO (Either String Description)
-getDescription repo' = do
-  let packagePath = repoPath repo' </> "elm-package.json"
-  runErrorT $ Elm.Package.Description.read packagePath
-
-elmFiles :: Repo -> IO [ElmFile]
-elmFiles repo' = do
+elmFiles :: Repo -> Description -> IO [ElmFile]
+elmFiles repo' description' = do
   allFiles <- index repo'
   let filesToConvert = filter (\f -> takeExtension f == ".elm") allFiles
-  elmFiles' <- mapM (elmFile repo') filesToConvert
+  elmFiles' <- mapM (elmFile repo' description') filesToConvert
   return $ catMaybes elmFiles'
 
 --compile :: Project -> IO (Either String Project)

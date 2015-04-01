@@ -43,6 +43,7 @@ data Repo = Repo
   { repoPath :: FilePath
   , repoInfo :: RepoInfo
   , index :: IO [FilePath]
+  , latest :: FilePath -> IO RevisionId
   , retrieve :: FilePath -> Maybe RevisionId -> IO LazyBS.ByteString
   }
 
@@ -54,10 +55,13 @@ data Project = Project
 
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
-  , compiled :: Bool
+  , fileName :: QualifiedName
+  , compiledCode :: Maybe LazyBS.ByteString
+  , lastCompiled :: Maybe RevisionId
   , modul :: Maybe Module
+  , inRepo :: Repo
   }
 
 data CompileStatus
   = CompileSuccess
-  | CompileError String
+  | CompileFailure LazyBS.ByteString
