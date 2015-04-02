@@ -20,7 +20,6 @@ import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), (<.>))
 import System.IO.Error (tryIOError)
 
-import Arrowsmith.Compile (compile)
 import Arrowsmith.Module
 import Arrowsmith.Repo
 import Arrowsmith.Types
@@ -29,22 +28,10 @@ import Arrowsmith.Project
 
 type Route = (BS.ByteString, Snap ())
 
-data CompileResponse
-  = CompileSuccess BS.ByteString BS.ByteString
-  | CompileError String
-
-instance ToJSON CompileResponse where
-  toJSON (CompileSuccess ast code) =
-    object ["ast" .= UTF8BS.toString ast, "code" .= UTF8BS.toString code]
-  toJSON (CompileError message) =
-    object ["error" .= message]
-
-
 routes :: [Route]
 routes =
   [ (":backend/:user/:project/:module", method GET editorHandler)
   , (":backend/:user/:project/:module/update", method POST updateHandler)
-  , (":backend/:user/:project/:module/compile", method POST compileHandler)
   ]
 
 editor :: Html -> Html
@@ -59,52 +46,27 @@ editor contents =
       H.script ! A.src "/app/env.js" $ return ()
       contents
 
-getRepo :: Snap Repo
-getRepo = do
+getRepoInfo :: Snap RepoInfo
+getRepoInfo = do
   b <- urlFragment "backend"
   u <- urlFragment "user"
   p <- urlFragment "project"
-  return Repo { backend = b, user = u, project = p }
-
-getModule :: Repo -> String -> IO (Maybe Module)
-getModule repo modul = do
-  basePath <- getCurrentDirectory
-  let repoPath' = repoPath basePath repo
-  astFile <- tryIOError . LazyBS.readFile $ repoPath' </> "elm-stuff/build-artifacts/USER/PROJECT/1.0.0" </> modul <.> "elma" -- TODO properly
-  source <- readFile $ repoPath' </> modul <.> "elm"
-  return $ case astFile of
-    Left err -> Nothing
-    Right astFile' -> (fromAstFile astFile') >>= Just . moduleSourceDefs source
-
-runCompile :: (MonadIO m) => Repo -> String -> m (Either String (UTF8BS.ByteString, UTF8BS.ByteString))
-runCompile repo modul =
-  liftIO . runErrorT $ compile repo modul
+  return RepoInfo { backend = b, user = u, project = p }
 
 editorHandler :: Snap ()
 editorHandler = do
-  repo <- getRepo
-  modul <- urlFragment "module"
-  compiledProgram <- runCompile repo modul -- TODO properly: probably shouldn't have to recompile every time.
-  m <- liftIO $ getModule repo modul
-  let moduleJson = UTF8BS.toString . LazyBS.toStrict . encode . toJSON $ m
-  let moduleScript = H.script ! A.class_ "initial-program" ! A.type_ "text/json" $ toMarkup moduleJson
-  writeText . toStrict . renderHtml $ editor moduleScript
+  --repo <- getRepo
+  --modul <- urlFragment "module"
+  --compiledProgram <- runCompile repo modul -- TODO properly: probably shouldn't have to recompile every time.
+  --m <- liftIO $ getModule repo modul
+  --let moduleJson = UTF8BS.toString . LazyBS.toStrict . encode . toJSON $ m
+  --let moduleScript = H.script ! A.class_ "initial-program" ! A.type_ "text/json" $ toMarkup moduleJson
+  --writeText . toStrict . renderHtml $ editor moduleScript
+  writeText "not implemented yet."
 
 updateHandler :: Snap ()
 updateHandler = do
   writeText "not implemented yet."
-
-compileHandler :: Snap ()
-compileHandler = do
-  repo <- getRepo
-  modul <- urlFragment "module"
-  compiledProgram <- runCompile repo modul
-  case compiledProgram of
-    Right (ast, code) ->
-      writeJSON $ CompileSuccess ast code
-    Left err -> do
-      modifyResponse $ setResponseCode 400 -- Bad Request
-      writeJSON $ CompileError err
 
 urlFragment :: BS.ByteString -> Snap String
 urlFragment paramName = do

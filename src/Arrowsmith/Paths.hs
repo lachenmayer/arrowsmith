@@ -26,6 +26,10 @@ reposPath :: FilePath
 reposPath =
   rootDirectory </> "repos"
 
+repoPath :: RepoInfo -> FilePath
+repoPath repoInfo' =
+  reposPath </> backend repoInfo' </> user repoInfo' </> project repoInfo'
+
 temporaryDataPath :: FilePath
 temporaryDataPath =
   rootDirectory </> "tmp"
@@ -42,12 +46,12 @@ getDescription projectRoot = do
   runErrorT $ Desc.read packagePath
 
 stuffDirectory :: Desc.Description -> FilePath
-stuffDirectory description =
+stuffDirectory description' =
   ElmPaths.stuffDirectory
     </> "build-artifacts"
-    </> Name.toFilePath (Desc.name description)
-    </> Version.toString (Desc.version description)
+    </> Name.toFilePath (Desc.name description')
+    </> Version.toString (Desc.version description')
 
 astPath :: Desc.Description -> QualifiedName -> FilePath
-astPath description moduleName =
-  stuffDirectory description </> intercalate "-" moduleName <.> "elma"
+astPath description' moduleName =
+  stuffDirectory description' </> intercalate "-" moduleName <.> "elma"

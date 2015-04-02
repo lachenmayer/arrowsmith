@@ -40,15 +40,14 @@ data RepoInfo = RepoInfo
 type RevisionId = Data.FileStore.RevisionId
 
 data Repo = Repo
-  { repoPath :: FilePath
-  , repoInfo :: RepoInfo
+  { repoInfo :: RepoInfo
   , index :: IO [FilePath]
   , latest :: FilePath -> IO RevisionId
   , retrieve :: FilePath -> Maybe RevisionId -> IO LazyBS.ByteString
   }
 
 data Project = Project
-  { repo :: Repo
+  { projectRepo :: RepoInfo
   , description :: Description
   , sources :: [ElmFile]
   }
@@ -59,9 +58,11 @@ data ElmFile = ElmFile
   , compiledCode :: Maybe LazyBS.ByteString
   , lastCompiled :: Maybe RevisionId
   , modul :: Maybe Module
-  , inRepo :: Repo
+  , inRepo :: RepoInfo
   }
+  deriving (Show, Eq)
 
 data CompileStatus
   = CompileSuccess
-  | CompileFailure LazyBS.ByteString
+  | CompileFailure String
+  deriving (Show, Eq)
