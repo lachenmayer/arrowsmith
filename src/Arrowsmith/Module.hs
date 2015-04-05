@@ -1,10 +1,11 @@
 module Arrowsmith.Module where
 
 import Data.Aeson
-import Data.Aeson.TH
 import qualified Data.ByteString.Lazy as LazyBS
+import Data.List (tails, isPrefixOf)
+import Data.List.Split (splitOn)
 --import qualified Data.ByteString.Lazy.Char8 as C8
-import qualified Data.ByteString.UTF8 as UTF8BS
+--import qualified Data.ByteString.UTF8 as UTF8BS
 
 -- elm-compiler
 import qualified AST.Annotation as Annotation
@@ -55,9 +56,7 @@ definitions modoole =
       case ds of
         General.Var _ -> [] -- should be the "_save_the_environment!!!" varaible.
         General.Let [def] next -> def : letDefs next
-        _ -> error "unexpected AST structure. (2)"
-    letDefs _ =
-      error "unexpected AST structure. (1)"
+        _ -> error "unexpected AST structure. (letDefs)"
 
 -- Uses the built-in pretty printer to give a textual representation of the definition.
 defPrettyPrinted :: DefTransform
@@ -65,30 +64,68 @@ defPrettyPrinted def =
   ( varName
   , tipe >>= Just . PP.renderPretty
   , PP.renderPretty binding
+  , startPosition
+  , endPosition
   )
   where
     Canonical.Definition (Pattern.Var varName) binding tipe = def
-defPrettyPrinted _ =
-  ("___not_implemented!!!", Nothing, "not implemented! (Arrowsmith.Module.defPrettyPrinted)")
+    (startPosition, endPosition) = sourceRange def
 
 -- Looks up the regions in the code itself to match the style the code was written in originally.
 defFromSource :: String -> DefTransform
 defFromSource source def =
   ( varName
   , tipe >>= Just . PP.renderPretty
-  , sourceRegion source (unpos startPosition) (unpos endPosition)
+  , sourceRegion source lhsStartPosition endPosition
+  , lhsStartPosition
+  , endPosition
   )
   where
-    Canonical.Definition (Pattern.Var varName) binding tipe = def
-    Annotation.A (Annotation.Span startPosition endPosition _) _ = binding
-    unpos p = (Annotation.line p, Annotation.column p)
+    Canonical.Definition (Pattern.Var varName) _ tipe = def
+    (startPosition, endPosition) = sourceRange def
+    lhsStartPosition = expandToLhs source varName startPosition
 
-sourceRegion :: String -> (Int, Int) -> (Int, Int) -> String
+
+-- 1-indexed
+-- indexOf "foobarbazbar" "bar" == Just 4
+indexOf :: String -> String -> Maybe Int
+indexOf haystack needle =
+  if null results then Nothing else Just ((snd . head) results)
+  where
+    results = filter fst $ zip (map (isPrefixOf needle) (tails haystack)) [1..]
+
+
+-- Returns the start position of a definition including the left hand side.
+-- expandToLhs "foo\n  baz\nbal = baz\nbar" "baz" (3, 6) == (2, 3)
+expandToLhs :: String -> String -> Position -> Position
+expandToLhs source varName (startLine, startColumn) =
+  case indexOf (take startColumn firstDefLine) varName of
+    Just i -> (startLine, i)
+    Nothing -> findInPrevious previousLines (startLine - 1)
+  where
+    (firstDefLine:previousLines) = reverse $ take startLine (lines source)
+    findInPrevious _ 0 = error "couldn't find def (expandToLhs:1)"
+    findInPrevious [] _ = error "couldn't find def (expandToLhs:2)"
+    findInPrevious (line:previous) lineCount =
+      case indexOf line varName of
+        Just i -> (lineCount, i)
+        Nothing -> findInPrevious previous (lineCount - 1)
+
+unpos p =
+  (Annotation.line p, Annotation.column p)
+
+sourceRange :: Canonical.Def -> (Position, Position)
+sourceRange def =
+  (unpos startPosition, unpos endPosition)
+  where
+    Canonical.Definition (Pattern.Var _) binding _ = def
+    Annotation.A (Annotation.Span startPosition endPosition _) _ = binding
+
+sourceRegion :: String -> Position -> Position -> String
 sourceRegion source (startLine, startColumn) (endLine, endColumn) =
   columnRange (region startLine endLine (lines source))
   where
     -- Lines are 1-indexed.
-    region start end xs = take ((end - start) + 1) $ drop (start - 1) xs
     columnRange lines' =
       case lines' of
         [] -> ""
@@ -96,3 +133,15 @@ sourceRegion source (startLine, startColumn) (endLine, endColumn) =
         (x:xs) ->
           let (middle, lastLine) = (init xs, last xs) in
             unlines $ [drop (startColumn - 1) x] ++ middle ++ [take endColumn lastLine]
+
+breakSource :: String -> Position -> Position -> (String, String, String)
+breakSource source start end =
+  (before, def, after)
+  where
+    (before:after:_) = splitOn def source -- let's hope the def only appears once...
+    def = sourceRegion source start end
+
+-- returns the sub-list bounded by `start` and `end` (1-indexed)
+region :: Int -> Int -> [a] -> [a]
+region start end xs =
+  take ((end - start) + 1) $ drop (start - 1) xs

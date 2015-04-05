@@ -10,6 +10,5 @@ attachToEnvironment = (compiledCode) ->
 
   executionFrame.contentDocument.body.appendChild script
 
-
 module.exports =
   attachToEnvironment: attachToEnvironment

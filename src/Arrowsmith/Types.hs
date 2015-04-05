@@ -9,7 +9,8 @@ import Elm.Package.Description
 type ElmCode = String
 type Name = String
 type QualifiedName = [String]
-type Definition = (Name, Maybe Type, ElmCode)
+type Position = (Int {- line -}, Int {- column -}) -- 1-indexed
+type Definition = (Name, Maybe Type, ElmCode, Position {- start -}, Position {- end -})
 type QualifiedDefinition = (QualifiedName, Maybe Type, ElmCode)
 type PartialDefinition = (Maybe Name, Maybe Type, Maybe ElmCode)
 type Type = String

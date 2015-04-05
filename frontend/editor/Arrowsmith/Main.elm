@@ -231,7 +231,7 @@ codeView isEditing (name, tipe, binding) =
       else
         H.text binding
   in
-    editable isEditing name "div"
+    editable isEditing name "pre"
       [ A.class "definition-code" ]
       [ content ]
 

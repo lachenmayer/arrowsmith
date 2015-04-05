@@ -360,7 +360,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  return A5(editable,
                  isEditing,
                  _v23._0,
-                 "div",
+                 "pre",
                  _L.fromArray([$Html$Attributes.$class("definition-code")]),
                  _L.fromArray([content]));
               }();}

@@ -3,7 +3,6 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Arrowsmith.Api (routes) where
 
-import Control.Monad.Error (runErrorT)
 import Control.Monad.IO.Class
 import Data.Aeson
 import qualified Data.ByteString as BS
@@ -11,20 +10,17 @@ import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.ByteString.UTF8 as UTF8BS
 import Data.List.Utils (split)
 import Data.Text (pack)
-import Data.Text.Lazy (toStrict, unpack)
+import Data.Text.Lazy (toStrict)
 import Snap.Core
-import Snap.Extras.JSON (writeJSON)
-import Text.Blaze.Html (Html, (!), toMarkup)
+--import Snap.Extras.JSON (writeJSON)
+import Text.Blaze.Html (Html, (!))
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
-import System.Directory (getCurrentDirectory)
-import System.FilePath ((</>), (<.>))
-import System.IO.Error (tryIOError)
 
 import Arrowsmith.ElmFile
-import Arrowsmith.Module
-import Arrowsmith.Repo
+--import Arrowsmith.Module
+--import Arrowsmith.Repo
 import Arrowsmith.Types
 import Arrowsmith.Project
 
@@ -58,14 +54,14 @@ getRepoInfo = do
 
 moduleHandler :: Snap ()
 moduleHandler = do
-  repoInfo <- getRepoInfo
+  repoInfo' <- getRepoInfo
   moduleName <- urlFragment "module"
   let fileName' = split "." moduleName
-  project <- liftIO $ getProject repoInfo
-  case project of
+  project' <- liftIO $ getProject repoInfo'
+  case project' of
     Left err -> (writeText . pack) err
-    Right project' -> do
-      case fileWithName project' fileName' of
+    Right project'' -> do
+      case fileWithName project'' fileName' of
         Nothing -> writeText "module not found"
         Just elmFile' -> do
           latestFile <- liftIO $ getLatest elmFile'
