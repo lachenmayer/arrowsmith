@@ -2,7 +2,8 @@ module Arrowsmith.Module where
 
 import Data.Aeson
 import qualified Data.ByteString.Lazy as LazyBS
-import Data.List (tails, isPrefixOf)
+import Data.Function (on)
+import Data.List (tails, isPrefixOf, sortBy)
 import Data.List.Split (splitOn)
 --import qualified Data.ByteString.Lazy.Char8 as C8
 --import qualified Data.ByteString.UTF8 as UTF8BS
@@ -30,16 +31,21 @@ makeModule defTransform m =
   Module { name = AST.Module.names m
          , imports = []
          , adts = []
-         , defs = map defTransform (definitions m)
+         , defs = sortByAppearance $ map defTransform (definitions m)
          }
 
 modulePrettyPrintedDefs :: ModuleTransform
 modulePrettyPrintedDefs =
   makeModule defPrettyPrinted
 
+
 moduleSourceDefs :: String -> ModuleTransform
 moduleSourceDefs source =
   makeModule (defFromSource source)
+
+sortByAppearance :: [Definition] -> [Definition]
+sortByAppearance =
+  sortBy (compare `on` (\x -> let (_, _, _, (startLine, _), _) = x in startLine))
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
 fromAstFile astFile =
@@ -111,6 +117,7 @@ expandToLhs source varName (startLine, startColumn) =
         Just i -> (lineCount, i)
         Nothing -> findInPrevious previous (lineCount - 1)
 
+unpos :: Annotation.Position -> Position
 unpos p =
   (Annotation.line p, Annotation.column p)
 

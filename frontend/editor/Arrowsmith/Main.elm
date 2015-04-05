@@ -201,7 +201,6 @@ port compileModule =
 port initialModule : Module
 port moduleUpdates : Signal (Module, (CompileResponse, String))
 
-
 --
 -- Views
 --

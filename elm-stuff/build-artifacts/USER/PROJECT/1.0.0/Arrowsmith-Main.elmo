@@ -47,7 +47,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          ,_0: false
                          ,_1: $default};}
                _U.badCase($moduleName,
-               "between lines 302 and 305");
+               "between lines 301 and 304");
             }();
          };
          return A2($Signal._op["<~"],
@@ -74,7 +74,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
               "no-error",
               _L.fromArray([]));}
          _U.badCase($moduleName,
-         "between lines 286 and 288");
+         "between lines 285 and 287");
       }();
    };
    var adtView = function (code) {
@@ -365,7 +365,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  _L.fromArray([content]));
               }();}
          _U.badCase($moduleName,
-         "between lines 227 and 236");
+         "between lines 226 and 235");
       }();
    });
    var defHeaderView = F3(function (moduleName,
@@ -399,7 +399,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                        return _L.fromArray([nameTag
                                            ,evalTag]);}
                     _U.badCase($moduleName,
-                    "between lines 243 and 248");
+                    "between lines 242 and 247");
                  }();
                  return A2($Html.table,
                  _L.fromArray([$Html$Attributes.$class("definition-header")]),
@@ -408,7 +408,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  header)]));
               }();}
          _U.badCase($moduleName,
-         "between lines 240 and 250");
+         "between lines 239 and 249");
       }();
    });
    var defView = F4(function (values,
@@ -435,7 +435,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                case "Nothing":
                return _L.fromArray([]);}
             _U.badCase($moduleName,
-            "between lines 258 and 261");
+            "between lines 257 and 260");
          }();
          return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]))(A2($Basics._op["++"],
          _L.fromArray([A3(defHeaderView,
