@@ -26,12 +26,13 @@ elmFile repoInfo' description' filePath' = do
   let fullPath' = repoPath repoInfo' </> filePath'
   exists <- doesFileExist fullPath'
   return $ if exists
-    then do
-      return ElmFile
+    then
+      Just ElmFile
         { filePath = filePath'
         , fileName = fileNameFromPath (sourceDirs description') filePath'
         , compiledCode = Nothing
         , lastCompiled = Nothing
+        , lastEdited = Nothing
         , modul = Nothing
         , inRepo = repoInfo'
         }
@@ -75,7 +76,6 @@ compile elmFile' = do
         ExitFailure _ -> do
           err <- hGetContents compilerErr
           return $ Left (unlines . drop 2 . lines $ err)
-  where
 
 getLatest :: ElmFile -> IO (Either String ElmFile)
 getLatest elmFile' = do
@@ -96,6 +96,23 @@ fullPath elmFile' =
 fileNameFromPath :: [FilePath] -> FilePath -> QualifiedName
 fileNameFromPath sourceDirs' filePath' =
   splitDirectories . dropExtension $ stripLongestPrefix sourceDirs' filePath'
+
+elmSource :: ElmFile -> IO String
+elmSource elmFile' =
+  readFile (repoPath (inRepo elmFile') </> filePath elmFile')
+
+changeSource :: ElmFile -> String -> (String -> String) -> IO (Either String ElmFile)
+changeSource elmFile' commitMessage transform = do
+  repo' <- getRepo (inRepo elmFile')
+  case repo' of
+    Left _ -> return $ Left "repo doesn't exist. (changeSource)"
+    Right repo'' -> do
+      let filePath' = filePath elmFile'
+      file <- retrieve repo'' filePath' (lastCompiled elmFile')
+      let transformed = transform $! file
+      save repo'' filePath' commitMessage transformed
+      newRevision <- latest repo'' filePath'
+      return $ Right elmFile' { lastEdited = Just newRevision }
 
 getAstFile :: ElmFile -> IO (Either String LazyBS.ByteString)
 getAstFile elmFile' = do

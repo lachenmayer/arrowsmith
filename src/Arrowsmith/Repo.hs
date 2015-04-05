@@ -23,6 +23,9 @@ getRepo repoInfo' = do
           , index = Data.FileStore.index fileStore
           , latest = Data.FileStore.latest fileStore
           , retrieve = Data.FileStore.retrieve fileStore
+          , save = \p -> Data.FileStore.save fileStore p author
           }
     else
       Left "unimplemented: get it from github?"
+  where
+    author = Data.FileStore.Author "Arrowsmith" "arrowsmith@no.email"

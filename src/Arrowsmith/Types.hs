@@ -4,7 +4,6 @@ module Arrowsmith.Types where
 import Data.Aeson.TH
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.FileStore
-import Elm.Package.Description
 
 type ElmCode = String
 type Name = String
@@ -24,12 +23,12 @@ data Module = Module
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
 
-data Update
+data Action
   = AddDefinition QualifiedName {- module name -} Definition
   | ChangeDefinition QualifiedName {- module name -} Name PartialDefinition
   | RemoveDefinition QualifiedName {- module name -} Name
   deriving (Show, Eq)
-$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Update)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Action)
 
 data RepoInfo = RepoInfo
   { backend :: String
@@ -39,13 +38,15 @@ data RepoInfo = RepoInfo
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''RepoInfo)
 
+type CommitMessage = Data.FileStore.Description
 type RevisionId = Data.FileStore.RevisionId
 
 data Repo = Repo
   { repoInfo :: RepoInfo
   , index :: IO [FilePath]
   , latest :: FilePath -> IO RevisionId
-  , retrieve :: FilePath -> Maybe RevisionId -> IO LazyBS.ByteString
+  , retrieve :: FilePath -> Maybe RevisionId -> IO String
+  , save :: FilePath -> CommitMessage -> String -> IO ()
   }
 
 data Project = Project
@@ -59,6 +60,7 @@ data ElmFile = ElmFile
   , fileName :: QualifiedName
   , compiledCode :: Maybe String
   , lastCompiled :: Maybe RevisionId
+  , lastEdited :: Maybe RevisionId
   , modul :: Maybe Module
   , inRepo :: RepoInfo
   }
