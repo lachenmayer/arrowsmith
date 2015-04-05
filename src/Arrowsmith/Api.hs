@@ -9,7 +9,9 @@ import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.ByteString.UTF8 as UTF8BS
-import Data.Text.Lazy (toStrict)
+import Data.List.Utils (split)
+import Data.Text (pack)
+import Data.Text.Lazy (toStrict, unpack)
 import Snap.Core
 import Snap.Extras.JSON (writeJSON)
 import Text.Blaze.Html (Html, (!), toMarkup)
@@ -20,6 +22,7 @@ import System.Directory (getCurrentDirectory)
 import System.FilePath ((</>), (<.>))
 import System.IO.Error (tryIOError)
 
+import Arrowsmith.ElmFile
 import Arrowsmith.Module
 import Arrowsmith.Repo
 import Arrowsmith.Types
@@ -30,7 +33,7 @@ type Route = (BS.ByteString, Snap ())
 
 routes :: [Route]
 routes =
-  [ (":backend/:user/:project/:module", method GET editorHandler)
+  [ (":backend/:user/:project/:module", method GET moduleHandler)
   , (":backend/:user/:project/:module/update", method POST updateHandler)
   ]
 
@@ -53,16 +56,25 @@ getRepoInfo = do
   p <- urlFragment "project"
   return RepoInfo { backend = b, user = u, project = p }
 
-editorHandler :: Snap ()
-editorHandler = do
-  --repo <- getRepo
-  --modul <- urlFragment "module"
-  --compiledProgram <- runCompile repo modul -- TODO properly: probably shouldn't have to recompile every time.
-  --m <- liftIO $ getModule repo modul
-  --let moduleJson = UTF8BS.toString . LazyBS.toStrict . encode . toJSON $ m
-  --let moduleScript = H.script ! A.class_ "initial-program" ! A.type_ "text/json" $ toMarkup moduleJson
-  --writeText . toStrict . renderHtml $ editor moduleScript
-  writeText "not implemented yet."
+moduleHandler :: Snap ()
+moduleHandler = do
+  repoInfo <- getRepoInfo
+  moduleName <- urlFragment "module"
+  let fileName' = split "." moduleName
+  project <- liftIO $ getProject repoInfo
+  case project of
+    Left err -> (writeText . pack) err
+    Right project' -> do
+      case fileWithName project' fileName' of
+        Nothing -> writeText "module not found"
+        Just elmFile' -> do
+          latestFile <- liftIO $ getLatest elmFile'
+          case latestFile of
+            Left err -> (writeText . pack) err
+            Right latestFile' -> do
+              let moduleJson = (encode . toJSON) latestFile'
+              let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.unsafeLazyByteString moduleJson
+              (writeText . toStrict . renderHtml . editor) moduleScript
 
 updateHandler :: Snap ()
 updateHandler = do

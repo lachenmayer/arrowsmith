@@ -38,14 +38,14 @@ elmFile repoInfo' description' filePath' = do
     else
       Nothing
 
-compile :: ElmFile -> IO (CompileStatus, ElmFile)
+compile :: ElmFile -> IO (Either String ElmFile)
 compile elmFile' = do
   let repoInfo' = inRepo elmFile'
   let filePath' = filePath elmFile'
 
   repo <- getRepo repoInfo'
   case repo of
-    Left _ -> return $ compileFailure "repo doesn't exist."
+    Left _ -> return $ Left "repo doesn't exist. (compile)"
     Right repo' -> do
       revision <- latest repo' filePath'
       let tempPath = backend repoInfo' </> user repoInfo' </> project repoInfo' </> revision
@@ -59,27 +59,35 @@ compile elmFile' = do
 
       case exitCode of
         ExitSuccess -> do
-          compiledCode' <- LazyBS.readFile outFile
+          compiledCode' <- readFile outFile
           astFile <- getAstFile elmFile'
-          return $ case astFile of
-            Right astFile' ->
-              let
-                modul' = modulePrettyPrintedDefs <$> fromAstFile astFile'
-                newFile = elmFile' { compiledCode = Just compiledCode'
-                                   , lastCompiled = Just revision
-                                   , modul = modul'
-                                   }
-              in
-                (CompileSuccess, newFile)
+          case astFile of
+            Right astFile' -> do
+              source <- readFile inFile
+              let modul' = moduleSourceDefs source <$> fromAstFile astFile'
+              let newFile = elmFile' { compiledCode = Just compiledCode'
+                                     , lastCompiled = Just revision
+                                     , modul = modul'
+                                     }
+              return $ Right newFile
             Left err ->
-              compileFailure ("ast file could not be loaded: " ++ err)
+              return . Left $ "ast file could not be loaded: " ++ err
         ExitFailure _ -> do
           err <- hGetContents compilerErr
-          return $ compileFailure (unlines . drop 2 . lines $ err)
+          return $ Left (unlines . drop 2 . lines $ err)
   where
-    -- A compile failure will always keep the elm file unchanged.
-    compileFailure message =
-      (CompileFailure message, elmFile')
+
+getLatest :: ElmFile -> IO (Either String ElmFile)
+getLatest elmFile' = do
+  repo <- getRepo (inRepo elmFile')
+  case repo of
+    Left _ -> return $ Left "repo doesn't exist. (getLatest)"
+    Right repo' -> do
+      revision <- latest repo' (filePath elmFile')
+      if (lastCompiled elmFile') == Just revision then
+        return $ Right elmFile'
+      else do
+        compile elmFile'
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =

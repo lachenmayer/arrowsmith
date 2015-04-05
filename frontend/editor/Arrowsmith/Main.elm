@@ -179,8 +179,8 @@ port evaluate =
 
 port compileResponse : Signal (CompileResponse, String)
 
-port compileProgram : Signal ElmCode
-port compileProgram =
+port compileModule : Signal ElmCode
+port compileModule =
   let
     extractValue a =
       case a of
@@ -191,9 +191,8 @@ port compileProgram =
         Compile _ -> True
         _ -> False
     compileAction = extractValue <~ S.keepIf isCompileAction NoOp (S.subscribe actions)
-    dirtyState = .modul <~ S.keepIf .dirty initialState state
   in
-    Module.toString <~ S.merge compileAction dirtyState
+    Module.toString <~ compileAction
 
 --
 -- Update

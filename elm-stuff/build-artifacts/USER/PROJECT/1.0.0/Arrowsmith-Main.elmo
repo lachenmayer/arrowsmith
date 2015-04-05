@@ -47,7 +47,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          ,_0: false
                          ,_1: $default};}
                _U.badCase($moduleName,
-               "between lines 303 and 306");
+               "between lines 302 and 305");
             }();
          };
          return A2($Signal._op["<~"],
@@ -74,7 +74,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
               "no-error",
               _L.fromArray([]));}
          _U.badCase($moduleName,
-         "between lines 287 and 289");
+         "between lines 286 and 288");
       }();
    };
    var adtView = function (code) {
@@ -365,7 +365,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  _L.fromArray([content]));
               }();}
          _U.badCase($moduleName,
-         "between lines 228 and 237");
+         "between lines 227 and 236");
       }();
    });
    var defHeaderView = F3(function (moduleName,
@@ -399,7 +399,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                        return _L.fromArray([nameTag
                                            ,evalTag]);}
                     _U.badCase($moduleName,
-                    "between lines 244 and 249");
+                    "between lines 243 and 248");
                  }();
                  return A2($Html.table,
                  _L.fromArray([$Html$Attributes.$class("definition-header")]),
@@ -408,7 +408,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  header)]));
               }();}
          _U.badCase($moduleName,
-         "between lines 241 and 251");
+         "between lines 240 and 250");
       }();
    });
    var defView = F4(function (values,
@@ -435,7 +435,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                case "Nothing":
                return _L.fromArray([]);}
             _U.badCase($moduleName,
-            "between lines 259 and 262");
+            "between lines 258 and 261");
          }();
          return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]))(A2($Basics._op["++"],
          _L.fromArray([A3(defHeaderView,
@@ -568,21 +568,11 @@ Elm.Arrowsmith.Main.make = function (_elm) {
       NoOp,
       $Signal.subscribe(actions)));
    }());
-   var compileProgram = _P.portOut("compileProgram",
+   var compileModule = _P.portOut("compileModule",
    _P.outgoingSignal(function (v) {
       return v;
    }),
    function () {
-      var dirtyState = A2($Signal._op["<~"],
-      function (_) {
-         return _.modul;
-      },
-      A3($Signal.keepIf,
-      function (_) {
-         return _.dirty;
-      },
-      initialState,
-      state));
       var isCompileAction = function (a) {
          return function () {
             switch (a.ctor)
@@ -605,9 +595,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
       $Signal.subscribe(actions)));
       return A2($Signal._op["<~"],
       $Arrowsmith$Module.toString,
-      A2($Signal.merge,
-      compileAction,
-      dirtyState));
+      compileAction);
    }());
    var State = F8(function (a,
    b,

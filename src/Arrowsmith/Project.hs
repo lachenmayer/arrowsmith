@@ -1,11 +1,10 @@
 module Arrowsmith.Project where
 
-import Control.Monad.Error (runErrorT)
+import Data.List (find)
 import Data.Maybe (catMaybes)
-import System.FilePath ((</>))
 import System.FilePath.Posix (takeExtension)
 
-import Elm.Package.Description
+import Elm.Package.Description (Description)
 
 import Arrowsmith.ElmFile
 import Arrowsmith.Paths
@@ -22,7 +21,6 @@ getProject repoInfo' = do
       sources' <- elmFiles repoInfo' description'
       return $ Right Project
         { projectRepo = repoInfo'
-        , description = description'
         , sources = sources'
         }
 
@@ -30,13 +28,18 @@ elmFiles :: RepoInfo -> Description -> IO [ElmFile]
 elmFiles repoInfo' description' = do
   repo <- getRepo repoInfo'
   case repo of
-    Left err -> return []
+    Left _ -> return []
     Right repo' -> do
       allFiles <- index repo'
       let filesToConvert = filter (\f -> takeExtension f == ".elm") allFiles
       elmFiles' <- mapM (elmFile repoInfo' description') filesToConvert
       return $ catMaybes elmFiles'
 
+fileWithName :: Project -> QualifiedName -> Maybe ElmFile
+fileWithName project' name' =
+  find (\file -> fileName file == name') (sources project')
+
+-- TODO
 --compile :: Project -> IO (Either String Project)
 --compile project = do
---  -- TODO
+--  sources' <- mapM ElmFile.compile

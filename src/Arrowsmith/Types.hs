@@ -36,6 +36,7 @@ data RepoInfo = RepoInfo
   , project :: String
   }
   deriving (Show, Eq)
+$(deriveJSON defaultOptions ''RepoInfo)
 
 type RevisionId = Data.FileStore.RevisionId
 
@@ -48,21 +49,17 @@ data Repo = Repo
 
 data Project = Project
   { projectRepo :: RepoInfo
-  , description :: Description
   , sources :: [ElmFile]
   }
+  deriving (Show, Eq)
 
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
   , fileName :: QualifiedName
-  , compiledCode :: Maybe LazyBS.ByteString
+  , compiledCode :: Maybe String
   , lastCompiled :: Maybe RevisionId
   , modul :: Maybe Module
   , inRepo :: RepoInfo
   }
   deriving (Show, Eq)
-
-data CompileStatus
-  = CompileSuccess
-  | CompileFailure String
-  deriving (Show, Eq)
+$(deriveJSON defaultOptions ''ElmFile)

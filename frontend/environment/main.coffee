@@ -1,24 +1,27 @@
 ready = require 'domready'
+{attachToEnvironment} = require './utils.coffee'
 
 ready ->
-  initialProgram = document.querySelector('.initial-program')
-  unless initialProgram?
-    console.log 'expected an initial program, but none found'
+  initialModule = document.querySelector('.initial-module')
+  unless initialModule?
+    console.log 'expected an initial module, but none found'
     return
 
-  program = JSON.parse initialProgram.innerHTML
-  initialProgram.parentNode.removeChild initialProgram
+  elmFile = JSON.parse initialModule.innerHTML
+  initialModule.parentNode.removeChild initialModule
 
-  console.log program
+  console.log elmFile.compiledCode.length
+
+  attachToEnvironment elmFile.compiledCode
 
   ports =
-    initialModule: program # : Module
-    moduleUpdates: [program, ["Ok", ""]] # : (Module, Result Error ElmCode)
+    initialModule: elmFile.modul # : Module
+    moduleUpdates: [elmFile.modul, ["Ok", ""]] # : (Module, Result Error ElmCode)
     editedValue: ["", ""] # : (Name, Value)
     evaluatedValue: [[], "", ""] # : (ModuleName, Name, Value)
     compileResponse: ["Ok", ""] # : Result ElmError ElmCode (~ish)
   editor = Elm.fullscreen Elm.Arrowsmith.Main, ports
 
-  editor.ports.compileProgram.subscribe require('./compile.coffee')(editor.ports.compileResponse.send)
+  # editor.ports.compileModule.subscribe require('./compile.coffee')(editor.ports.compileResponse.send)
   editor.ports.stopEditing.subscribe require('./edit.coffee')(editor.ports.editedValue.send)
   editor.ports.evaluate.subscribe require('./evaluate.coffee')(editor.ports.evaluatedValue.send)
