@@ -1,0 +1,5 @@
+:l Arrowsmith.Repo Arrowsmith.Types Arrowsmith.Project Arrowsmith.ElmFile
+:m + Arrowsmith.Repo Arrowsmith.Types Arrowsmith.Project Arrowsmith.ElmFile Data.Either
+let ri = RepoInfo {backend = "github", user = "lachenmayer", project = "secret-sauce"}
+p' <- getProject ri
+let Right p = p'
