@@ -72,8 +72,8 @@ moduleHandler = do
           case latestFile of
             Left err -> (writeText . pack) err
             Right latestFile' -> do
-              let moduleJson = (encode . toJSON) latestFile'
-              let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.unsafeLazyByteString moduleJson
+              let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) latestFile'
+              let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
               (writeText . toStrict . renderHtml . editor) moduleScript
 
 updateHandler :: Snap ()
