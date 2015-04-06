@@ -1,6 +1,8 @@
+{-# LANGUAGE BangPatterns #-}
 module Arrowsmith.ElmFile where
 
 --import qualified Data.ByteString as BS
+import Prelude hiding (readFile)
 import Control.Monad (when)
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.ByteString.Lazy.Char8 as C8
@@ -10,7 +12,7 @@ import System.Directory (doesFileExist)
 import System.Exit (ExitCode(..))
 import System.FilePath ((</>), (<.>))
 import System.FilePath.Posix (dropExtension, splitDirectories)
-import System.IO (hGetContents)
+import System.IO.Strict (readFile, hGetContents)
 import System.IO.Error (tryIOError)
 
 import Elm.Package.Description (Description, sourceDirs)
@@ -109,8 +111,11 @@ changeSource elmFile' commitMessage transform = do
     Right repo'' -> do
       let filePath' = filePath elmFile'
       file <- retrieve repo'' filePath' (lastCompiled elmFile')
-      let transformed = transform $! file
-      save repo'' filePath' commitMessage transformed
+      --handle <- openFile ((repoPath (inRepo elmFile')) </> filePath') ReadMode
+      -- !file <- hGetContents handle
+      --hClose handle
+      --putStrLn file
+      save repo'' filePath' commitMessage (transform file)
       newRevision <- latest repo'' filePath'
       return $ Right elmFile' { lastEdited = Just newRevision }
 

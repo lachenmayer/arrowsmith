@@ -43,6 +43,7 @@ executable Arrowsmith
     --snap-extras ==0.9,
     snap-server ==0.9.4.6,
     split,
+    strict,
     text,
     time,
     transformers,

@@ -21,7 +21,7 @@ import qualified AST.PrettyPrint as PP
 import Arrowsmith.Types
 
 -- Converts an elm-compiler Def to an Arrowsmith Definition.
-type DefTransform = Canonical.Def -> Definition
+type DefTransform = Canonical.Def -> LocatedDefinition
 
 -- Converts an elm-compiler Module to an Arrowsmith Module.
 type ModuleTransform = AST.Module.CanonicalModule -> Module
@@ -31,20 +31,19 @@ makeModule defTransform m =
   Module { name = AST.Module.names m
          , imports = []
          , adts = []
-         , defs = sortByAppearance $ map defTransform (definitions m)
+         , defs = sortByLocation $ map defTransform (definitions m)
          }
 
 modulePrettyPrintedDefs :: ModuleTransform
 modulePrettyPrintedDefs =
   makeModule defPrettyPrinted
 
-
 moduleSourceDefs :: String -> ModuleTransform
 moduleSourceDefs source =
   makeModule (defFromSource source)
 
-sortByAppearance :: [Definition] -> [Definition]
-sortByAppearance =
+sortByLocation :: [LocatedDefinition] -> [LocatedDefinition]
+sortByLocation =
   sortBy (compare `on` (\x -> let (_, _, _, (startLine, _), _) = x in startLine))
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
@@ -70,26 +69,26 @@ defPrettyPrinted def =
   ( varName
   , tipe >>= Just . PP.renderPretty
   , PP.renderPretty binding
-  , startPosition
-  , endPosition
+  , startLocation
+  , endLocation
   )
   where
     Canonical.Definition (Pattern.Var varName) binding tipe = def
-    (startPosition, endPosition) = sourceRange def
+    (startLocation, endLocation) = sourceRange def
 
 -- Looks up the regions in the code itself to match the style the code was written in originally.
 defFromSource :: String -> DefTransform
 defFromSource source def =
   ( varName
   , tipe >>= Just . PP.renderPretty
-  , sourceRegion source lhsStartPosition endPosition
-  , lhsStartPosition
-  , endPosition
+  , sourceRegion source lhsStartLocation endLocation
+  , lhsStartLocation
+  , endLocation
   )
   where
     Canonical.Definition (Pattern.Var varName) _ tipe = def
-    (startPosition, endPosition) = sourceRange def
-    lhsStartPosition = expandToLhs source varName startPosition
+    (startLocation, endLocation) = sourceRange def
+    lhsStartLocation = expandToLhs source varName startLocation
 
 
 -- 1-indexed
@@ -103,7 +102,7 @@ indexOf haystack needle =
 
 -- Returns the start position of a definition including the left hand side.
 -- expandToLhs "foo\n  baz\nbal = baz\nbar" "baz" (3, 6) == (2, 3)
-expandToLhs :: String -> String -> Position -> Position
+expandToLhs :: String -> String -> Location -> Location
 expandToLhs source varName (startLine, startColumn) =
   case indexOf (take startColumn firstDefLine) varName of
     Just i -> (startLine, i)
@@ -117,18 +116,18 @@ expandToLhs source varName (startLine, startColumn) =
         Just i -> (lineCount, i)
         Nothing -> findInPrevious previous (lineCount - 1)
 
-unpos :: Annotation.Position -> Position
-unpos p =
+toLocation :: Annotation.Position -> Location
+toLocation p =
   (Annotation.line p, Annotation.column p)
 
-sourceRange :: Canonical.Def -> (Position, Position)
+sourceRange :: Canonical.Def -> (Location, Location)
 sourceRange def =
-  (unpos startPosition, unpos endPosition)
+  (toLocation startPosition, toLocation endPosition)
   where
     Canonical.Definition (Pattern.Var _) binding _ = def
     Annotation.A (Annotation.Span startPosition endPosition _) _ = binding
 
-sourceRegion :: String -> Position -> Position -> String
+sourceRegion :: String -> Location -> Location -> String
 sourceRegion source (startLine, startColumn) (endLine, endColumn) =
   columnRange (region startLine endLine (lines source))
   where
@@ -141,7 +140,7 @@ sourceRegion source (startLine, startColumn) (endLine, endColumn) =
           let (middle, lastLine) = (init xs, last xs) in
             unlines $ [drop (startColumn - 1) x] ++ middle ++ [take endColumn lastLine]
 
-breakSource :: String -> Position -> Position -> (String, String, String)
+breakSource :: String -> Location -> Location -> (String, String, String)
 breakSource source start end =
   (before, def, after)
   where

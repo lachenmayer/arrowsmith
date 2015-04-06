@@ -8,17 +8,17 @@ import qualified Data.FileStore
 type ElmCode = String
 type Name = String
 type QualifiedName = [String]
-type Position = (Int {- line -}, Int {- column -}) -- 1-indexed
-type Definition = (Name, Maybe Type, ElmCode, Position {- start -}, Position {- end -})
-type QualifiedDefinition = (QualifiedName, Maybe Type, ElmCode)
+type Location = (Int {- line -}, Int {- column -}) -- 1-indexed
+type Definition = (Name, Maybe Type, ElmCode)
 type PartialDefinition = (Maybe Name, Maybe Type, Maybe ElmCode)
+type LocatedDefinition = (Name, Maybe Type, ElmCode, Location {- start -}, Location {- end -})
 type Type = String
 
 data Module = Module
   { name :: QualifiedName
   , imports :: [String]
   , adts :: [String]
-  , defs :: [Definition]
+  , defs :: [LocatedDefinition]
   }
   deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
