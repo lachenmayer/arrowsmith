@@ -16,11 +16,11 @@ removeIfExists fileName = do
     then removeFile fileName
     else return ()
 
-runCommand :: FilePath -> FilePath -> [String] -> IO (Handle, ExitCode)
+runCommand :: FilePath -> FilePath -> [String] -> IO (Handle, Handle, ExitCode)
 runCommand workingDirectory command args = do
-  (_, _, Just stderr, handle) <- createProcess (proc command args) { cwd = Just workingDirectory, std_err = CreatePipe }
+  (_, Just stdout, Just stderr, handle) <- createProcess (proc command args) { cwd = Just workingDirectory, std_err = CreatePipe, std_out = CreatePipe }
   exitCode <- waitForProcess handle
-  return (stderr, exitCode)
+  return (stdout, stderr, exitCode)
 
 replace :: Eq a => a -> a -> [a] -> [a]
 replace element with =

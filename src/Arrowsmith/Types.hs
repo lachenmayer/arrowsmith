@@ -24,11 +24,17 @@ data Module = Module
 $(deriveJSON defaultOptions ''Module)
 
 data Action
-  = AddDefinition QualifiedName {- module name -} Definition
-  | ChangeDefinition QualifiedName {- module name -} Name PartialDefinition
-  | RemoveDefinition QualifiedName {- module name -} Name
-  deriving (Show, Eq)
+  = AddDefinition Definition
+  -- | ChangeDefinition Name ElmCode
+  | RemoveDefinition Name
+  deriving (Show, Read, Eq)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Action)
+
+data EditStatus = EditStatus
+  { compileErrors :: [QualifiedName]
+  , action :: (QualifiedName, Action)
+  }
+  deriving (Show, Read, Eq)
 
 data RepoInfo = RepoInfo
   { backend :: String
@@ -60,7 +66,6 @@ data ElmFile = ElmFile
   , fileName :: QualifiedName
   , compiledCode :: Maybe String
   , lastCompiled :: Maybe RevisionId
-  , lastEdited :: Maybe RevisionId
   , modul :: Maybe Module
   , inRepo :: RepoInfo
   }

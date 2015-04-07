@@ -12,7 +12,7 @@ import Data.List.Utils (split)
 import Data.Text (pack)
 import Data.Text.Lazy (toStrict)
 import Snap.Core
---import Snap.Extras.JSON (writeJSON)
+import Snap.Extras.JSON (getJSON)
 import Text.Blaze.Html (Html, (!))
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
@@ -30,7 +30,7 @@ type Route = (BS.ByteString, Snap ())
 routes :: [Route]
 routes =
   [ (":backend/:user/:project/:module", method GET moduleHandler)
-  , (":backend/:user/:project/:module/update", method POST updateHandler)
+  , (":backend/:user/:project/:module/edit", method POST editHandler)
   ]
 
 editor :: Html -> Html
@@ -52,29 +52,38 @@ getRepoInfo = do
   p <- urlFragment "project"
   return RepoInfo { backend = b, user = u, project = p }
 
-moduleHandler :: Snap ()
-moduleHandler = do
+getProject :: Snap Project
+getProject = do
   repoInfo' <- getRepoInfo
-  moduleName <- urlFragment "module"
-  let fileName' = split "." moduleName
-  project' <- liftIO $ getProject repoInfo'
+  project' <- liftIO $ createProject repoInfo'
   case project' of
     Left err -> (writeText . pack) err
-    Right project'' -> do
-      case fileWithName project'' fileName' of
-        Nothing -> writeText "module not found"
-        Just elmFile' -> do
-          latestFile <- liftIO $ getLatest elmFile'
-          case latestFile of
-            Left err -> (writeText . pack) err
-            Right latestFile' -> do
-              let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) latestFile'
-              let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
-              (writeText . toStrict . renderHtml . editor) moduleScript
+    Right project'' -> return project''
 
-updateHandler :: Snap ()
-updateHandler = do
-  writeText "not implemented yet."
+getElmFile :: Snap ElmFile
+getElmFile = do
+  project' <- getProject
+  moduleName <- urlFragment "module"
+  let fileName' = split "." moduleName
+  case fileWithName project'' fileName' of
+    Nothing -> writeText "module not found"
+    Just elmFile' -> return elmFile'
+
+moduleHandler :: Snap ()
+moduleHandler = do
+  elmFile' <- getElmFile
+  latestFile <- liftIO $ getLatest elmFile'
+  case latestFile of
+    Left err -> (writeText . pack) err
+    Right latestFile' -> do
+      let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) latestFile'
+      let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
+      (writeText . toStrict . renderHtml . editor) moduleScript
+
+editHandler :: Snap ()
+editHandler = do
+  elmFile' <- getElmFile
+  action <- getJSON
 
 urlFragment :: BS.ByteString -> Snap String
 urlFragment paramName = do

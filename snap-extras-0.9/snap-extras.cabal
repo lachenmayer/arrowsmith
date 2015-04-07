@@ -20,7 +20,7 @@ data-files:
   resources/templates/*.tpl
 
 Library
-  Exposed-modules:     
+  Exposed-modules:
     Snap.Extras
     Snap.Extras.Ajax
     Snap.Extras.CoreUtils
@@ -59,11 +59,11 @@ Library
     , safe                     >= 0.3   && < 0.4
     , snap                     >= 0.13  && < 0.14
     , snap-core                >= 0.7   && < 0.10
-    , text                     >= 0.11  && < 1.2
+    , text                     >= 0.11  && < 1.3
     , transformers             >= 0.2   && < 0.4
     , xmlhtml                  >= 0.1.6 && < 0.3
     , jmacro                   >= 0.6   && < 0.7
-  
+
   ghc-options: -Wall -fwarn-tabs
   default-language: Haskell2010
-  
+

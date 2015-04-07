@@ -11,8 +11,8 @@ import Arrowsmith.Paths
 import Arrowsmith.Repo
 import Arrowsmith.Types
 
-getProject :: RepoInfo -> IO (Either String Project)
-getProject repoInfo' = do
+createProject :: RepoInfo -> IO (Either String Project)
+createProject repoInfo' = do
   d <- getDescription (repoPath repoInfo')
   case d of
     Left err ->
