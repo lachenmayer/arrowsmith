@@ -18,6 +18,7 @@ import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import Arrowsmith.Edit
 import Arrowsmith.ElmFile
 --import Arrowsmith.Module
 --import Arrowsmith.Repo
@@ -65,7 +66,7 @@ getElmFile = do
   project' <- getProject
   moduleName <- urlFragment "module"
   let fileName' = split "." moduleName
-  case fileWithName project'' fileName' of
+  case fileWithName project' fileName' of
     Nothing -> writeText "module not found"
     Just elmFile' -> return elmFile'
 
@@ -84,6 +85,13 @@ editHandler :: Snap ()
 editHandler = do
   elmFile' <- getElmFile
   action <- getJSON
+  case action of
+    Left err -> writeText err
+    Right action' -> do
+      editResult <- liftIO $ performEdit elmFile' action'
+      case editResult of
+        Left err -> writeText "nope"
+        Right editedElmFile -> writeText "yay"
 
 urlFragment :: BS.ByteString -> Snap String
 urlFragment paramName = do
