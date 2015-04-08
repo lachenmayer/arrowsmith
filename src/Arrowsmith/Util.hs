@@ -12,9 +12,7 @@ import System.Process (CreateProcess(..), StdStream(CreatePipe), createProcess, 
 removeIfExists :: FilePath -> IO ()
 removeIfExists fileName = do
   exists <- doesFileExist fileName
-  if exists
-    then removeFile fileName
-    else return ()
+  when exists (removeFile fileName)
 
 runCommand :: FilePath -> FilePath -> [String] -> IO (Handle, Handle, ExitCode)
 runCommand workingDirectory command args = do
@@ -31,7 +29,7 @@ stripLongestPrefix :: [FilePath] -> FilePath -> FilePath
 stripLongestPrefix [] path =
   path
 stripLongestPrefix dirs path =
-  joinPath . head . sortBy (comparing (length . concat)) . catMaybes . map (flip stripPrefix splitPath) $ splitDirs
+  joinPath . minimumBy (comparing (length . concat)) . mapMaybe (`stripPrefix` splitPath) $ splitDirs
   where
     splitPath = splitDirectories path
     splitDirs = map splitDirectories . replace "." "" . map normalise $ dirs

@@ -20,4 +20,4 @@ performEdit elmFile' action =
         (before, lastDef, after) = breakSource source lastStart lastEnd
 
     addModuleChange def source modul' =
-      modul' { defs = (defs modul') ++ [let (n, t, c) = def in (n, t, c, (0, 0), (0, 0))] }
+      modul' { defs = defs modul' ++ [let (n, t, c) = def in (n, t, c, (0, 0), (0, 0))] }

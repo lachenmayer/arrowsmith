@@ -48,7 +48,7 @@ sortByLocation =
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
 fromAstFile astFile =
-  (decode astFile :: Maybe AST.Module.CanonicalModule)
+  decode astFile :: Maybe AST.Module.CanonicalModule
 
 definitions :: AST.Module.CanonicalModule -> [Canonical.Def]
 definitions modoole =

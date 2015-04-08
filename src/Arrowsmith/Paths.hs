@@ -15,6 +15,7 @@ import Arrowsmith.Types
 
 -- TODO: set to something sane
 rootDirectory :: FilePath
+{-# NOINLINE rootDirectory #-}
 rootDirectory =
   unsafePerformIO getCurrentDirectory
 

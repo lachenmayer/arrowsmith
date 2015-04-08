@@ -16,7 +16,7 @@ createProject repoInfo' = do
   d <- getDescription (repoPath repoInfo')
   case d of
     Left err ->
-      return . Left $ "repo at " ++ (repoPath repoInfo') ++ " is not a valid elm project: " ++ err
+      return . Left $ "repo at " ++ repoPath repoInfo' ++ " is not a valid elm project: " ++ err
     Right description' -> do
       sources' <- elmFiles repoInfo' description'
       return $ Right Project

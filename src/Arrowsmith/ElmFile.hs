@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Arrowsmith.ElmFile where
 
 --import qualified Data.ByteString as BS
@@ -89,9 +88,9 @@ getLatest elmFile' = do
     Left _ -> return $ Left "repo doesn't exist. (getLatest)"
     Right repo' -> do
       revision <- latest repo' (filePath elmFile')
-      if (lastCompiled elmFile') == Just revision then
+      if lastCompiled elmFile' == Just revision then
         return $ Right elmFile'
-      else do
+      else
         compile elmFile'
 
 fullPath :: ElmFile -> FilePath
@@ -117,7 +116,7 @@ edit elmFile' commitMessage sourceTransform moduleTransform = do
   repo' <- getRepo (inRepo elmFile')
   case repo' of
     Left _ -> return $ Left "repo doesn't exist. (edit)"
-    Right repo'' -> do
+    Right repo'' ->
       case modul elmFile' of
         Nothing -> return $ Left "elm file wasn't compiled. (edit)"
         Just modul' -> do
