@@ -2,12 +2,8 @@ module Arrowsmith.ElmFile where
 
 --import qualified Data.ByteString as BS
 import Prelude hiding (readFile)
-import Control.Monad (when)
 import qualified Data.ByteString.Lazy as LazyBS
-import qualified Data.ByteString.Lazy.Char8 as C8
-import Data.Either (isLeft)
 import Data.Functor ((<$>))
-import Data.List (intercalate)
 import System.Directory (copyFile, doesFileExist)
 import System.Exit (ExitCode(..))
 import System.FilePath ((</>), (<.>))
@@ -15,6 +11,7 @@ import System.FilePath.Posix (dropExtension, splitDirectories)
 import System.IO.Strict (readFile, hGetContents)
 import System.IO.Error (tryIOError)
 
+import Elm.Compiler.Module (Name(Name), hyphenate)
 import Elm.Package.Description (Description, sourceDirs)
 
 import Arrowsmith.Module
@@ -40,6 +37,14 @@ elmFile repoInfo' description' filePath' = do
     else
       Nothing
 
+edit :: ElmFile -> ((ElmCode, Maybe Module) -> (ElmCode, Maybe Module)) -> IO ElmFile
+edit elmFile' transform = do
+  let sourcePath' = sourcePath elmFile'
+  source <- readFile sourcePath'
+  let (newSource, newModule) = transform (source, modul elmFile')
+  writeFile sourcePath' newSource
+  return elmFile' { modul = newModule }
+
 compile :: ElmFile -> IO (Either String ElmFile)
 compile elmFile' = do
   let repoInfo' = inRepo elmFile'
@@ -52,7 +57,7 @@ compile elmFile' = do
       revision <- latest repo' filePath'
       let tempPath = backend repoInfo' </> user repoInfo' </> project repoInfo' </> revision
       tempDirectory <- temporaryDirectory tempPath
-      let tempFile ext = tempDirectory </> intercalate "-" (fileName elmFile') <.> ext
+      let tempFile ext = tempDirectory </> hyphenate (Name (fileName elmFile')) <.> ext
 
       let projectRoot = repoPath repoInfo'
       let inFile = projectRoot </> filePath'
@@ -81,18 +86,6 @@ compile elmFile' = do
           err <- hGetContents compilerErr
           return $ Left (unlines . drop 2 . lines $ err)
 
-getLatest :: ElmFile -> IO (Either String ElmFile)
-getLatest elmFile' = do
-  repo <- getRepo (inRepo elmFile')
-  case repo of
-    Left _ -> return $ Left "repo doesn't exist. (getLatest)"
-    Right repo' -> do
-      revision <- latest repo' (filePath elmFile')
-      if lastCompiled elmFile' == Just revision then
-        return $ Right elmFile'
-      else
-        compile elmFile'
-
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =
   repoPath (inRepo elmFile') </> filePath elmFile'
@@ -101,29 +94,9 @@ fileNameFromPath :: [FilePath] -> FilePath -> QualifiedName
 fileNameFromPath sourceDirs' filePath' =
   splitDirectories . dropExtension $ stripLongestPrefix sourceDirs' filePath'
 
-elmSource :: ElmFile -> IO String
-elmSource elmFile' =
-  readFile (repoPath (inRepo elmFile') </> filePath elmFile')
-
---changeSource :: ElmFile -> String -> (String -> String) -> IO (Either String ElmFile)
---changeSource elmFile' commitMessage transform = do
---      save repo'' filePath' commitMessage (transform file)
---      newRevision <- latest repo'' filePath'
---      return $ Right elmFile' { lastEdited = Just newRevision }
-
-edit :: ElmFile -> CommitMessage -> (ElmCode -> Module -> ElmCode) -> (ElmCode -> Module -> Module) -> IO (Either String ElmFile)
-edit elmFile' commitMessage sourceTransform moduleTransform = do
-  repo' <- getRepo (inRepo elmFile')
-  case repo' of
-    Left _ -> return $ Left "repo doesn't exist. (edit)"
-    Right repo'' ->
-      case modul elmFile' of
-        Nothing -> return $ Left "elm file wasn't compiled. (edit)"
-        Just modul' -> do
-          let filePath' = filePath elmFile'
-          source <- retrieve repo'' filePath' Nothing
-          save repo'' filePath' commitMessage (sourceTransform source modul')
-          return $ Right elmFile' { modul = Just $ moduleTransform source modul' }
+sourcePath :: ElmFile -> String
+sourcePath elmFile' =
+  repoPath (inRepo elmFile') </> filePath elmFile'
 
 getAstPath :: ElmFile -> IO (Either String FilePath)
 getAstPath elmFile' = do
@@ -141,6 +114,4 @@ getAstFile elmFile' = do
     Left err -> return $ Left err
     Right path' -> do
       ast <- (tryIOError . LazyBS.readFile) path'
-      return $ case ast of
-        Left err -> Left $ show err
-        Right astContents -> Right astContents
+      return $ either (Left . show) Right ast

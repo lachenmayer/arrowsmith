@@ -1,8 +1,9 @@
 module Arrowsmith.Util where
 
-import Data.List (sortBy, stripPrefix)
+import Control.Monad (when)
+import Data.List (minimumBy, stripPrefix)
 import Data.Ord (comparing)
-import Data.Maybe (catMaybes)
+import Data.Maybe (mapMaybe)
 import System.Directory (doesFileExist, removeFile)
 import System.FilePath.Posix (joinPath, normalise, splitDirectories)
 import System.Exit (ExitCode)

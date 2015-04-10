@@ -1,10 +1,12 @@
-:l Arrowsmith.Repo Arrowsmith.Types Arrowsmith.Project Arrowsmith.ElmFile Arrowsmith.Update
-:m + Arrowsmith.Repo Arrowsmith.Types Arrowsmith.Project Arrowsmith.ElmFile Data.Either Arrowsmith.Update
+:l Arrowsmith.Repo Arrowsmith.Types Arrowsmith.Project Arrowsmith.ElmFile Arrowsmith.Edit
+:m + Arrowsmith.Repo Arrowsmith.Types Arrowsmith.Project Arrowsmith.ElmFile Data.Either Arrowsmith.Edit
 let ri = RepoInfo {backend = "github", user = "lachenmayer", project = "secret-sauce"}
 
-p' <- getProject ri
+p' <- createProject ri
 let Right p = p'
 
 Right f <- compile (head $ sources p)
 
-performUpdate f (AddDefinition ["Wat"] ("wateva", Just "String", "wateva = \"unoit\"", (0, 0), (0, 0)))
+performEdit f (AddDefinition ("wateva", Just "String", "wateva = \"unoit\""))
+
+

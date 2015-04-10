@@ -53,45 +53,47 @@ getRepoInfo = do
   p <- urlFragment "project"
   return RepoInfo { backend = b, user = u, project = p }
 
-getProject :: Snap Project
+getProject :: Snap (Either String Project)
 getProject = do
   repoInfo' <- getRepoInfo
-  project' <- liftIO $ createProject repoInfo'
-  case project' of
-    Left err -> (writeText . pack) err
-    Right project'' -> return project''
+  -- TODO don't recreate project every time.
+  liftIO $ createProject repoInfo'
 
-getElmFile :: Snap ElmFile
+getElmFile :: Snap (Maybe ElmFile)
 getElmFile = do
   project' <- getProject
   moduleName <- urlFragment "module"
   let fileName' = split "." moduleName
-  case fileWithName project' fileName' of
-    Nothing -> writeText "module not found"
-    Just elmFile' -> return elmFile'
+  return $ case project' of
+    Left _ -> Nothing
+    Right project'' -> fileWithName project'' fileName'
 
 moduleHandler :: Snap ()
 moduleHandler = do
   elmFile' <- getElmFile
-  latestFile <- liftIO $ getLatest elmFile'
-  case latestFile of
-    Left err -> (writeText . pack) err
-    Right latestFile' -> do
-      let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) latestFile'
-      let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
-      (writeText . toStrict . renderHtml . editor) moduleScript
+  case elmFile' of
+    Nothing -> writeText "404 :("
+    Just elmFile'' -> do
+      compiled <- liftIO $ compile elmFile''
+      case compiled of
+        Left err -> (writeText . pack) err
+        Right compiledFile' -> do
+          let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) compiledFile'
+          let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
+          (writeText . toStrict . renderHtml . editor) moduleScript
 
 editHandler :: Snap ()
 editHandler = do
   elmFile' <- getElmFile
-  action <- getJSON
-  case action of
-    Left err -> writeText err
-    Right action' -> do
-      editResult <- liftIO $ performEdit elmFile' action'
-      case editResult of
-        Left err -> writeText "nope"
-        Right editedElmFile -> writeText "yay"
+  case elmFile' of
+    Nothing -> writeText "404 :/"
+    Just elmFile'' -> do
+      action' <- getJSON
+      case action' of
+        Left err -> (writeText . pack) err
+        Right action'' -> do
+          editResult <- liftIO $ performEdit elmFile'' action''
+          writeText "edited ffs."
 
 urlFragment :: BS.ByteString -> Snap String
 urlFragment paramName = do
