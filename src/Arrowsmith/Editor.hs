@@ -1,13 +1,16 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module Arrowsmith.Api (routes) where
+module Arrowsmith.Editor (routes) where
 
 import Control.Monad.IO.Class
+import Control.Monad.State.Class
 import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.ByteString.UTF8 as UTF8BS
+import qualified Data.HashMap.Strict as HashMap
+import Data.IORef
 import Data.List.Utils (split)
 import Data.Text (pack)
 import Data.Text.Lazy (toStrict)
@@ -20,10 +23,9 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import Arrowsmith.Edit
 import Arrowsmith.ElmFile
---import Arrowsmith.Module
---import Arrowsmith.Repo
 import Arrowsmith.Types
 import Arrowsmith.Project
+
 
 routes :: [Route]
 routes =
@@ -31,8 +33,8 @@ routes =
   , (":backend/:user/:project/:module/edit", method POST editHandler)
   ]
 
-editor :: Html -> Html
-editor contents =
+template :: Html -> Html
+template contents =
   H.docTypeHtml $ do
     H.head $ do
       H.title "Arrowsmith"
@@ -53,8 +55,19 @@ getRepoInfo = do
 getProject :: AppHandler (Either String Project)
 getProject = do
   repoInfo' <- getRepoInfo
-  -- TODO don't recreate project every time.
-  liftIO $ createProject repoInfo'
+  projectsRef <- gets _projects
+  projects' <- liftIO $ readIORef projectsRef
+  case HashMap.lookup repoInfo' projects' of
+    Nothing -> liftIO $ tryCreateProject projectsRef repoInfo'
+    Just project' -> return $ Right project'
+
+tryCreateProject :: IORef ProjectsMap -> RepoInfo -> IO (Either String Project)
+tryCreateProject projects' repoInfo' = do
+  eitherProject <- createProject repoInfo'
+  case eitherProject of
+    Left err -> return $ Left err
+    Right project' -> atomicModifyIORef projects' $ \ps ->
+      (HashMap.insert repoInfo' project' ps, Right project')
 
 getElmFile :: AppHandler (Maybe ElmFile)
 getElmFile = do
@@ -77,7 +90,7 @@ moduleHandler = do
         Right compiledFile' -> do
           let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) compiledFile'
           let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
-          (writeText . toStrict . renderHtml . editor) moduleScript
+          (writeText . toStrict . renderHtml . template) moduleScript
 
 editHandler :: AppHandler ()
 editHandler = do
@@ -89,7 +102,8 @@ editHandler = do
       case action' of
         Left err -> (writeText . pack) err
         Right action'' -> do
-          editResult <- liftIO $ performEdit elmFile'' action''
+          Right compiled <- liftIO $ compile elmFile''
+          editResult <- liftIO $ performEdit compiled action''
           case editResult of
             Nothing -> writeText "didn't edit."
             Just _ -> writeText "did actually edit."

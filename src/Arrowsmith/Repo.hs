@@ -6,6 +6,7 @@ import System.Directory (doesDirectoryExist)
 import Arrowsmith.Paths
 import Arrowsmith.Types
 
+
 getRepo :: RepoInfo -> IO (Either String Repo)
 getRepo repoInfo' = do
   let repoPath' = repoPath repoInfo'

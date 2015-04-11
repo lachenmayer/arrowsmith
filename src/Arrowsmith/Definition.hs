@@ -4,6 +4,7 @@ import Data.List (find)
 
 import Arrowsmith.Types
 
+
 prettyPrintLocated :: LocatedDefinition -> String
 prettyPrintLocated (name', maybeType, binding, _, _) =
   prettyPrint (name', maybeType, binding)

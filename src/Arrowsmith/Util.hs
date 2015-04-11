@@ -10,6 +10,7 @@ import System.Exit (ExitCode)
 import System.IO (Handle)
 import System.Process (CreateProcess(..), StdStream(CreatePipe), createProcess, proc, waitForProcess)
 
+
 removeIfExists :: FilePath -> IO ()
 removeIfExists fileName = do
   exists <- doesFileExist fileName

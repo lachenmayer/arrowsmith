@@ -1,25 +1,20 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DeriveGeneric #-}
 module Arrowsmith.Types where
 
-import Control.Concurrent.MVar
 import Control.Lens.TH
 import Data.Aeson.TH
+import Data.Hashable
+import Data.HashMap.Strict
+import Data.IORef
 import qualified Data.ByteString as BS
 -- import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.FileStore
+import GHC.Generics (Generic)
 import Snap.Snaplet (Handler)
 
--- Serving
 
-data App = App
-  { _projects :: MVar String
-  }
-makeLenses ''App
-
-type AppHandler = Handler App App
-type Route = (BS.ByteString, AppHandler ())
-
--- Elm code
+-- Editor
 
 type ElmCode = String
 type VarName = String
@@ -54,8 +49,9 @@ data RepoInfo = RepoInfo
   { backend :: String
   , user :: String
   , project :: String
-  } deriving (Show, Eq)
+  } deriving (Show, Eq, Generic)
 $(deriveJSON defaultOptions ''RepoInfo)
+instance Hashable RepoInfo
 
 type CommitMessage = Data.FileStore.Description
 type RevisionId = Data.FileStore.RevisionId
@@ -82,3 +78,16 @@ data ElmFile = ElmFile
   , inRepo :: RepoInfo
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ElmFile)
+
+
+-- Serving
+
+type ProjectsMap = HashMap RepoInfo Project
+
+data App = App
+  { _projects :: IORef ProjectsMap
+  }
+makeLenses ''App
+
+type AppHandler = Handler App App
+type Route = (BS.ByteString, AppHandler ())

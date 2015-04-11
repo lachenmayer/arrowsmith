@@ -20,6 +20,7 @@ import Arrowsmith.Repo
 import Arrowsmith.Types
 import Arrowsmith.Util
 
+
 elmFile :: RepoInfo -> Description -> FilePath -> IO (Maybe ElmFile)
 elmFile repoInfo' description' filePath' = do
   let fullPath' = repoPath repoInfo' </> filePath'

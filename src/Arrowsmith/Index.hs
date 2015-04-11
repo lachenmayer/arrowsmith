@@ -10,6 +10,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import Arrowsmith.Types
 
+
 indexTemplate :: Html
 indexTemplate =
   H.docTypeHtml $ do

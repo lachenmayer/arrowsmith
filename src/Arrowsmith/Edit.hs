@@ -5,6 +5,7 @@ import Arrowsmith.ElmFile
 import Arrowsmith.Module
 import Arrowsmith.Types
 
+
 addDefinition :: Definition -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)
 addDefinition def@(defName, defType, defBinding) (source, maybeModule) = do
     modul' <- maybeModule

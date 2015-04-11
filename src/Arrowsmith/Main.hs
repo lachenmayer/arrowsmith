@@ -2,13 +2,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Control.Concurrent.MVar (newMVar)
 import Control.Monad.IO.Class (liftIO)
+import qualified Data.HashMap.Strict as HashMap
+import Data.IORef (newIORef)
 import Snap.Http.Server
 import Snap.Snaplet
 import Snap.Util.FileServe (serveDirectoryWith, simpleDirectoryConfig)
 
-import Arrowsmith.Api as Api
+import Arrowsmith.Editor as Editor
 import Arrowsmith.Index (indexRoute)
 import Arrowsmith.Types
 
@@ -23,9 +24,9 @@ appInit :: SnapletInit App App
 appInit = makeSnaplet "arrowsmith" "Arrowsmith" Nothing $ do
   addRoutes [indexRoute]
   addRoutes staticRoutes
-  addRoutes Api.routes
+  addRoutes Editor.routes
 
-  projects' <- liftIO $ newMVar "foobarbaz"
+  projects' <- liftIO $ newIORef HashMap.empty
   return $ App projects'
 
 main :: IO ()

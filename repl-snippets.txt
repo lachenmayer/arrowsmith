@@ -10,3 +10,5 @@ Right f <- compile (head $ sources p)
 performEdit f (AddDefinition ("wateva", Just "String", "wateva = \"unoit\""))
 
 
+["AddDefinition",["wateva","String","wateva = \"unoit babez\""]]
+"[\"AddDefinition\",[\"wateva\",\"String\",\"wateva = \\\"unoit\\\"\"]]"

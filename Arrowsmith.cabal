@@ -34,6 +34,7 @@ executable Arrowsmith
     elm-package,
     filepath,
     filestore,
+    hashable,
     lens,
     MissingH,
     mtl ==2.1.3.1,
@@ -50,6 +51,7 @@ executable Arrowsmith
     time,
     transformers,
     unix,
+    unordered-containers,
     utf8-string
 
   if impl(ghc >= 6.12.0)
