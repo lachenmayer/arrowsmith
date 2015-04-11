@@ -25,14 +25,11 @@ import Arrowsmith.ElmFile
 import Arrowsmith.Types
 import Arrowsmith.Project
 
-
-type Route = (BS.ByteString, Snap ())
-
 routes :: [Route]
-routes =
-  [ (":backend/:user/:project/:module", method GET moduleHandler)
-  , (":backend/:user/:project/:module/edit", method POST editHandler)
-  ]
+routes = []
+  -- [ (":backend/:user/:project/:module", method GET moduleHandler)
+  -- , (":backend/:user/:project/:module/edit", method POST editHandler)
+  -- ]
 
 editor :: Html -> Html
 editor contents =

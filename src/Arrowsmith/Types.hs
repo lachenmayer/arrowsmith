@@ -1,9 +1,25 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Arrowsmith.Types where
 
+import Control.Concurrent.MVar
+import Control.Lens.TH
 import Data.Aeson.TH
+import qualified Data.ByteString as BS
 -- import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.FileStore
+import Snap.Snaplet (Handler)
+
+-- Serving
+
+data App = App
+  { _projects :: MVar String
+  }
+makeLenses ''App
+
+type AppHandler = Handler App App
+type Route = (BS.ByteString, AppHandler ())
+
+-- Elm code
 
 type ElmCode = String
 type VarName = String

@@ -1,20 +1,17 @@
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Control.Applicative
-import qualified Data.ByteString.Char8 as BS
-import Data.Text.Lazy (toStrict)
-import Snap.Core
+import Control.Concurrent.MVar (newMVar)
+import Control.Monad.IO.Class (liftIO)
 import Snap.Http.Server
+import Snap.Snaplet
 import Snap.Util.FileServe (serveDirectoryWith, simpleDirectoryConfig)
-import Text.Blaze.Html
-import Text.Blaze.Html.Renderer.Text (renderHtml)
-import qualified Text.Blaze.Html5 as H
-import qualified Text.Blaze.Html5.Attributes as A
 
 import Arrowsmith.Api as Api
+import Arrowsmith.Index (indexRoute)
+import Arrowsmith.Types
 
-type Route = (BS.ByteString, Snap ())
 
 staticRoutes :: [Route]
 staticRoutes = map (\(url, fsPath) -> (url, serveDirectoryWith simpleDirectoryConfig fsPath))
@@ -22,22 +19,15 @@ staticRoutes = map (\(url, fsPath) -> (url, serveDirectoryWith simpleDirectoryCo
   , ("public", "frontend/public")
   ]
 
-index :: Html
-index =
-  H.docTypeHtml $ do
-    H.head $ do
-      H.title "Arrowsmith"
-      H.link ! A.rel "stylesheet" ! A.href "/app/style.css"
-      H.meta ! A.name "viewport" ! A.content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    H.body $
-      H.a ! A.href "/github/lachenmayer/secret-sauce/Foo" $ "go to the example module."
+appInit :: SnapletInit App App
+appInit = makeSnaplet "arrowsmith" "Arrowsmith" Nothing $ do
+  addRoutes [indexRoute]
+  addRoutes staticRoutes
+  addRoutes Api.routes
 
-app :: Snap ()
-app =
-  ifTop ((writeText . toStrict . renderHtml) index) <|>
-  route staticRoutes <|>
-  route Api.routes
+  projects' <- liftIO $ newMVar "foobarbaz"
+  return $ App projects'
 
 main :: IO ()
 main =
-  quickHttpServe app
+  serveSnaplet defaultConfig appInit
