@@ -37,13 +37,15 @@ elmFile repoInfo' description' filePath' = do
     else
       Nothing
 
-edit :: ElmFile -> ((ElmCode, Maybe Module) -> (ElmCode, Maybe Module)) -> IO ElmFile
+edit :: ElmFile -> ((ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)) -> IO (Maybe ElmFile)
 edit elmFile' transform = do
   let sourcePath' = sourcePath elmFile'
   source <- readFile sourcePath'
-  let (newSource, newModule) = transform (source, modul elmFile')
-  writeFile sourcePath' newSource
-  return elmFile' { modul = newModule }
+  case transform (source, modul elmFile') of
+    Nothing -> return Nothing
+    Just (newSource, newModule) -> do
+      writeFile sourcePath' newSource
+      return $ Just elmFile' { modul = newModule }
 
 compile :: ElmFile -> IO (Either String ElmFile)
 compile elmFile' = do

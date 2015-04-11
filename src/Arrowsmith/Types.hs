@@ -2,7 +2,7 @@
 module Arrowsmith.Types where
 
 import Data.Aeson.TH
-import qualified Data.ByteString.Lazy as LazyBS
+-- import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.FileStore
 
 type ElmCode = String

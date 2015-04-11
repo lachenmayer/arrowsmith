@@ -93,7 +93,9 @@ editHandler = do
         Left err -> (writeText . pack) err
         Right action'' -> do
           editResult <- liftIO $ performEdit elmFile'' action''
-          writeText "edited ffs."
+          case editResult of
+            Nothing -> writeText "didn't edit."
+            Just _ -> writeText "did actually edit."
 
 urlFragment :: BS.ByteString -> Snap String
 urlFragment paramName = do

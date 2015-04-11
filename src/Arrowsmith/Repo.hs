@@ -2,10 +2,6 @@ module Arrowsmith.Repo where
 
 import qualified Data.FileStore
 import System.Directory (doesDirectoryExist)
-import System.FilePath ((</>))
-
-import qualified Elm.Package.Description as Desc
-import qualified Elm.Package.Paths as ElmPaths
 
 import Arrowsmith.Paths
 import Arrowsmith.Types
