@@ -26,10 +26,10 @@ import Arrowsmith.Types
 import Arrowsmith.Project
 
 routes :: [Route]
-routes = []
-  -- [ (":backend/:user/:project/:module", method GET moduleHandler)
-  -- , (":backend/:user/:project/:module/edit", method POST editHandler)
-  -- ]
+routes =
+  [ (":backend/:user/:project/:module", method GET moduleHandler)
+  , (":backend/:user/:project/:module/edit", method POST editHandler)
+  ]
 
 editor :: Html -> Html
 editor contents =
@@ -43,20 +43,20 @@ editor contents =
       H.script ! A.src "/app/env.js" $ return ()
       contents
 
-getRepoInfo :: Snap RepoInfo
+getRepoInfo :: AppHandler RepoInfo
 getRepoInfo = do
   b <- urlFragment "backend"
   u <- urlFragment "user"
   p <- urlFragment "project"
   return RepoInfo { backend = b, user = u, project = p }
 
-getProject :: Snap (Either String Project)
+getProject :: AppHandler (Either String Project)
 getProject = do
   repoInfo' <- getRepoInfo
   -- TODO don't recreate project every time.
   liftIO $ createProject repoInfo'
 
-getElmFile :: Snap (Maybe ElmFile)
+getElmFile :: AppHandler (Maybe ElmFile)
 getElmFile = do
   project' <- getProject
   moduleName <- urlFragment "module"
@@ -65,7 +65,7 @@ getElmFile = do
     Left _ -> Nothing
     Right project'' -> fileWithName project'' fileName'
 
-moduleHandler :: Snap ()
+moduleHandler :: AppHandler ()
 moduleHandler = do
   elmFile' <- getElmFile
   case elmFile' of
@@ -79,7 +79,7 @@ moduleHandler = do
           let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
           (writeText . toStrict . renderHtml . editor) moduleScript
 
-editHandler :: Snap ()
+editHandler :: AppHandler ()
 editHandler = do
   elmFile' <- getElmFile
   case elmFile' of
@@ -94,7 +94,7 @@ editHandler = do
             Nothing -> writeText "didn't edit."
             Just _ -> writeText "did actually edit."
 
-urlFragment :: BS.ByteString -> Snap String
+urlFragment :: MonadSnap m => BS.ByteString -> m String
 urlFragment paramName = do
   param <- getParam paramName
   case param of
