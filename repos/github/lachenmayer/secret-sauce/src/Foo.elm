@@ -4,7 +4,7 @@ import Graphics.Element (..)
 import Text (..)
 
 modulus : number
-modulus =
+asdf =
   bigger 103 107
 
 encrypt : number -> number -> number
@@ -20,7 +20,3 @@ bigger first second =if
 main : Element
 main =
   plainText "Hello, World!"
-
-
-wateva : String
-wateva = "unoit"

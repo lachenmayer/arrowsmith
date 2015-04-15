@@ -21,3 +21,34 @@ type alias Module =
   , adts : List ElmCode
   , defs : List Definition
   }
+
+type alias State =
+  { modul : Module
+
+  , isCompiling : Bool
+  , compilationStatus : CompilationStatus
+  , dirty : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
+
+  , editing : Maybe Name
+
+  , values : Dict Name Value
+  , toEvaluate : Maybe (ModuleName, Name)
+
+  , fresh : Int
+  }
+
+type Action
+  = NoOp
+
+  | Compile Module
+  | FinishCompiling (CompileResponse, String)
+
+  | Edit Name
+  | StopEditing Name
+  | FinishEditing (Name, Value)
+
+  | Evaluate (ModuleName, Name)
+  | FinishEvaluating (ModuleName, Name, Value)
+
+  | NewDefinition
+  | RemoveDefinition Name

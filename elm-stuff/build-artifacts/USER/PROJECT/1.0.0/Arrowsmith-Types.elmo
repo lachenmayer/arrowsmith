@@ -15,6 +15,57 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    $Dict = Elm.Dict.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm);
+   var RemoveDefinition = function (a) {
+      return {ctor: "RemoveDefinition"
+             ,_0: a};
+   };
+   var NewDefinition = {ctor: "NewDefinition"};
+   var FinishEvaluating = function (a) {
+      return {ctor: "FinishEvaluating"
+             ,_0: a};
+   };
+   var Evaluate = function (a) {
+      return {ctor: "Evaluate"
+             ,_0: a};
+   };
+   var FinishEditing = function (a) {
+      return {ctor: "FinishEditing"
+             ,_0: a};
+   };
+   var StopEditing = function (a) {
+      return {ctor: "StopEditing"
+             ,_0: a};
+   };
+   var Edit = function (a) {
+      return {ctor: "Edit",_0: a};
+   };
+   var FinishCompiling = function (a) {
+      return {ctor: "FinishCompiling"
+             ,_0: a};
+   };
+   var Compile = function (a) {
+      return {ctor: "Compile"
+             ,_0: a};
+   };
+   var NoOp = {ctor: "NoOp"};
+   var State = F8(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g,
+   h) {
+      return {_: {}
+             ,compilationStatus: c
+             ,dirty: d
+             ,editing: e
+             ,fresh: h
+             ,isCompiling: b
+             ,modul: a
+             ,toEvaluate: g
+             ,values: f};
+   });
    var Module = F4(function (a,
    b,
    c,
@@ -26,6 +77,17 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,name: a};
    });
    _elm.Arrowsmith.Types.values = {_op: _op
-                                  ,Module: Module};
+                                  ,Module: Module
+                                  ,State: State
+                                  ,NoOp: NoOp
+                                  ,Compile: Compile
+                                  ,FinishCompiling: FinishCompiling
+                                  ,Edit: Edit
+                                  ,StopEditing: StopEditing
+                                  ,FinishEditing: FinishEditing
+                                  ,Evaluate: Evaluate
+                                  ,FinishEvaluating: FinishEvaluating
+                                  ,NewDefinition: NewDefinition
+                                  ,RemoveDefinition: RemoveDefinition};
    return _elm.Arrowsmith.Types.values;
 };

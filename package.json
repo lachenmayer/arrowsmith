@@ -4,6 +4,7 @@
   "description": "none",
   "author": "harry lachenmayer (at gmail dot com)",
   "dependencies": {
+    "codemirror": "^5.1.0",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.8.0",
     "domready": "^1.0.7",

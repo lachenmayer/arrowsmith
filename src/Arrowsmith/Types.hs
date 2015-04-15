@@ -35,7 +35,7 @@ $(deriveJSON defaultOptions ''Module)
 
 data Action
   = AddDefinition Definition
-  -- | ChangeDefinition VarName ElmCode
+  | ChangeDefinition VarName ElmCode
   | RemoveDefinition VarName
   deriving (Show, Read, Eq)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Action)

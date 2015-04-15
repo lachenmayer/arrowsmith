@@ -9,8 +9,6 @@ import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.ByteString.UTF8 as UTF8BS
-import qualified Data.HashMap.Strict as HashMap
-import Data.IORef
 import Data.List.Utils (split)
 import Data.Text (pack)
 import Data.Text.Lazy (toStrict)
@@ -45,56 +43,49 @@ template contents =
       H.script ! A.src "/app/env.js" $ return ()
       contents
 
-getRepoInfo :: AppHandler RepoInfo
-getRepoInfo = do
+getReqRepoInfo :: AppHandler RepoInfo
+getReqRepoInfo = do
   b <- urlFragment "backend"
   u <- urlFragment "user"
   p <- urlFragment "project"
   return RepoInfo { backend = b, user = u, project = p }
 
-getProject :: AppHandler (Either String Project)
-getProject = do
-  repoInfo' <- getRepoInfo
-  projectsRef <- gets _projects
-  projects' <- liftIO $ readIORef projectsRef
-  case HashMap.lookup repoInfo' projects' of
-    Nothing -> liftIO $ tryCreateProject projectsRef repoInfo'
-    Just project' -> return $ Right project'
-
-tryCreateProject :: IORef ProjectsMap -> RepoInfo -> IO (Either String Project)
-tryCreateProject projects' repoInfo' = do
-  eitherProject <- createProject repoInfo'
-  case eitherProject of
-    Left err -> return $ Left err
-    Right project' -> atomicModifyIORef projects' $ \ps ->
-      (HashMap.insert repoInfo' project' ps, Right project')
-
-getElmFile :: AppHandler (Maybe ElmFile)
-getElmFile = do
-  project' <- getProject
+getReqModuleName :: AppHandler QualifiedName
+getReqModuleName = do
   moduleName <- urlFragment "module"
-  let fileName' = split "." moduleName
+  return $ split "." moduleName
+
+getReqProject :: AppHandler (Either String Project)
+getReqProject = do
+  repoInfo' <- getReqRepoInfo
+  projectsRef <- gets _projects
+  liftIO $ getProject projectsRef repoInfo'
+
+readElmFile :: AppHandler (Maybe ElmFile)
+readElmFile = do
+  project' <- getReqProject
+  moduleName <- getReqModuleName
   return $ case project' of
     Left _ -> Nothing
-    Right project'' -> fileWithName project'' fileName'
+    Right p -> fileWithName p moduleName
 
 moduleHandler :: AppHandler ()
 moduleHandler = do
-  elmFile' <- getElmFile
+  elmFile' <- readElmFile
   case elmFile' of
-    Nothing -> writeText "404 :("
+    Nothing -> writeText "404 :(" -- TODO "create file" screen?
     Just elmFile'' -> do
       compiled <- liftIO $ compile elmFile''
       case compiled of
         Left err -> (writeText . pack) err
         Right compiledFile' -> do
           let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) compiledFile'
-          let moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
+              moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
           (writeText . toStrict . renderHtml . template) moduleScript
 
 editHandler :: AppHandler ()
 editHandler = do
-  elmFile' <- getElmFile
+  elmFile' <- readElmFile
   case elmFile' of
     Nothing -> writeText "404 :/"
     Just elmFile'' -> do

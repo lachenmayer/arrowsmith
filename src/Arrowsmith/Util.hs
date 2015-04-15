@@ -1,7 +1,7 @@
 module Arrowsmith.Util where
 
 import Control.Monad (when)
-import Data.List (minimumBy, stripPrefix)
+import Data.List (tails, isPrefixOf, minimumBy, stripPrefix)
 import Data.Ord (comparing)
 import Data.Maybe (mapMaybe)
 import System.Directory (doesFileExist, removeFile)
@@ -35,3 +35,20 @@ stripLongestPrefix dirs path =
   where
     splitPath = splitDirectories path
     splitDirs = map splitDirectories . replace "." "" . map normalise $ dirs
+
+-- 1-indexed
+-- indexOf "foobarbazbar" "bar" == Just 4
+indexOf :: Eq a => [a] -> [a] -> Maybe Int
+indexOf haystack needle =
+  if null results then Nothing else Just ((snd . head) results)
+  where
+    results = filter fst $ zip (map (isPrefixOf needle) (tails haystack)) [1..]
+
+-- returns the sub-list bounded by `start` and `end` (1-indexed)
+region :: Int -> Int -> [a] -> [a]
+region start end xs =
+  take ((end - start) + 1) $ drop (start - 1) xs
+
+update :: Eq a => a -> a -> [a] -> [a]
+update old new =
+  map (\x -> if x == old then new else x)

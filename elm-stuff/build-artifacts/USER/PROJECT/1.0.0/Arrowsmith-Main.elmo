@@ -24,6 +24,14 @@ Elm.Arrowsmith.Main.make = function (_elm) {
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
+   var tag = F2(function ($class,
+   attrs) {
+      return $Html.td(A2($List._op["::"],
+      $Html$Attributes.$class(A2($Basics._op["++"],
+      "tag ",
+      $class)),
+      attrs));
+   });
    var div = function ($class) {
       return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]));
    };
@@ -47,7 +55,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                          ,_0: false
                          ,_1: $default};}
                _U.badCase($moduleName,
-               "between lines 301 and 304");
+               "between lines 268 and 271");
             }();
          };
          return A2($Signal._op["<~"],
@@ -74,7 +82,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
               "no-error",
               _L.fromArray([]));}
          _U.badCase($moduleName,
-         "between lines 285 and 287");
+         "between lines 252 and 254");
       }();
    };
    var adtView = function (code) {
@@ -224,34 +232,25 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                           case "Ok":
                                           return $Result.Ok(_v5._0._1);}
                                        _U.badCase($moduleName,
-                                       "between lines 95 and 97");
+                                       "between lines 64 and 66");
                                     }()]],
                    state);}
               break;
             case "FinishEditing":
             switch (_v5._0.ctor)
               {case "_Tuple2":
-                 return function () {
-                      var _v21 = state.editing;
-                      switch (_v21.ctor)
-                      {case "Just":
-                         return _U.replace([["editing"
-                                            ,$Maybe.Nothing]
-                                           ,["dirty",true]
-                                           ,["modul"
-                                            ,A3($Arrowsmith$Module.replaceDefinition,
-                                            state.modul,
-                                            _v21._0,
-                                            {ctor: "_Tuple3"
-                                            ,_0: _v5._0._0
-                                            ,_1: $Maybe.Nothing
-                                            ,_2: _v5._0._1})]],
-                           state);
-                         case "Nothing":
-                         return $Debug.crash("FinishEditing should never happen if not editing something!");}
-                      _U.badCase($moduleName,
-                      "between lines 104 and 113");
-                   }();}
+                 return _U.replace([["editing"
+                                    ,$Maybe.Nothing]
+                                   ,["dirty",true]
+                                   ,["modul"
+                                    ,A3($Arrowsmith$Module.replaceDefinition,
+                                    state.modul,
+                                    _v5._0._0,
+                                    {ctor: "_Tuple3"
+                                    ,_0: _v5._0._0
+                                    ,_1: $Maybe.Nothing
+                                    ,_2: _v5._0._1})]],
+                   state);}
               break;
             case "FinishEvaluating":
             switch (_v5._0.ctor)
@@ -282,124 +281,41 @@ Elm.Arrowsmith.Main.make = function (_elm) {
             case "StopEditing":
             return state;}
          _U.badCase($moduleName,
-         "between lines 86 and 125");
+         "between lines 55 and 91");
       }();
    });
-   var initialState = {_: {}
-                      ,compilationStatus: $Result.Ok("")
-                      ,dirty: true
-                      ,editing: $Maybe.Nothing
-                      ,fresh: 0
-                      ,isCompiling: false
-                      ,modul: initialModule
-                      ,toEvaluate: $Maybe.Nothing
-                      ,values: $Dict.empty};
-   var RemoveDefinition = function (a) {
-      return {ctor: "RemoveDefinition"
-             ,_0: a};
-   };
-   var NewDefinition = {ctor: "NewDefinition"};
-   var FinishEvaluating = function (a) {
-      return {ctor: "FinishEvaluating"
-             ,_0: a};
-   };
-   var Evaluate = function (a) {
-      return {ctor: "Evaluate"
-             ,_0: a};
-   };
-   var FinishEditing = function (a) {
-      return {ctor: "FinishEditing"
-             ,_0: a};
-   };
-   var StopEditing = {ctor: "StopEditing"};
-   var Edit = function (a) {
-      return {ctor: "Edit",_0: a};
-   };
-   var FinishCompiling = function (a) {
-      return {ctor: "FinishCompiling"
-             ,_0: a};
-   };
-   var Compile = function (a) {
-      return {ctor: "Compile"
-             ,_0: a};
-   };
-   var NoOp = {ctor: "NoOp"};
-   var actions = $Signal.channel(NoOp);
+   var actions = $Signal.channel($Arrowsmith$Types.NoOp);
    var action = $Signal.send(actions);
-   var editEvent = F2(function (isEditing,
-   name) {
-      return isEditing ? $Html$Events.onBlur(action(StopEditing)) : $Html$Events.onClick(action(Edit(name)));
-   });
-   var editable = F5(function (isEditing,
-   name,
-   tagName,
-   additionalAttrs,
-   contents) {
+   var defHeaderView = F2(function (moduleName,
+   _v22) {
       return function () {
-         var attrs = A2($Basics._op["++"],
-         _L.fromArray([$Html$Attributes.contenteditable(isEditing)
-                      ,A2(editEvent,isEditing,name)]),
-         additionalAttrs);
-         return A3($Html.node,
-         tagName,
-         attrs,
-         contents);
-      }();
-   });
-   var codeView = F2(function (isEditing,
-   _v23) {
-      return function () {
-         switch (_v23.ctor)
+         switch (_v22.ctor)
          {case "_Tuple3":
             return function () {
-                 var content = _U.eq(_v23._2,
-                 $Arrowsmith$Module.undefinedBinding) || _U.eq(_v23._2,
-                 "") ? A2($Html.span,
-                 _L.fromArray([$Html$Attributes.$class("undefined-definition")]),
-                 _L.fromArray([$Html.text(isEditing ? "" : "undefined")])) : $Html.text(_v23._2);
-                 return A5(editable,
-                 isEditing,
-                 _v23._0,
-                 "pre",
-                 _L.fromArray([$Html$Attributes.$class("definition-code")]),
-                 _L.fromArray([content]));
-              }();}
-         _U.badCase($moduleName,
-         "between lines 226 and 235");
-      }();
-   });
-   var defHeaderView = F3(function (moduleName,
-   isEditing,
-   _v28) {
-      return function () {
-         switch (_v28.ctor)
-         {case "_Tuple3":
-            return function () {
-                 var evalTag = A2($Html.td,
-                 _L.fromArray([$Html$Attributes.$class("tag definition-evaluate")
-                              ,$Html$Events.onClick(action(Evaluate({ctor: "_Tuple2"
-                                                                    ,_0: moduleName
-                                                                    ,_1: _v28._0})))]),
+                 var evalTag = A3(tag,
+                 "definition-evaluate",
+                 _L.fromArray([$Html$Events.onClick(action($Arrowsmith$Types.Evaluate({ctor: "_Tuple2"
+                                                                                      ,_0: moduleName
+                                                                                      ,_1: _v22._0})))]),
                  _L.fromArray([$Html.text("eval")]));
-                 var nameTag = A5(editable,
-                 isEditing,
-                 _v28._0,
-                 "td",
-                 _L.fromArray([$Html$Attributes.$class("tag definition-name")]),
-                 _L.fromArray([$Html.text(_v28._0)]));
+                 var nameTag = A3(tag,
+                 "definition-name",
+                 _L.fromArray([]),
+                 _L.fromArray([$Html.text(_v22._0)]));
                  var header = function () {
-                    switch (_v28._1.ctor)
+                    switch (_v22._1.ctor)
                     {case "Just":
                        return _L.fromArray([nameTag
-                                           ,A2($Html.td,
-                                           _L.fromArray([$Html$Attributes.$class("tag definition-type")]),
-                                           _L.fromArray([$Html.text(_v28._1._0)]))
+                                           ,A3(tag,
+                                           "definition-type",
+                                           _L.fromArray([]),
+                                           _L.fromArray([$Html.text(_v22._1._0)]))
                                            ,evalTag]);
                        case "Nothing":
                        return _L.fromArray([nameTag
                                            ,evalTag]);}
                     _U.badCase($moduleName,
-                    "between lines 242 and 247");
+                    "between lines 210 and 215");
                  }();
                  return A2($Html.table,
                  _L.fromArray([$Html$Attributes.$class("definition-header")]),
@@ -408,44 +324,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                  header)]));
               }();}
          _U.badCase($moduleName,
-         "between lines 239 and 249");
-      }();
-   });
-   var defView = F4(function (values,
-   moduleName,
-   editing,
-   definition) {
-      return function () {
-         var $ = definition,
-         name = $._0,
-         tipe = $._1,
-         binding = $._2;
-         var isEditing = _U.eq($Maybe.Just(name),
-         editing);
-         var $class = isEditing ? "definition editing" : "definition";
-         var valueView = function () {
-            var _v35 = A2($Dict.get,
-            name,
-            values);
-            switch (_v35.ctor)
-            {case "Just":
-               return _L.fromArray([A2(div,
-                 "definition-value",
-                 _L.fromArray([$Html.text(_v35._0)]))]);
-               case "Nothing":
-               return _L.fromArray([]);}
-            _U.badCase($moduleName,
-            "between lines 257 and 260");
-         }();
-         return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]))(A2($Basics._op["++"],
-         _L.fromArray([A3(defHeaderView,
-                      moduleName,
-                      isEditing,
-                      definition)
-                      ,A2(codeView,
-                      isEditing,
-                      definition)]),
-         valueView));
+         "between lines 207 and 217");
       }();
    });
    var button = F3(function (className,
@@ -460,10 +339,82 @@ Elm.Arrowsmith.Main.make = function (_elm) {
       return A3(button,
       "compile-button",
       "compile",
-      Compile(modul));
+      $Arrowsmith$Types.Compile(modul));
    };
-   var moduleView = F3(function (values,
-   editing,
+   var editActions = function (name) {
+      return _L.fromArray([$Html$Events.onFocus(action($Arrowsmith$Types.Edit(name)))
+                          ,$Html$Events.onBlur(action($Arrowsmith$Types.StopEditing(name)))]);
+   };
+   var editable = F4(function (name,
+   tagName,
+   additionalAttrs,
+   contents) {
+      return function () {
+         var attrs = A2($List._op["::"],
+         $Html$Attributes.contenteditable(true),
+         A2($Basics._op["++"],
+         editActions(name),
+         additionalAttrs));
+         return A3($Html.node,
+         tagName,
+         attrs,
+         contents);
+      }();
+   });
+   var codeView = function (_v29) {
+      return function () {
+         switch (_v29.ctor)
+         {case "_Tuple3":
+            return function () {
+                 var content = _U.eq(_v29._2,
+                 $Arrowsmith$Module.undefinedBinding) || _U.eq(_v29._2,
+                 "") ? A2($Html.span,
+                 _L.fromArray([$Html$Attributes.$class("undefined-definition")]),
+                 _L.fromArray([$Html.text("undefined")])) : $Html.text(_v29._2);
+                 return A4(editable,
+                 _v29._0,
+                 "textarea",
+                 _L.fromArray([$Html$Attributes.$class("definition-code")]),
+                 _L.fromArray([content]));
+              }();}
+         _U.badCase($moduleName,
+         "between lines 194 and 203");
+      }();
+   };
+   var defView = F3(function (values,
+   moduleName,
+   definition) {
+      return function () {
+         var $ = definition,
+         name = $._0,
+         tipe = $._1,
+         binding = $._2;
+         var $class = A2($Basics._op["++"],
+         "definition defname-",
+         name);
+         var valueView = function () {
+            var _v34 = A2($Dict.get,
+            name,
+            values);
+            switch (_v34.ctor)
+            {case "Just":
+               return _L.fromArray([A2(div,
+                 "definition-value",
+                 _L.fromArray([$Html.text(_v34._0)]))]);
+               case "Nothing":
+               return _L.fromArray([]);}
+            _U.badCase($moduleName,
+            "between lines 224 and 227");
+         }();
+         return $Html.div(_L.fromArray([$Html$Attributes.$class($class)]))(A2($Basics._op["++"],
+         _L.fromArray([A2(defHeaderView,
+                      moduleName,
+                      definition)
+                      ,codeView(definition)]),
+         valueView));
+      }();
+   });
+   var moduleView = F2(function (values,
    modul) {
       return function () {
          var $ = modul,
@@ -487,56 +438,52 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                       adts))
                       ,div("module-defs")(A2($Basics._op["++"],
                       A2($List.map,
-                      A3(defView,values,name,editing),
+                      A2(defView,values,name),
                       defs),
                       _L.fromArray([A3(button,
                       "new-def-button",
                       "+",
-                      NewDefinition)])))]));
+                      $Arrowsmith$Types.NewDefinition)])))]));
       }();
    });
-   var view = function (_v37) {
+   var view = function (_v36) {
       return function () {
          return A2(div,
          "modules",
-         _L.fromArray([A3(moduleView,
-                      _v37.values,
-                      _v37.editing,
-                      _v37.modul)
-                      ,errorView(_v37.compilationStatus)]));
+         _L.fromArray([A2(moduleView,
+                      _v36.values,
+                      _v36.modul)
+                      ,errorView(_v36.compilationStatus)]));
       }();
    };
-   var state = function () {
-      var events = $Signal.mergeMany(_L.fromArray([$Signal.subscribe(actions)
-                                                  ,A2($Signal._op["<~"],
-                                                  FinishCompiling,
-                                                  compileResponse)
-                                                  ,A2($Signal._op["<~"],
-                                                  FinishEditing,
-                                                  editedValue)
-                                                  ,A2($Signal._op["<~"],
-                                                  FinishEvaluating,
-                                                  evaluatedValue)]));
-      return A3($Signal.foldp,
-      step,
-      initialState,
-      events);
-   }();
-   var main = A2($Signal._op["<~"],
-   view,
-   state);
    var stopEditing = _P.portOut("stopEditing",
    _P.outgoingSignal(function (v) {
-      return [];
+      return v;
    }),
-   A2($Signal._op["<~"],
-   $Basics.always({ctor: "_Tuple0"}),
-   A3($Signal.keepIf,
-   F2(function (x,y) {
-      return _U.eq(x,y);
-   })(StopEditing),
-   NoOp,
-   $Signal.subscribe(actions))));
+   function () {
+      var isStopEditingAction = function (a) {
+         return function () {
+            switch (a.ctor)
+            {case "StopEditing":
+               return true;}
+            return false;
+         }();
+      };
+      var extractValue = function (a) {
+         return function () {
+            switch (a.ctor)
+            {case "StopEditing":
+               return a._0;}
+            return "";
+         }();
+      };
+      return A2($Signal._op["<~"],
+      extractValue,
+      A3($Signal.keepIf,
+      isStopEditingAction,
+      $Arrowsmith$Types.NoOp,
+      $Signal.subscribe(actions)));
+   }());
    var evaluate = _P.portOut("evaluate",
    _P.outgoingSignal(function (v) {
       return [Elm.Native.List.make(_elm).toArray(v._0).map(function (v) {
@@ -565,7 +512,7 @@ Elm.Arrowsmith.Main.make = function (_elm) {
       extractValue,
       A3($Signal.keepIf,
       isEvaluateAction,
-      NoOp,
+      $Arrowsmith$Types.NoOp,
       $Signal.subscribe(actions)));
    }());
    var compileModule = _P.portOut("compileModule",
@@ -591,42 +538,41 @@ Elm.Arrowsmith.Main.make = function (_elm) {
       extractValue,
       A3($Signal.keepIf,
       isCompileAction,
-      NoOp,
+      $Arrowsmith$Types.NoOp,
       $Signal.subscribe(actions)));
       return A2($Signal._op["<~"],
       $Arrowsmith$Module.toString,
       compileAction);
    }());
-   var State = F8(function (a,
-   b,
-   c,
-   d,
-   e,
-   f,
-   g,
-   h) {
-      return {_: {}
-             ,compilationStatus: c
-             ,dirty: d
-             ,editing: e
-             ,fresh: h
-             ,isCompiling: b
-             ,modul: a
-             ,toEvaluate: g
-             ,values: f};
-   });
+   var initialState = {_: {}
+                      ,compilationStatus: $Result.Ok("")
+                      ,dirty: true
+                      ,editing: $Maybe.Nothing
+                      ,fresh: 0
+                      ,isCompiling: false
+                      ,modul: initialModule
+                      ,toEvaluate: $Maybe.Nothing
+                      ,values: $Dict.empty};
+   var state = function () {
+      var events = $Signal.mergeMany(_L.fromArray([$Signal.subscribe(actions)
+                                                  ,A2($Signal._op["<~"],
+                                                  $Arrowsmith$Types.FinishCompiling,
+                                                  compileResponse)
+                                                  ,A2($Signal._op["<~"],
+                                                  $Arrowsmith$Types.FinishEditing,
+                                                  editedValue)
+                                                  ,A2($Signal._op["<~"],
+                                                  $Arrowsmith$Types.FinishEvaluating,
+                                                  evaluatedValue)]));
+      return A3($Signal.foldp,
+      step,
+      initialState,
+      events);
+   }();
+   var main = A2($Signal._op["<~"],
+   view,
+   state);
    _elm.Arrowsmith.Main.values = {_op: _op
-                                 ,State: State
-                                 ,NoOp: NoOp
-                                 ,Compile: Compile
-                                 ,FinishCompiling: FinishCompiling
-                                 ,Edit: Edit
-                                 ,StopEditing: StopEditing
-                                 ,FinishEditing: FinishEditing
-                                 ,Evaluate: Evaluate
-                                 ,FinishEvaluating: FinishEvaluating
-                                 ,NewDefinition: NewDefinition
-                                 ,RemoveDefinition: RemoveDefinition
                                  ,initialState: initialState
                                  ,actions: actions
                                  ,action: action
@@ -634,7 +580,6 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                  ,state: state
                                  ,importView: importView
                                  ,adtView: adtView
-                                 ,editEvent: editEvent
                                  ,codeView: codeView
                                  ,defHeaderView: defHeaderView
                                  ,defView: defView
@@ -645,8 +590,10 @@ Elm.Arrowsmith.Main.make = function (_elm) {
                                  ,keepJust: keepJust
                                  ,button: button
                                  ,editable: editable
+                                 ,editActions: editActions
                                  ,visible: visible
                                  ,div: div
+                                 ,tag: tag
                                  ,main: main};
    return _elm.Arrowsmith.Main.values;
 };

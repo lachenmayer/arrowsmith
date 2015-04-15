@@ -1,5 +1,9 @@
 module Arrowsmith.Project where
 
+import Control.Monad (when)
+import Data.Either (isRight)
+import qualified Data.HashMap.Strict as HashMap
+import Data.IORef
 import Data.List (find)
 import Data.Maybe (catMaybes)
 import System.FilePath.Posix (takeExtension)
@@ -24,6 +28,22 @@ createProject repoInfo' = do
         , sources = sources'
         }
 
+-- Creates a new project if not found.
+getProject :: IORef ProjectsMap -> RepoInfo -> IO (Either String Project)
+getProject projectsRef repoInfo' = do
+  projects' <- readIORef projectsRef
+  case HashMap.lookup repoInfo' projects' of
+    Nothing -> do
+      newProject <- createProject repoInfo'
+      when (isRight newProject) $ let Right p = newProject in saveProject projectsRef p
+      return newProject
+    Just p -> return $ Right p
+
+saveProject :: IORef ProjectsMap -> Project -> IO ()
+saveProject projectsRef project' =
+  atomicModifyIORef' projectsRef $ \ps ->
+    (HashMap.insert (projectRepo project') project' ps, ())
+
 elmFiles :: RepoInfo -> Description -> IO [ElmFile]
 elmFiles repoInfo' description' = do
   repo <- getRepo repoInfo'
@@ -39,7 +59,3 @@ fileWithName :: Project -> QualifiedName -> Maybe ElmFile
 fileWithName project' name' =
   find (\file -> fileName file == name') (sources project')
 
--- TODO
---compile :: Project -> IO (Either String Project)
---compile project = do
---  sources' <- mapM ElmFile.compile

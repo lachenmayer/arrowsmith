@@ -25,38 +25,6 @@ import Arrowsmith.Types (..)
 -- State & Actions
 --
 
-type alias State =
-  { modul : Module
-
-  , isCompiling : Bool
-  , compilationStatus : CompilationStatus
-  , dirty : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
-
-  , editing : Maybe Name
-
-  , values : Dict Name Value
-  , toEvaluate : Maybe (ModuleName, Name)
-
-  , fresh : Int
-  }
-
-type Action
-  = NoOp
-
-  | Compile Module
-  | FinishCompiling (CompileResponse, String)
-
-  | Edit Name
-  | StopEditing
-  | FinishEditing (Name, Value)
-
-  | Evaluate (ModuleName, Name)
-  | FinishEvaluating (ModuleName, Name, Value)
-
-  | NewDefinition
-  | RemoveDefinition Name
-
-
 initialState : State
 initialState =
   { modul = initialModule
@@ -83,6 +51,7 @@ action =
 
 step : Action -> State -> State
 step action state =
+  --Debug.log "state" <| case action of
   case (Debug.log "action" action) of
     NoOp ->
       state
@@ -98,17 +67,14 @@ step action state =
 
     Edit name ->
       { state | editing <- Just name }
-    StopEditing ->
+    StopEditing _ ->
       state -- Nothing happens, this is only used to call the JS "edit" function.
-    FinishEditing (newName, newBinding) ->
-      case state.editing of
-        Just oldName ->
-          { state
-          | editing <- Nothing
-          , dirty <- True
-          , modul <- Module.replaceDefinition state.modul oldName (newName, Nothing, newBinding)
-          }
-        Nothing -> Debug.crash "FinishEditing should never happen if not editing something!"
+    FinishEditing (name, newBinding) ->
+      { state
+      | editing <- Nothing
+      , dirty <- True
+      , modul <- Module.replaceDefinition state.modul name (name, Nothing, newBinding)
+      }
 
     Evaluate e ->
       { state | toEvaluate <- Just e }
@@ -146,9 +112,19 @@ state =
 
 port editedValue : Signal (Name, Value)
 
-port stopEditing : Signal ()
+port stopEditing : Signal Name
 port stopEditing =
-  always () <~ S.keepIf ((==) StopEditing) NoOp (S.subscribe actions)
+  let
+    extractValue a =
+      case a of
+        StopEditing v -> v
+        _ -> ""
+    isStopEditingAction a =
+      case a of
+        StopEditing _ -> True
+        _ -> False
+  in
+    extractValue <~ S.keepIf isStopEditingAction NoOp (S.subscribe actions)
 
 --
 -- Evaluate
@@ -213,62 +189,53 @@ adtView : ElmCode -> Html
 adtView code =
   div "adt" [ H.code [] [ H.text code ] ]
 
-editEvent : Bool -> Name -> H.Attribute
-editEvent isEditing name =
-  if isEditing then
-    E.onBlur <| action StopEditing
-  else
-    E.onClick <| action (Edit name)
-
-
-codeView : Bool -> Definition -> Html
-codeView isEditing (name, tipe, binding) =
+codeView : Definition -> Html
+codeView (name, tipe, binding) =
   let
     content =
       if (binding == Module.undefinedBinding) || (binding == "") then
-        H.span [ A.class "undefined-definition" ] [ H.text (if isEditing then "" else "undefined") ]
+        H.span [ A.class "undefined-definition" ] [ H.text "undefined" ]
       else
         H.text binding
   in
-    editable isEditing name "pre"
+    editable name "textarea"
       [ A.class "definition-code" ]
       [ content ]
 
-defHeaderView : ModuleName -> Bool -> Definition -> Html
-defHeaderView moduleName isEditing (name, tipe, _) =
+defHeaderView : ModuleName -> Definition -> Html
+defHeaderView moduleName (name, tipe, _) =
   let
-    nameTag = editable isEditing name "td" [ A.class "tag definition-name" ] [ H.text name ]
-    evalTag = H.td [ A.class "tag definition-evaluate", E.onClick (action (Evaluate (moduleName, name))) ] [ H.text "eval" ]
+    nameTag = tag "definition-name" [] [ H.text name ]
+    evalTag = tag "definition-evaluate" [ E.onClick (action (Evaluate (moduleName, name))) ] [ H.text "eval" ]
     header = case tipe of
       Just t ->
-        [ nameTag, H.td [ A.class "tag definition-type" ] [ H.text t ], evalTag ]
+        [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
       Nothing ->
         [ nameTag, evalTag ]
   in
     H.table [ A.class "definition-header" ]
       [ H.tr [] header ]
 
-defView : Values -> ModuleName -> Maybe Name -> Definition -> Html
-defView values moduleName editing definition =
+defView : Values -> ModuleName -> Definition -> Html
+defView values moduleName definition =
   let
     (name, tipe, binding) = definition
-    isEditing = Just name == editing
-    class = if isEditing then "definition editing" else "definition"
+    class = "definition defname-" ++ name
     valueView = case (Dict.get name values) of
       Just value -> [ div "definition-value" [ H.text value ] ]
       Nothing -> []
   in
     H.div [ A.class class ] <|
-      [ defHeaderView moduleName isEditing definition
-      , codeView isEditing definition
+      [ defHeaderView moduleName definition
+      , codeView definition
       ] ++ valueView
 
 compileButton : Module -> Html
 compileButton modul =
   button "compile-button" "compile" (Compile modul)
 
-moduleView : Values -> Maybe Name -> Module -> Html
-moduleView values editing modul =
+moduleView : Values -> Module -> Html
+moduleView values modul =
   let
     {name, imports, adts, defs} = modul
   in
@@ -277,7 +244,7 @@ moduleView values editing modul =
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ], compileButton modul ]
       , div "module-imports" <| List.map importView imports
       , div "module-adts" <| List.map adtView adts
-      , div "module-defs" <| List.map (defView values name editing) defs ++ [button "new-def-button" "+" NewDefinition]
+      , div "module-defs" <| List.map (defView values name) defs ++ [button "new-def-button" "+" NewDefinition]
       ]
 
 errorView : CompilationStatus -> Html
@@ -287,8 +254,8 @@ errorView status =
     Err err -> div "error" [ H.pre [] [ H.text err ] ]
 
 view : State -> Html
-view {modul, values, editing, compilationStatus} =
-  div "modules" [ moduleView values editing modul, errorView compilationStatus ]
+view {modul, values, compilationStatus} =
+  div "modules" [ moduleView values modul, errorView compilationStatus ]
 
 --
 -- Util
@@ -312,20 +279,28 @@ button className buttonText act =
     ]
     [ H.text buttonText ]
 
-editable : Bool -> Name -> String -> List H.Attribute -> List Html -> Html
-editable isEditing name tagName additionalAttrs contents =
+editable : Name -> String -> List H.Attribute -> List Html -> Html
+editable name tagName additionalAttrs contents =
   let
-    attrs = [ A.contenteditable isEditing, editEvent isEditing name ] ++ additionalAttrs
+    attrs = A.contenteditable True :: editActions name ++ additionalAttrs
   in
     H.node tagName attrs contents
 
+editActions : Name -> List H.Attribute
+editActions name =
+  [ E.onFocus (action (Edit name)), E.onBlur (action (StopEditing name)) ]
+
 visible : Bool -> H.Attribute
 visible v =
-  A.style [("visibility", if v then "visible" else "hidden")]
+  A.style [ ("visibility", if v then "visible" else "hidden") ]
 
 div : String -> List Html -> Html
 div class =
-  H.div [A.class class]
+  H.div [ A.class class ]
+
+tag : String -> List H.Attribute -> List Html -> Html
+tag class attrs =
+  H.td (A.class ("tag " ++ class) :: attrs)
 
 --
 -- Main

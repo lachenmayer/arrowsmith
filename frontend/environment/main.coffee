@@ -9,9 +9,6 @@ ready ->
 
   elmFile = JSON.parse initialModule.innerHTML
   initialModule.parentNode.removeChild initialModule
-
-  console.log elmFile.compiledCode.length
-
   attachToEnvironment elmFile.compiledCode
 
   ports =
@@ -22,6 +19,8 @@ ready ->
     compileResponse: ["Ok", ""] # : Result ElmError ElmCode (~ish)
   editor = Elm.fullscreen Elm.Arrowsmith.Main, ports
 
-  # editor.ports.compileModule.subscribe require('./compile.coffee')(editor.ports.compileResponse.send)
-  editor.ports.stopEditing.subscribe require('./edit.coffee')(editor.ports.editedValue.send)
-  editor.ports.evaluate.subscribe require('./evaluate.coffee')(editor.ports.evaluatedValue.send)
+  edit = require('./edit.coffee')(editor.ports.editedValue.send, editor.ports.moduleUpdates)
+  editor.ports.stopEditing.subscribe edit
+
+  evaluate = require('./evaluate.coffee')(editor.ports.evaluatedValue.send)
+  editor.ports.evaluate.subscribe evaluate

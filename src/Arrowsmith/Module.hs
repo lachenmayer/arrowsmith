@@ -3,7 +3,7 @@ module Arrowsmith.Module where
 import Data.Aeson
 import qualified Data.ByteString.Lazy as LazyBS
 import Data.Function (on)
-import Data.List (tails, isPrefixOf, sortBy)
+import Data.List (sortBy)
 import Data.List.Split (splitOn)
 --import qualified Data.ByteString.Lazy.Char8 as C8
 --import qualified Data.ByteString.UTF8 as UTF8BS
@@ -19,6 +19,7 @@ import qualified AST.PrettyPrint as PP
 --import qualified AST.Variable as Var
 
 import Arrowsmith.Types
+import Arrowsmith.Util
 
 -- Converts an elm-compiler Def to an Arrowsmith Definition.
 type DefTransform = Canonical.Def -> LocatedDefinition
@@ -90,16 +91,6 @@ defFromSource source def =
     (startLocation, endLocation) = sourceRange def
     lhsStartLocation = expandToLhs source varName startLocation
 
-
--- 1-indexed
--- indexOf "foobarbazbar" "bar" == Just 4
-indexOf :: String -> String -> Maybe Int
-indexOf haystack needle =
-  if null results then Nothing else Just ((snd . head) results)
-  where
-    results = filter fst $ zip (map (isPrefixOf needle) (tails haystack)) [1..]
-
-
 -- Returns the start position of a definition including the left hand side.
 -- expandToLhs "foo\n  baz\nbal = baz\nbar" "baz" (3, 6) == (2, 3)
 expandToLhs :: String -> String -> Location -> Location
@@ -146,8 +137,3 @@ breakSource source start end =
   where
     (before:after:_) = splitOn def source -- let's hope the def only appears once...
     def = sourceRegion source start end
-
--- returns the sub-list bounded by `start` and `end` (1-indexed)
-region :: Int -> Int -> [a] -> [a]
-region start end xs =
-  take ((end - start) + 1) $ drop (start - 1) xs
