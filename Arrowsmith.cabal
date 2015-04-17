@@ -29,6 +29,7 @@ executable Arrowsmith
     Cabal,
     containers,
     directory,
+    either,
     elm-compiler ==0.14.1.1337,
     elm-make ==0.1.1.1337,
     elm-package,

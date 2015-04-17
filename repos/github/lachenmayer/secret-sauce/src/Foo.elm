@@ -4,7 +4,7 @@ import Graphics.Element (..)
 import Text (..)
 
 modulus : number
-asdf =
+modulus =
   bigger 103 107
 
 encrypt : number -> number -> number

@@ -4,11 +4,10 @@ module Arrowsmith.Types where
 
 import Control.Lens.TH
 import Data.Aeson.TH
+import qualified Data.ByteString as BS
 import Data.Hashable
 import Data.HashMap.Strict
 import Data.IORef
-import qualified Data.ByteString as BS
--- import qualified Data.ByteString.Lazy as LazyBS
 import qualified Data.FileStore
 import GHC.Generics (Generic)
 import Snap.Snaplet (Handler)
@@ -17,6 +16,7 @@ import Snap.Snaplet (Handler)
 -- Editor
 
 type ElmCode = String
+type ElmError = String -- TODO add ranges
 type VarName = String
 type QualifiedName = [String]
 type Location = (Int {- line -}, Int {- column -}) -- 1-indexed
@@ -40,11 +40,6 @@ data Action
   deriving (Show, Read, Eq)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Action)
 
-data EditStatus = EditStatus
-  { compileErrors :: [QualifiedName]
-  , action :: (QualifiedName, Action)
-  } deriving (Show, Read, Eq)
-
 data RepoInfo = RepoInfo
   { backend :: String
   , user :: String
@@ -66,7 +61,7 @@ data Repo = Repo
 
 data Project = Project
   { projectRepo :: RepoInfo
-  , sources :: [ElmFile]
+  , elmFiles :: HashMap QualifiedName ElmFile
   } deriving (Show, Eq)
 
 data ElmFile = ElmFile
@@ -78,6 +73,25 @@ data ElmFile = ElmFile
   , inRepo :: RepoInfo
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ElmFile)
+
+-- data EditStatus = EditStatus
+--   { compileErrors :: [QualifiedName]
+--   , action :: (QualifiedName, Action)
+--   } deriving (Show, Read, Eq)
+
+data CompileResponse
+  = CompileSuccess ElmFile
+  | CompileFailure ElmError
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''CompileResponse)
+
+toCompileResponse :: Either ElmError ElmFile -> CompileResponse
+toCompileResponse (Left err) = CompileFailure err
+toCompileResponse (Right elmFile') = CompileSuccess elmFile'
+
+data EditResponse
+  = EditSuccess CompileResponse
+  | EditFailure String
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''EditResponse)
 
 
 -- Serving

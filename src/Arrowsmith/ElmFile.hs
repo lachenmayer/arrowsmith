@@ -46,7 +46,7 @@ edit elmFile' transform = do
     Nothing -> return Nothing
     Just (newSource, newModule) -> do
       writeFile sourcePath' newSource
-      return $ Just elmFile' { modul = newModule }
+      return $ Just elmFile' { modul = newModule, compiledCode = Nothing }
 
 compile :: ElmFile -> IO (Either String ElmFile)
 compile elmFile' = do
@@ -88,6 +88,12 @@ compile elmFile' = do
         ExitFailure _ -> do
           err <- hGetContents compilerErr
           return $ Left (unlines . drop 2 . lines $ err)
+
+compileIfNeeded :: ElmFile -> IO (Either String ElmFile)
+compileIfNeeded elmFile' =
+  case compiledCode elmFile' of
+    Nothing -> compile elmFile'
+    Just _ -> return $ Right elmFile' -- TODO check that compiled code is up to date
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =

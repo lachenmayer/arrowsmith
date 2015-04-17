@@ -13,7 +13,7 @@ import Data.List.Utils (split)
 import Data.Text (pack)
 import Data.Text.Lazy (toStrict)
 import Snap.Core
-import Snap.Extras.JSON (getJSON)
+import Snap.Extras.JSON (getJSON, writeJSON)
 import Text.Blaze.Html (Html, (!))
 import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
@@ -67,13 +67,13 @@ readElmFile = do
   moduleName <- getReqModuleName
   return $ case project' of
     Left _ -> Nothing
-    Right p -> fileWithName p moduleName
+    Right p -> getElmFile p moduleName
 
 moduleHandler :: AppHandler ()
 moduleHandler = do
   elmFile' <- readElmFile
   case elmFile' of
-    Nothing -> writeText "404 :(" -- TODO "create file" screen?
+    Nothing -> notFound "elm file not found.." -- TODO "create file" screen?
     Just elmFile'' -> do
       compiled <- liftIO $ compile elmFile''
       case compiled of
@@ -85,19 +85,31 @@ moduleHandler = do
 
 editHandler :: AppHandler ()
 editHandler = do
-  elmFile' <- readElmFile
-  case elmFile' of
-    Nothing -> writeText "404 :/"
-    Just elmFile'' -> do
-      action' <- getJSON
-      case action' of
-        Left err -> (writeText . pack) err
-        Right action'' -> do
-          Right compiled <- liftIO $ compile elmFile''
-          editResult <- liftIO $ performEdit compiled action''
-          case editResult of
-            Nothing -> writeText "didn't edit."
-            Just _ -> writeText "did actually edit."
+  repoInfo' <- getReqRepoInfo
+  projectsRef <- gets _projects
+  moduleName <- getReqModuleName
+  action' <- getJSON
+  case action' of
+    Left err -> badRequest err
+    Right action'' -> do
+      editResponse <- liftIO $ editElmFile projectsRef repoInfo' moduleName (getEditResponse action'')
+      writeJSON editResponse
+
+  where
+    getEditResponse action' maybeElmFile = do
+      case maybeElmFile of
+        Nothing -> return $ EditFailure "Elm file not found."
+        Just elmFile' -> do
+          compiled <- liftIO $ compileIfNeeded elmFile'
+          case compiled of
+            Left err -> return $ EditFailure err
+            Right compiledFile -> do
+              editResult <- liftIO $ performEdit compiledFile action'
+              case editResult of
+                Just editedFile -> do
+                  newCompiled <- compile editedFile
+                  return $ EditSuccess (toCompileResponse newCompiled)
+                Nothing -> return $ EditFailure "Probably couldn't compile the file."
 
 urlFragment :: MonadSnap m => BS.ByteString -> m String
 urlFragment paramName = do
@@ -105,3 +117,20 @@ urlFragment paramName = do
   case param of
     Just value -> return $ UTF8BS.toString value
     Nothing -> error "URL handling is broken in Snap... (Arrowsmith.Api)"
+
+withResponseCode :: MonadSnap m => Int -> String -> m ()
+withResponseCode code message = do
+  modifyResponse $ setResponseCode code
+  (writeText . pack) message
+
+notFound :: MonadSnap m => String -> m ()
+notFound message =
+  withResponseCode 404 message
+
+badRequest :: MonadSnap m => String -> m ()
+badRequest message =
+  withResponseCode 400 message
+
+serverError :: MonadSnap m => String -> m ()
+serverError message =
+  withResponseCode 500 message
