@@ -33,12 +33,10 @@ infer interfaces modul =
                 hints@(_:_) -> throwError hints
                 []          -> return ()
 
-        () <- Check.portTypes (program (body modul))
-
         let header' = Map.delete "::" header
             types = Map.difference (TS.sSavedEnv state) header'
 
-        Check.mainType types
+        Check.effectTypes types
 
 
 genConstraints

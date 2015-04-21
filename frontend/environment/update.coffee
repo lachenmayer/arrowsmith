@@ -1,21 +1,16 @@
-updateClient = require 'rest'
-  .wrap require('rest/interceptor/mime')
-  .wrap require('rest/interceptor/errorCode')
-  .wrap require('rest/interceptor/defaultRequest'),
-    method: 'POST'
-    path: "#{document.location.pathname}/update"
+# Update the environment, usually based on newly compiled code.
 
-updateRequest = (update) ->
-  updateClient entity: update
+attachToEnvironment = (compiledCode) ->
+  document.getElementById('elm-script')?.remove()
+  executionFrame = document.createElement 'iframe'
+  executionFrame.id = 'elm-script'
+  executionFrame.style.display = 'none'
+  document.body.appendChild executionFrame
 
-module.exports = (done) -> (update) ->
-  console.log 'updating'
-  console.log update
-  request = updateRequest update
-  request.then (response) ->
-    attachToEnvironment response.entity.code
-    done ["Ok", ""] # TODO fill with something useful?
-  request.catch (response) ->
-    console.log "update: HTTP error #{response.status.code}"
-    console.log response
-    done ["Err", response.entity.error]
+  script = document.createElement 'script'
+  script.text = compiledCode
+
+  executionFrame.contentDocument.body.appendChild script
+
+module.exports =
+  attachToEnvironment: attachToEnvironment

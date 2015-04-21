@@ -4,8 +4,9 @@
 successfully. At that point we still need to do occurs checks and ensure that
 `main` has an acceptable type.
 -}
-module Type.ExtraChecks (mainType, occurs, portTypes) where
+module Type.ExtraChecks (effectTypes, occurs) where
 
+import Prelude hiding (maybe)
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad.Error
 import Control.Monad.State
@@ -15,129 +16,101 @@ import qualified Data.UnionFind.IO as UF
 import Text.PrettyPrint as P
 
 import qualified AST.Annotation as A
-import qualified AST.Expression.Canonical as Canonical
 import qualified AST.PrettyPrint as PP
 import qualified AST.Type as ST
-import qualified AST.Variable as V
-import qualified Transform.Expression as Expr
+import qualified AST.Variable as Var
 import qualified Type.Hint as Hint
 import qualified Type.Type as TT
 import qualified Type.State as TS
 
 
-throw :: [Doc] -> Either [Doc] a
-throw err =
-  Left [ P.vcat err ]
+-- EFFECT TYPE CHECKS
 
-
-mainType :: TS.Env -> ErrorT [P.Doc] IO (Map.Map String ST.CanonicalType)
-mainType environment =
+effectTypes :: TS.Env -> ErrorT [P.Doc] IO (Map.Map String ST.CanonicalType)
+effectTypes environment =
   do  environment' <- liftIO $ Traverse.traverse TT.toSrcType environment
       mainCheck environment'
+      return environment'
+
+
+-- MAIN TYPE
+
+mainCheck
+    :: (Monad m)
+    => Map.Map String ST.CanonicalType
+    -> ErrorT [P.Doc] m ()
+mainCheck env =
+  case Map.lookup "main" env of
+    Nothing ->
+        return ()
+
+    Just typeOfMain ->
+        let tipe = ST.deepDealias typeOfMain
+        in
+            if tipe `elem` validMainTypes
+              then return ()
+              else throwError [ badMainMessage typeOfMain ]
+
+
+validMainTypes :: [ST.CanonicalType]
+validMainTypes =
+    [ element
+    , html
+    , signal element
+    , signal html
+    ]
   where
-    mainCheck
-        :: (Monad m) => Map.Map String ST.CanonicalType
-        -> ErrorT [P.Doc] m (Map.Map String ST.CanonicalType)
-    mainCheck env =
-      case Map.lookup "main" env of
-        Nothing -> return env
-        Just typeOfMain
-            | tipe `elem` acceptable -> return env
-            | otherwise              -> throwError [ err ]
-            where
-              acceptable =
-                  [ "Graphics.Element.Element"
-                  , "Signal.Signal Graphics.Element.Element"
-                  , "Html.Html"
-                  , "Signal.Signal Html.Html"
-                  ]
+    fromModule :: [String] -> String -> ST.CanonicalType
+    fromModule home name =
+      ST.Type (Var.fromModule home name)
 
-              tipe = PP.renderPretty typeOfMain
+    html =
+        fromModule ["VirtualDom"] "Node"
 
-              err =
-                P.vcat
-                  [ P.text "Type Error: 'main' must have one of the following types:"
-                  , P.text " "
-                  , P.text "    Element, Html, Signal Element, Signal Html"
-                  , P.text " "
-                  , P.text "Instead 'main' has type:\n"
-                  , P.nest 4 (PP.pretty typeOfMain)
-                  , P.text " "
-                  ]
+    signal tipe =
+        ST.App (fromModule ["Signal"] "Signal") [ tipe ]
+
+    element =
+      let builtin name =
+            ST.Type (Var.builtin name)
+
+          maybe tipe =
+            ST.App (fromModule ["Maybe"] "Maybe") [ tipe ]
+      in
+        ST.Record
+          [ ("element", fromModule ["Graphics","Element"] "ElementPrim")
+          , ("props",
+              ST.Record
+                [ ("click"  , builtin "_Tuple0")
+                , ("color"  , maybe (fromModule ["Color"] "Color"))
+                , ("height" , builtin "Int")
+                , ("hover"  , builtin "_Tuple0")
+                , ("href"   , builtin "String")
+                , ("id"     , builtin "Int")
+                , ("opacity", builtin "Float")
+                , ("tag"    , builtin "String")
+                , ("width"  , builtin "Int")
+                ]
+                Nothing
+            )
+          ]
+          Nothing
 
 
-data Direction = In | Out
+badMainMessage :: ST.CanonicalType -> P.Doc
+badMainMessage typeOfMain =
+  P.vcat
+    [ P.text "Type Error: 'main' must have one of the following types:"
+    , P.text " "
+    , P.text "    Element, Html, Signal Element, Signal Html"
+    , P.text " "
+    , P.text "Instead 'main' has type:\n"
+    , P.nest 4 (PP.pretty typeOfMain)
+    , P.text " "
+    ]
 
 
-portTypes :: (Monad m) => Canonical.Expr -> ErrorT [P.Doc] m ()
-portTypes expr =
-  case Expr.checkPorts (check In) (check Out) expr of
-    Left err -> throwError err
-    Right _  -> return ()
-  where
-    check = isValid True False False
-    isValid isTopLevel seenFunc seenSignal direction name tipe =
-        case tipe of
-          ST.Aliased _ t -> valid t
-
-          ST.Type v ->
-              case any ($ v) [ V.isJson, V.isPrimitive, V.isTuple ] of
-                True -> return ()
-                False -> err "an unsupported type"
-
-          ST.App t [] -> valid t
-
-          ST.App (ST.Type v) [t]
-              | V.isSignal v -> handleSignal t
-              | V.isMaybe  v -> valid t
-              | V.isArray  v -> valid t
-              | V.isList   v -> valid t
-
-          ST.App (ST.Type v) ts
-              | V.isTuple v -> mapM_ valid ts
-                    
-          ST.App _ _ -> err "an unsupported type"
-
-          ST.Var _ -> err "free type variables"
-
-          ST.Lambda _ _ ->
-              case direction of
-                In -> err "functions"
-                Out | seenFunc   -> err "higher-order functions"
-                    | seenSignal -> err "signals that contain functions"
-                    | otherwise  ->
-                        forM_ (ST.collectLambdas tipe)
-                              (isValid' True seenSignal direction name)
-
-          ST.Record _ (Just _) -> err "extended records with free type variables"
-
-          ST.Record fields Nothing ->
-              mapM_ (\(k,v) -> (,) k <$> valid v) fields
-
-        where
-          isValid' = isValid False
-          valid = isValid' seenFunc seenSignal direction name
-
-          handleSignal t
-              | seenFunc   = err "functions that involve signals"
-              | seenSignal = err "signals-of-signals"
-              | isTopLevel = isValid' seenFunc True direction name t
-              | otherwise  = err "a signal within a data stucture"
-
-          dir inMsg outMsg = case direction of { In -> inMsg ; Out -> outMsg }
-          txt = P.text . concat
-
-          err kind =
-              throw $
-              [ txt [ "Type Error: the value ", dir "coming in" "sent out"
-                    , " through port '", name, "' is invalid." ]
-              , txt [ "It contains ", kind, ":\n" ]
-              , P.nest 4 (PP.pretty tipe) <> P.text "\n"
-              , txt [ "Acceptable values for ", dir "incoming" "outgoing", " ports include:" ]
-              , txt [ "    Ints, Floats, Bools, Strings, Maybes, Lists, Arrays, Tuples, unit values," ]
-              , txt [ "    Json.Values, ", dir "" "first-order functions, ", "and concrete records." ]
-              ]
-
+-- INFINITE TYPES
 
 occurs :: (String, TT.Variable) -> StateT TS.SolverState IO ()
 occurs (name, variable) =
@@ -171,8 +144,17 @@ occurs (name, variable) =
             Nothing -> return []
             Just struct ->
                 case struct of
-                  TT.App1 a b -> (++) <$> go a <*> go b
-                  TT.Fun1 a b -> (++) <$> go a <*> go b
-                  TT.Var1 a   -> go a
-                  TT.EmptyRecord1 -> return []
-                  TT.Record1 fields ext -> concat <$> mapM go (ext : concat (Map.elems fields))
+                  TT.App1 a b ->
+                      (++) <$> go a <*> go b
+
+                  TT.Fun1 a b ->
+                      (++) <$> go a <*> go b
+
+                  TT.Var1 a ->
+                      go a
+
+                  TT.EmptyRecord1 ->
+                      return []
+
+                  TT.Record1 fields ext ->
+                      concat <$> mapM go (ext : concat (Map.elems fields))

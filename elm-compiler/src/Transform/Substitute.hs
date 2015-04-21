@@ -5,7 +5,7 @@ import Control.Arrow (second, (***))
 import qualified Data.Set as Set
 
 import AST.Annotation
-import AST.Expression.General (Expr'(..))
+import AST.Expression.General (Expr'(..), PortImpl(..))
 import qualified AST.Expression.Canonical as Canonical
 import qualified AST.Pattern as Pattern
 import qualified AST.Variable as V
@@ -77,12 +77,20 @@ subst old new expression =
       Record fields ->
           Record (map (second f) fields)
 
-      Literal _ -> expression
+      Literal _ ->
+          expression
 
-      GLShader _ _ _ -> expression
+      GLShader _ _ _ ->
+          expression
 
-      PortIn name st ->
-          PortIn name st
+      Port impl ->
+          Port $
+            case impl of
+              In _ _ ->
+                  impl
 
-      PortOut name st signal ->
-          PortOut name st (f signal)
+              Out name expr tipe ->
+                  Out name (f expr) tipe
+
+              Task name expr tipe ->
+                  Task name (f expr) tipe

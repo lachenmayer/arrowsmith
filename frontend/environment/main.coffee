@@ -1,5 +1,5 @@
 ready = require 'domready'
-{attachToEnvironment} = require './utils.coffee'
+{attachToEnvironment} = require './update.coffee'
 
 ready ->
   initialModule = document.querySelector('.initial-module')
@@ -13,13 +13,13 @@ ready ->
 
   ports =
     initialModule: elmFile.modul # : Module
-    moduleUpdates: [elmFile.modul, ["Ok", ""]] # : (Module, Result Error ElmCode)
     editedValue: ["", ""] # : (Name, Value)
     evaluatedValue: [[], "", ""] # : (ModuleName, Name, Value)
-    compileResponse: ["Ok", ""] # : Result ElmError ElmCode (~ish)
+    compiledModules: elmFile.modul # : Module
+    compileErrors: "" # : ElmError(~ String)
   editor = Elm.fullscreen Elm.Arrowsmith.Main, ports
 
-  edit = require('./edit.coffee')(editor.ports.editedValue.send, editor.ports.moduleUpdates)
+  edit = require('./edit.coffee')(editor.ports.editedValue.send, editor.ports.compiledModules.send, editor.ports.compileErrors.send)
   editor.ports.stopEditing.subscribe edit
 
   evaluate = require('./evaluate.coffee')(editor.ports.evaluatedValue.send)

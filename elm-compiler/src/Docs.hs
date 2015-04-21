@@ -9,6 +9,7 @@ import System.IO
 
 import Control.Applicative ((<$>))
 import Control.Arrow (second)
+import Control.Monad (when)
 import qualified Data.Aeson.Encode.Pretty as Json
 import qualified Data.ByteString.Lazy.Char8 as BS
 import qualified Data.Map as Map
@@ -54,7 +55,17 @@ defaultFlags = Flags
 main :: IO ()
 main =
   do  flags <- cmdArgs defaultFlags
-      source <- readFile (input flags)
+      let inputFileName = input flags
+
+      exists <- doesFileExist inputFileName
+      when (not exists) $
+          do  hPutStrLn stderr $
+                  if null inputFileName
+                    then "Error: you must provide a file to document!"
+                    else "Error: could not find a file named '" ++ inputFileName ++ "'"
+              exitFailure
+
+      source <- readFile inputFileName
       case Parse.iParse documentation source of
         Right docs ->
             let json = Json.encodePretty' config docs in
@@ -178,7 +189,9 @@ collectInfo (comment, decl) info =
     case decl of
       Decl.Definition def ->
           case def of
-            Source.Definition _ _ -> error errorMessage
+            Source.Definition _ _ ->
+                error (errorMessage "unannotated definitions")
+
             Source.TypeAnnotation name tipe ->
                 let value = Docs.Value name comment (Type.fromInternalType tipe) Nothing
                 in
@@ -201,13 +214,13 @@ collectInfo (comment, decl) info =
               info { infixes = Map.insert name infixInfo (infixes info) }
 
       Decl.Port _ ->
-          error errorMessage
+          error (errorMessage "ports")
 
 
-errorMessage :: String
-errorMessage =
-    "there appears to be a bug in this tool.\n" ++
-    "Please report it to <https://github.com/elm-lang/Elm/issues>"
+errorMessage :: String -> String
+errorMessage name =
+    "Unable to deal with annotations on " ++ name ++ " at this time.\n" ++
+    "Please report your use case to <https://github.com/elm-lang/elm-compiler/issues>"
 
 
 -- FILTER OUT UNEXPORTED VALUES, ALIASES, and UNIONS

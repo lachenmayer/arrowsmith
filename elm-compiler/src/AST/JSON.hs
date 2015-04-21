@@ -25,6 +25,7 @@ $(deriveJSON defaultOptions ''AST.Declaration.Assoc)
 
 $(deriveJSON defaultOptions ''AST.Expression.Canonical.Def)
 $(deriveJSON defaultOptions ''AST.Expression.General.Expr')
+$(deriveJSON defaultOptions ''AST.Expression.General.PortImpl)
 
 $(deriveJSON defaultOptions ''AST.Literal.GLTipe)
 $(deriveJSON defaultOptions ''AST.Literal.GLShaderTipe)
@@ -41,6 +42,8 @@ $(deriveJSON defaultOptions ''AST.Variable.Home)
 $(deriveJSON defaultOptions ''AST.Variable.Value)
 $(deriveJSON defaultOptions ''AST.Variable.Listing)
 
+$(deriveJSON defaultOptions ''AST.Type.AliasType)
+$(deriveJSON defaultOptions ''AST.Type.PortType)
 $(deriveJSON defaultOptions ''AST.Type.Type)
 
 instance ToJSON Doc where

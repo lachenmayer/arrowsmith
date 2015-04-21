@@ -37,6 +37,11 @@ builtin :: String -> Canonical
 builtin x = Canonical BuiltIn x
 
 
+fromModule :: [String] -> String -> Canonical
+fromModule home name =
+    Canonical (Module home) name
+
+
 -- VARIABLE RECOGNIZERS
 
 is :: [String] -> String -> Canonical -> Bool
@@ -56,6 +61,11 @@ isMaybe =
 isArray :: Canonical -> Bool
 isArray =
     is ["Array"] "Array"
+
+
+isTask :: Canonical -> Bool
+isTask =
+    is ["Task"] "Task"
 
 
 isSignal :: Canonical -> Bool
@@ -101,7 +111,8 @@ class ToString a where
 
 
 instance ToString Raw where
-  toString (Raw x) = x
+  toString (Raw name) =
+      name
 
 
 instance ToString Canonical where
@@ -124,6 +135,16 @@ data Listing a = Listing
 openListing :: Listing a
 openListing =
     Listing [] True
+
+
+closedListing :: Listing a
+closedListing =
+    Listing [] False
+
+
+listing :: [a] -> Listing a
+listing xs =
+    Listing xs False
 
 
 -- | A value that can be imported or exported
@@ -178,11 +199,13 @@ getUnion value =
 -- PRETTY VARIABLES
 
 instance Pretty Raw where
-    pretty (Raw var) = variable var
+  pretty (Raw name) =
+      variable name
 
 
 instance Pretty Canonical where
-    pretty var = P.text (toString var)
+  pretty var =
+      P.text (toString var)
 
 
 instance Pretty a => Pretty (Listing a) where

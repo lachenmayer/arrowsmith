@@ -10,7 +10,6 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
    $moduleName = "Arrowsmith.Module",
    $Array = Elm.Array.make(_elm),
    $Arrowsmith$Definition = Elm.Arrowsmith.Definition.make(_elm),

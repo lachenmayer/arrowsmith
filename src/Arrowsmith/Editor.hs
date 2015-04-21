@@ -131,6 +131,6 @@ badRequest :: MonadSnap m => String -> m ()
 badRequest message =
   withResponseCode 400 message
 
-serverError :: MonadSnap m => String -> m ()
-serverError message =
-  withResponseCode 500 message
+-- serverError :: MonadSnap m => String -> m ()
+-- serverError message =
+--   withResponseCode 500 message

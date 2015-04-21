@@ -1,17 +1,21 @@
 
 -- incoming
-port userID : String
-port signal : Signal Int
-port tuple : (Float,Bool)
-port array : List Int
-port record : { x:Float, y:Float }
+input userID : String
+input number : Int
+input tuple : (Float,Bool)
+input array : List Int
+input record : { x:Float, y:Float }
 
 -- outgoing
-port fortyTwo : Int
-port fortyTwo = 42
+output fortyTwo : Int
+output fortyTwo =
+    42
 
-port time : Signal Float
-port time = every second
 
-port students : Signal (List {name:String, age:Int})
-port students = constant []
+output time : Float
+output time =
+    3.14
+
+output students : List { name:String, age:Int }
+output students =
+    [ { name = "Tom", age = 42 } ]

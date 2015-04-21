@@ -2,24 +2,19 @@ module Arrowsmith.Main where
 
 import Debug
 
-import Dict (Dict)
-import Dict
-import Graphics.Element (Element, flow, down)
+import Dict as D exposing (Dict)
+import Graphics.Element exposing (Element, flow, down)
 import Graphics.Input as Input
-import Html (Html)
-import Html as H
+import Html as H exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
-import Http
 import List
 import Maybe
-import Signal (Signal, (<~))
-import Signal as S
-import Text (plainText)
+import Signal as S exposing (Signal, (<~))
 
 import Arrowsmith.Definition as Def
 import Arrowsmith.Module as Module
-import Arrowsmith.Types (..)
+import Arrowsmith.Types exposing (..)
 
 --
 -- State & Actions
@@ -30,24 +25,24 @@ initialState =
   { modul = initialModule
 
   , isCompiling = False
-  , compilationStatus = Ok ""
-  , dirty = True
+  , compileStatus = Compiled
+  , synced = True
 
   , editing = Nothing
 
-  , values = Dict.empty
+  , values = D.empty
   , toEvaluate = Nothing
 
   , fresh = 0
   }
 
-actions : S.Channel Action
+actions : S.Mailbox Action
 actions =
-  S.channel NoOp
+  S.mailbox NoOp
 
 action : Action -> S.Message
 action =
-  S.send actions
+  S.message actions
 
 step : Action -> State -> State
 step action state =
@@ -56,15 +51,6 @@ step action state =
     NoOp ->
       state
 
-    Compile m ->
-      { state | isCompiling <- True }
-    FinishCompiling (response, codeOrError) ->
-      { state | isCompiling <- False
-              , dirty <- False
-              , compilationStatus <- case response of
-                  "Ok" -> Ok codeOrError
-                  "Err" -> Err codeOrError }
-
     Edit name ->
       { state | editing <- Just name }
     StopEditing _ ->
@@ -72,33 +58,51 @@ step action state =
     FinishEditing (name, newBinding) ->
       { state
       | editing <- Nothing
-      , dirty <- True
+      , synced <- True
       , modul <- Module.replaceDefinition state.modul name (name, Nothing, newBinding)
       }
 
     Evaluate e ->
       { state | toEvaluate <- Just e }
     FinishEvaluating (moduleName, name, value) ->
-      { state | values <- Dict.insert name value state.values
-              , toEvaluate <- Nothing }
+      { state
+      | values <- D.insert name value state.values
+      , toEvaluate <- Nothing
+      }
 
     NewDefinition ->
-      { state | modul <- Module.freshDefinition state.modul state.fresh
-              , fresh <- state.fresh + 1 }
-
+      { state
+      | modul <- Module.freshDefinition state.modul state.fresh
+      , fresh <- state.fresh + 1
+      }
     RemoveDefinition name ->
-      { state | modul <- Module.removeDefinition state.modul name
-              , dirty <- True }
+      { state
+      | modul <- Module.removeDefinition state.modul name
+      , synced <- True
+      }
+
+    ModuleCompiled newModule ->
+      { state
+      | compileStatus <- Compiled
+      , synced <- True
+      , modul <- newModule
+      }
+    CompilationFailed error ->
+      { state
+      | compileStatus <- CompileError error
+      , synced <- True
+      }
 
 -- State can be updated either by "in-house" actions or by events from the environment.
 -- Port signals can just be merged into actions, but compilation requires a separate signal.
 state : Signal State
 state =
   let
-    events = S.mergeMany [ S.subscribe actions
-                         , FinishCompiling <~ compileResponse
+    events = S.mergeMany [ actions.signal
                          , FinishEditing <~ editedValue
                          , FinishEvaluating <~ evaluatedValue
+                         , ModuleCompiled <~ compiledModules
+                         , CompilationFailed <~ compileErrors
                          ]
   in
     S.foldp step initialState events
@@ -124,7 +128,7 @@ port stopEditing =
         StopEditing _ -> True
         _ -> False
   in
-    extractValue <~ S.keepIf isStopEditingAction NoOp (S.subscribe actions)
+    extractValue <~ S.filter isStopEditingAction NoOp actions.signal
 
 --
 -- Evaluate
@@ -147,35 +151,17 @@ port evaluate =
         Evaluate _ -> True
         _ -> False
   in
-    extractValue <~ S.keepIf isEvaluateAction NoOp (S.subscribe actions)
+    extractValue <~ S.filter isEvaluateAction NoOp actions.signal
 
 --
 -- Compile
 --
 
-port compileResponse : Signal (CompileResponse, String)
-
-port compileModule : Signal ElmCode
-port compileModule =
-  let
-    extractValue a =
-      case a of
-        Compile modul -> modul
-        _ -> Module.empty
-    isCompileAction a =
-      case a of
-        Compile _ -> True
-        _ -> False
-    compileAction = extractValue <~ S.keepIf isCompileAction NoOp (S.subscribe actions)
-  in
-    Module.toString <~ compileAction
-
---
--- Update
---
-
 port initialModule : Module
-port moduleUpdates : Signal (Module, (CompileResponse, String))
+
+port compiledModules : Signal Module
+
+port compileErrors : Signal ElmError
 
 --
 -- Views
@@ -221,7 +207,7 @@ defView values moduleName definition =
   let
     (name, tipe, binding) = definition
     class = "definition defname-" ++ name
-    valueView = case (Dict.get name values) of
+    valueView = case (D.get name values) of
       Just value -> [ div "definition-value" [ H.text value ] ]
       Nothing -> []
   in
@@ -230,10 +216,6 @@ defView values moduleName definition =
       , codeView definition
       ] ++ valueView
 
-compileButton : Module -> Html
-compileButton modul =
-  button "compile-button" "compile" (Compile modul)
-
 moduleView : Values -> Module -> Html
 moduleView values modul =
   let
@@ -241,21 +223,21 @@ moduleView values modul =
   in
     div "module"
       [ div "module-header"
-        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ], compileButton modul ]
+        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map importView imports
       , div "module-adts" <| List.map adtView adts
       , div "module-defs" <| List.map (defView values name) defs ++ [button "new-def-button" "+" NewDefinition]
       ]
 
-errorView : CompilationStatus -> Html
+errorView : CompileStatus -> Html
 errorView status =
   case status of
-    Ok _ -> div "no-error" []
-    Err err -> div "error" [ H.pre [] [ H.text err ] ]
+    Compiled -> div "no-error" []
+    CompileError err -> div "error" [ H.pre [] [ H.text err ] ]
 
 view : State -> Html
-view {modul, values, compilationStatus} =
-  div "modules" [ moduleView values modul, errorView compilationStatus ]
+view {modul, values, compileStatus} =
+  div "modules" [ moduleView values modul, errorView compileStatus ]
 
 --
 -- Util
@@ -269,7 +251,7 @@ keepJust maybes default =
         Just x -> (True, x)
         Nothing -> (False, default)
   in
-    snd <~ S.keepIf fst (False, default) (decorate <~ maybes)
+    snd <~ S.filter fst (False, default) (decorate <~ maybes)
 
 button : String -> String -> Action -> Html
 button className buttonText act =

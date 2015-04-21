@@ -9,6 +9,7 @@ import qualified Data.Set as Set
 import qualified Data.Traversable as T
 
 import AST.Expression.General (Expr'(..), dummyLet)
+import qualified AST.Expression.General as E
 import qualified AST.Expression.Valid as Valid
 import qualified AST.Expression.Canonical as Canonical
 
@@ -22,15 +23,19 @@ import AST.PrettyPrint (pretty, commaSep)
 import qualified AST.Pattern as P
 import Text.PrettyPrint as P
 
-import Transform.Canonicalize.Environment as Env
+import qualified Transform.Canonicalize.Environment as Env
 import qualified Transform.Canonicalize.Setup as Setup
 import qualified Transform.Canonicalize.Type as Canonicalize
 import qualified Transform.Canonicalize.Variable as Canonicalize
+import qualified Transform.Canonicalize.Port as Port
 import qualified Transform.SortDefinitions as Transform
 import qualified Transform.Declaration as Transform
 
 
-module' :: Module.Interfaces -> Module.ValidModule -> Either [Doc] Module.CanonicalModule
+module'
+    :: Module.Interfaces
+    -> Module.ValidModule
+    -> Either [Doc] Module.CanonicalModule
 module' interfaces modul =
     filterImports <$> modul'
   where
@@ -39,11 +44,14 @@ module' interfaces modul =
 
     filterImports m =
         let used (name,_) = Set.member name usedModules
-        in  m { Module.imports = filter used (Module.imports m) }
+        in
+            m { Module.imports = filter used (Module.imports m) }
 
 
-moduleHelp :: Module.Interfaces -> Module.ValidModule
-           -> Canonicalizer [Doc] Module.CanonicalModule
+moduleHelp
+    :: Module.Interfaces
+    -> Module.ValidModule
+    -> Env.Canonicalizer [Doc] Module.CanonicalModule
 moduleHelp interfaces modul@(Module.Module _ _ exports _ decls) =
   do  env <- Setup.environment interfaces modul
       canonicalDecls <- mapM (declaration env) decls
@@ -70,11 +78,14 @@ moduleHelp interfaces modul@(Module.Module _ _ exports _ decls) =
          , aliases =
              Map.fromList [ (name,(tvs,alias)) | D.TypeAlias name tvs alias <- decls ]
          , ports =
-             [ D.portName port | D.Port port <- decls ]
+             [ E.portName impl | D.Port (D.CanonicalPort impl) <- decls ]
          }
 
 
-resolveExports :: [Var.Value] -> Var.Listing Var.Value -> Canonicalizer [Doc] [Var.Value]
+resolveExports
+    :: [Var.Value]
+    -> Var.Listing Var.Value
+    -> Env.Canonicalizer [Doc] [Var.Value]
 resolveExports fullList (Var.Listing partialList open) =
     if open
       then return fullList
@@ -164,12 +175,15 @@ declToValue decl =
       _ -> []
 
 
-declaration :: Environment -> D.ValidDecl -> Canonicalizer [Doc] D.CanonicalDecl
+declaration
+    :: Env.Environment
+    -> D.ValidDecl
+    -> Env.Canonicalizer [Doc] D.CanonicalDecl
 declaration env decl =
     let canonicalize kind context pattern env v =
             let ctx = P.text ("Error in " ++ context) <+> pretty pattern <> P.colon
                 throw err = P.vcat [ ctx, P.text err ]
-            in 
+            in
                 Env.onError throw (kind env v)
     in
     case decl of
@@ -189,25 +203,31 @@ declaration env decl =
           do  expanded' <- canonicalize Canonicalize.tipe "type alias" name env expanded
               return (D.TypeAlias name tvars expanded')
 
-      D.Port port ->
-          do  Env.uses ["Native","Ports"]
+      D.Port validPort ->
+          do  Env.uses ["Native","Port"]
               Env.uses ["Native","Json"]
-              D.Port <$>
-                  case port of
-                    D.In name t ->
-                        do  t' <- canonicalize Canonicalize.tipe "port" name env t
-                            return (D.In name t')
-                    D.Out name e t ->
-                        do  e' <- expression env e
-                            t' <- canonicalize Canonicalize.tipe "port" name env t
-                            return (D.Out name e' t')
+              case validPort of
+                D.In name tipe ->
+                    do  tipe' <- canonicalize Canonicalize.tipe "port" name env tipe
+                        port' <- Port.check name Nothing tipe'
+                        return (D.Port port')
+
+
+                D.Out name expr tipe ->
+                    do  expr' <- expression env expr
+                        tipe' <- canonicalize Canonicalize.tipe "port" name env tipe
+                        port' <- Port.check name (Just expr') tipe'
+                        return (D.Port port')
 
       D.Fixity assoc prec op ->
           return $ D.Fixity assoc prec op
 
 
-expression :: Environment -> Valid.Expr -> Canonicalizer [Doc] Canonical.Expr
-expression env (A.A ann expr) =
+expression
+    :: Env.Environment
+    -> Valid.Expr
+    -> Env.Canonicalizer [Doc] Canonical.Expr
+expression env (A.A ann validExpr) =
     let go = expression env
         tipe' environ = format . Canonicalize.tipe environ
         throw err =
@@ -218,48 +238,55 @@ expression env (A.A ann expr) =
         format = Env.onError throw
     in
     A.A ann <$>
-    case expr of
+    case validExpr of
       Literal lit ->
           return (Literal lit)
 
-      Range e1 e2 ->
-          Range <$> go e1 <*> go e2
+      Range lowExpr highExpr ->
+          Range <$> go lowExpr <*> go highExpr
 
-      Access e x ->
-          Access <$> go e <*> return x
+      Access record field ->
+          Access <$> go record <*> return field
 
-      Remove e x ->
-          flip Remove x <$> go e
+      Remove record field ->
+          flip Remove field <$> go record
 
-      Insert e x v ->
-          flip Insert x <$> go e <*> go v
+      Insert record field expr ->
+          flip Insert field <$> go record <*> go expr
 
-      Modify e fs ->
-          Modify <$> go e <*> mapM (\(k,v) -> (,) k <$> go v) fs
+      Modify record fields ->
+          Modify
+            <$> go record
+            <*> mapM (\(field,expr) -> (,) field <$> go expr) fields
 
-      Record fs ->
-          Record <$> mapM (\(k,v) -> (,) k <$> go v) fs
+      Record fields ->
+          Record
+            <$> mapM (\(field,expr) -> (,) field <$> go expr) fields
 
-      Binop (Var.Raw op) e1 e2 ->
+      Binop (Var.Raw op) leftExpr rightExpr ->
           do  op' <- format (Canonicalize.variable env op)
-              Binop op' <$> go e1 <*> go e2
+              Binop op' <$> go leftExpr <*> go rightExpr
 
-      Lambda p e ->
-          let env' = update p env in
-          Lambda <$> format (pattern env' p) <*> expression env' e
+      Lambda arg body ->
+          let env' = Env.addPattern arg env
+          in
+              Lambda <$> format (pattern env' arg) <*> expression env' body
 
-      App e1 e2 ->
-          App <$> go e1 <*> go e2
+      App func arg ->
+          App <$> go func <*> go arg
 
-      MultiIf ps ->
-          MultiIf <$> mapM go' ps
+      MultiIf branches ->
+          MultiIf <$> mapM go' branches
         where
-          go' (b,e) = (,) <$> go b <*> go e
+          go' (condition, branch) =
+              (,) <$> go condition <*> go branch
 
-      Let defs e ->
-          Let <$> mapM rename' defs <*> expression env' e
+      Let defs body ->
+          Let <$> mapM rename' defs <*> expression env' body
         where
-          env' = foldr update env $ map (\(Valid.Definition p _ _) -> p) defs
+          env' =
+              foldr Env.addPattern env $ map (\(Valid.Definition p _ _) -> p) defs
+
           rename' (Valid.Definition p body mtipe) =
               Canonical.Definition
                   <$> format (pattern env' p)
@@ -269,30 +296,47 @@ expression env (A.A ann expr) =
       Var (Var.Raw x) ->
           Var <$> format (Canonicalize.variable env x)
 
-      Data name es ->
-          Data name <$> mapM go es
+      Data name exprs ->
+          Data name <$> mapM go exprs
 
-      ExplicitList es ->
-          ExplicitList <$> mapM go es
+      ExplicitList exprs ->
+          ExplicitList <$> mapM go exprs
 
-      Case e cases ->
-          Case <$> go e <*> mapM branch cases
+      Case expr cases ->
+          Case <$> go expr <*> mapM branch cases
         where
           branch (p,b) =
               (,) <$> format (pattern env p)
-                  <*> expression (update p env) b
+                  <*> expression (Env.addPattern p env) b
 
-      PortIn name st ->
-          PortIn name <$> tipe' env st
+      Port impl ->
+          let portType pt =
+                case pt of
+                  Type.Normal t ->
+                      Type.Normal <$> tipe' env t
 
-      PortOut name st signal ->
-          PortOut name <$> tipe' env st <*> go signal
+                  Type.Signal root arg ->
+                      Type.Signal <$> tipe' env root <*> tipe' env arg
+          in
+              Port <$>
+                  case impl of
+                    E.In name tipe ->
+                        E.In name <$> portType tipe
+
+                    E.Out name expr tipe ->
+                        E.Out name <$> go expr <*> portType tipe
+
+                    E.Task name expr tipe ->
+                        E.Task name <$> go expr <*> portType tipe
 
       GLShader uid src tipe ->
           return (GLShader uid src tipe)
 
 
-pattern :: Environment -> P.RawPattern -> Canonicalizer String P.CanonicalPattern
+pattern
+    :: Env.Environment
+    -> P.RawPattern
+    -> Env.Canonicalizer String P.CanonicalPattern
 pattern env ptrn =
     case ptrn of
       P.Var x       -> return $ P.Var x

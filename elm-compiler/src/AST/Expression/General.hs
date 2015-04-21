@@ -10,13 +10,14 @@ module AST.Expression.General where
 
 import AST.PrettyPrint
 import Text.PrettyPrint as P
-import AST.Type (Type)
 
 import qualified AST.Annotation as Annotation
 import qualified AST.Helpers as Help
 import qualified AST.Literal as Literal
 import qualified AST.Pattern as Pattern
+import qualified AST.Type as Type
 import qualified AST.Variable as Var
+
 
 ---- GENERAL AST ----
 
@@ -38,6 +39,7 @@ move through the compilation process. The type holes are used to represent:
 type Expr annotation definition variable =
     Annotation.Annotated annotation (Expr' annotation definition variable)
 
+
 data Expr' ann def var
     = Literal Literal.Literal
     | Var var
@@ -56,133 +58,166 @@ data Expr' ann def var
     | Modify (Expr ann def var) [(String, Expr ann def var)]
     | Record [(String, Expr ann def var)]
     -- for type checking and code gen only
-    | PortIn String (Type var)
-    | PortOut String (Type var) (Expr ann def var)
+    | Port (PortImpl (Expr ann def var) var)
     | GLShader String String Literal.GLShaderTipe
     deriving (Show)
+
+
+-- PORTS
+
+data PortImpl expr var
+    = In String (Type.PortType var)
+    | Out String expr (Type.PortType var)
+    | Task String expr (Type.PortType var)
+    deriving (Show)
+
+
+portName :: PortImpl expr var -> String
+portName impl =
+  case impl of
+    In name _ -> name
+    Out name _ _ -> name
+    Task name _ _ -> name
 
 
 ---- UTILITIES ----
 
 rawVar :: String -> Expr' ann def Var.Raw
-rawVar x = Var (Var.Raw x)
+rawVar x =
+  Var (Var.Raw x)
+
 
 localVar :: String -> Expr' ann def Var.Canonical
-localVar x = Var (Var.Canonical Var.Local x)
+localVar x =
+  Var (Var.Canonical Var.Local x)
+
 
 tuple :: [Expr ann def var] -> Expr' ann def var
-tuple es = Data ("_Tuple" ++ show (length es)) es
+tuple expressions =
+  Data ("_Tuple" ++ show (length expressions)) expressions
 
-delist :: Expr ann def var -> [Expr ann def var]
-delist (Annotation.A _ (Data "::" [h,t])) = h : delist t
-delist _ = []
 
 saveEnvName :: String
-saveEnvName = "_save_the_environment!!!"
+saveEnvName =
+  "_save_the_environment!!!"
+
 
 dummyLet :: (Pretty def) => [def] -> Expr Annotation.Region def Var.Canonical
-dummyLet defs = 
-     Annotation.none $ Let defs (Annotation.none $ Var (Var.builtin saveEnvName))
+dummyLet defs =
+  Annotation.none $ Let defs (Annotation.none $ Var (Var.builtin saveEnvName))
+
 
 instance (Pretty def, Pretty var, Var.ToString var) => Pretty (Expr' ann def var) where
-  pretty expr =
-    case expr of
-      Literal lit ->
-          pretty lit
+  pretty expression =
+    case expression of
+      Literal literal ->
+          pretty literal
 
       Var x ->
           pretty x
 
-      Range e1 e2 ->
-          P.brackets (pretty e1 <> P.text ".." <> pretty e2)
+      Range lowExpr highExpr ->
+          P.brackets (pretty lowExpr <> P.text ".." <> pretty highExpr)
 
-      ExplicitList es ->
-          P.brackets (commaCat (map pretty es))
+      ExplicitList elements ->
+          P.brackets (commaCat (map pretty elements))
 
-      Binop op (Annotation.A _ (Literal (Literal.IntNum 0))) e
+      Binop op (Annotation.A _ (Literal (Literal.IntNum 0))) expr
           | Var.toString op == "-" ->
-              P.text "-" <> prettyParens e
+              P.text "-" <> prettyParens expr
 
-      Binop op e1 e2 ->
-          P.hang (prettyParens e1) 2 (P.text op'' <+> prettyParens e2)
+      Binop op leftExpr rightExpr ->
+          P.hang (prettyParens leftExpr) 2 (P.text op'' <+> prettyParens rightExpr)
         where
           op' = Var.toString op
           op'' = if Help.isOp op' then op' else "`" ++ op' ++ "`"
 
-      Lambda p e ->
+      Lambda pattern expr ->
           P.text "\\" <> args <+> P.text "->" <+> pretty body
         where
-          (ps,body) = collectLambdas (Annotation.A undefined $ Lambda p e)
-          args = P.sep (map Pattern.prettyParens ps)
+          (patterns, body) = collectLambdas expr
+          args = P.sep (map Pattern.prettyParens (pattern : patterns))
 
-      App _ _ ->
+      App expr arg ->
           P.hang func 2 (P.sep args)
         where
           func:args =
-              map prettyParens (collectApps (Annotation.A undefined expr))
+              map prettyParens (collectApps expr ++ [arg])
 
       MultiIf branches ->
           P.text "if" $$ nest 3 (vcat $ map iff branches)
         where
           iff (b,e) = P.text "|" <+> P.hang (pretty b <+> P.text "->") 2 (pretty e)
 
-      Let defs e ->
+      Let defs body ->
           P.sep
             [ P.hang (P.text "let") 4 (P.vcat (map pretty defs))
-            , P.text "in" <+> pretty e
+            , P.text "in" <+> pretty body
             ]
 
-      Case e pats ->
-          P.hang pexpr 2 (P.vcat (map pretty' pats))
+      Case expr branches ->
+          P.hang pexpr 2 (P.vcat (map pretty' branches))
         where
-          pexpr = P.sep [ P.text "case" <+> pretty e, P.text "of" ]
-          pretty' (p,b) = pretty p <+> P.text "->" <+> pretty b
+          pexpr = P.sep [ P.text "case" <+> pretty expr, P.text "of" ]
+          pretty' (pattern, branch) =
+              pretty pattern <+> P.text "->" <+> pretty branch
 
-      Data "::" [hd,tl] -> pretty hd <+> P.text "::" <+> pretty tl
-      Data "[]" [] -> P.text "[]"
-      Data name es
-          | Help.isTuple name -> P.parens (commaCat (map pretty es))
-          | otherwise -> P.hang (P.text name) 2 (P.sep (map prettyParens es))
+      Data "::" [hd,tl] ->
+          pretty hd <+> P.text "::" <+> pretty tl
 
-      Access e x ->
-          prettyParens e <> P.text "." <> variable x
+      Data "[]" [] ->
+          P.text "[]"
 
-      Remove e x ->
-          P.braces (pretty e <+> P.text "-" <+> variable x)
+      Data name exprs
+        | Help.isTuple name ->
+            P.parens (commaCat (map pretty exprs))
+        | otherwise ->
+            P.hang (P.text name) 2 (P.sep (map prettyParens exprs))
 
-      Insert (Annotation.A _ (Remove e y)) x v ->
+      Access record field ->
+          prettyParens record <> P.text "." <> variable field
+
+      Remove record field ->
+          P.braces (pretty record <+> P.text "-" <+> variable field)
+
+      Insert (Annotation.A _ (Remove record y)) x v ->
           P.braces $
               P.hsep
-                [ pretty e, P.text "-", variable y, P.text "|"
+                [ pretty record, P.text "-", variable y, P.text "|"
                 , variable x, P.equals, pretty v
                 ]
 
-      Insert e x v ->
-          P.braces (pretty e <+> P.text "|" <+> variable x <+> P.equals <+> pretty v)
+      Insert record field expr ->
+          P.braces (pretty record <+> P.text "|" <+> variable field <+> P.equals <+> pretty expr)
 
-      Modify e fs ->
+      Modify record fields ->
           P.braces $
               P.hang
-                  (pretty e <+> P.text "|")
+                  (pretty record <+> P.text "|")
                   4
-                  (commaSep $ map field fs)
+                  (commaSep $ map field fields)
         where
           field (k,v) = variable k <+> P.text "<-" <+> pretty v
 
-      Record fs ->
+      Record fields ->
           P.sep
-            [ P.cat (zipWith (<+>) (P.lbrace : repeat P.comma) (map field fs))
+            [ P.cat (zipWith (<+>) (P.lbrace : repeat P.comma) (map field fields))
             , P.rbrace
             ]
         where
-          field (field, value) =
-             variable field <+> P.equals <+> pretty value
+          field (name, expr) =
+             variable name <+> P.equals <+> pretty expr
 
-      GLShader _ _ _ -> P.text "[glsl| ... |]"
+      GLShader _ _ _ ->
+          P.text "[glsl| ... |]"
 
-      PortIn name _ -> P.text $ "<port:" ++ name ++ ">"
+      Port portImpl ->
+          pretty portImpl
 
-      PortOut _ _ signal -> pretty signal
+
+instance (Pretty expr, Pretty var) => Pretty (PortImpl expr var) where
+  pretty impl =
+      P.text ("<port:" ++ portName impl ++ ">")
 
 
 collectApps :: Expr ann def var -> [Expr ann def var]

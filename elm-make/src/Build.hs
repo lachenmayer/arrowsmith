@@ -159,7 +159,7 @@ buildManager env state =
 
         progress =
             fromIntegral (numIncompleteTasks state) / fromIntegral (numTasks env)
-    
+
 
 -- WAIT - REGISTER RESULTS
 

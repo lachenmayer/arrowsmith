@@ -1,10 +1,8 @@
 {-# OPTIONS_GHC -Wall #-}
 module Transform.Canonicalize.Type (tipe) where
 
-import Control.Arrow (second)
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad.Error
-import qualified Data.Map as Map
 import Data.Traversable (traverse)
 
 import qualified AST.Type as T
@@ -19,7 +17,10 @@ tipe
     -> T.RawType
     -> Canonicalizer String T.CanonicalType
 tipe env typ =
-    let go = tipe env in
+    let go = tipe env
+        goSnd (name,t) =
+            (,) name <$> go t
+    in
     case typ of
       T.Var x ->
           return (T.Var x)
@@ -33,13 +34,11 @@ tipe env typ =
       T.Lambda a b ->
           T.Lambda <$> go a <*> go b
 
-      T.Aliased name t ->
-          T.Aliased name <$> go t
-
       T.Record fields ext ->
-          let go' (f,t) = (,) f <$> go t
-          in
-              T.Record <$> mapM go' fields <*> traverse go ext
+          T.Record <$> mapM goSnd fields <*> traverse go ext
+
+      T.Aliased _ _ _ ->
+          error "a RawType should never have an alias in it"
 
 
 canonicalizeApp
@@ -73,24 +72,13 @@ canonicalizeAlias
 canonicalizeAlias env (name, tvars, dealiasedTipe) tipes =
   do  when (tipesLen /= tvarsLen) (throwError msg)
       tipes' <- mapM (tipe env) tipes
-      let tipe' = replace (Map.fromList (zip tvars tipes')) dealiasedTipe
-      return $ T.Aliased name tipe'
+      return $ T.Aliased name (zip tvars tipes') (T.Holey dealiasedTipe)
   where
     tipesLen = length tipes
     tvarsLen = length tvars
 
     msg :: String
-    msg = "Type alias '" ++ Var.toString name ++ "' expects " ++ show tvarsLen ++
-          " type argument" ++ (if tvarsLen == 1 then "" else "s") ++
-          " but was given " ++ show tipesLen
-
-    replace :: Map.Map String T.CanonicalType -> T.CanonicalType -> T.CanonicalType
-    replace typeTable t =
-        let go = replace typeTable in
-        case t of
-          T.Lambda a b          -> T.Lambda (go a) (go b)
-          T.Var x               -> Map.findWithDefault t x typeTable
-          T.Record fields ext   -> T.Record (map (second go) fields) (fmap go ext)
-          T.Aliased original t' -> T.Aliased original (go t')
-          T.Type _              -> t
-          T.App f args          -> T.App (go f) (map go args)
+    msg =
+        "Type alias '" ++ Var.toString name ++ "' expects " ++ show tvarsLen ++
+        " type argument" ++ (if tvarsLen == 1 then "" else "s") ++
+        " but was given " ++ show tipesLen

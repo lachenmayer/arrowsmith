@@ -1,10 +1,10 @@
 module Arrowsmith.Module where
 
 import Array
-import List (intersperse, isEmpty, map, filter)
-import String (concat, join)
+import List exposing (intersperse, isEmpty, map, filter)
+import String exposing (concat, join)
 
-import Arrowsmith.Types (..)
+import Arrowsmith.Types exposing (..)
 import Arrowsmith.Definition as Def
 
 newDefinition : Module -> Definition -> Module

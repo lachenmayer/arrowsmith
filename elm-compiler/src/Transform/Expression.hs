@@ -1,53 +1,29 @@
 {-# OPTIONS_GHC -Wall #-}
-module Transform.Expression (crawlLet, checkPorts) where
+module Transform.Expression (crawlLet) where
 
 import Control.Applicative ((<$>),(<*>))
 import AST.Annotation ( Annotated(A) )
 import AST.Expression.General
-import qualified AST.Expression.Canonical as Canonical
-import AST.Type (Type, CanonicalType)
+
 
 crawlLet
     :: ([def] -> Either a [def'])
     -> Expr ann def var
     -> Either a (Expr ann def' var)
-crawlLet =
-    crawl (\_ _ -> return ()) (\_ _ -> return ())
-
-
-checkPorts
-    :: (String -> CanonicalType -> Either a ())
-    -> (String -> CanonicalType -> Either a ())
-    -> Canonical.Expr
-    -> Either a Canonical.Expr
-checkPorts inCheck outCheck expr =
-    crawl inCheck outCheck (mapM checkDef) expr
-    where
-      checkDef def@(Canonical.Definition _ body _) =
-          do _ <- checkPorts inCheck outCheck body
-             return def
-
-
-crawl
-    :: (String -> Type var -> Either a ())
-    -> (String -> Type var -> Either a ())
-    -> ([def] -> Either a [def'])
-    -> Expr ann def var
-    -> Either a (Expr ann def' var)
-crawl portInCheck portOutCheck defsTransform =
-    go
+crawlLet defsTransform annotatedExpression =
+    go annotatedExpression
   where
-    go (A srcSpan expr) =
+    go (A srcSpan expression) =
         A srcSpan <$>
-        case expr of
+        case expression of
           Var x ->
               return (Var x)
 
-          Lambda p e ->
-              Lambda p <$> go e
+          Lambda pattern body ->
+              Lambda pattern <$> go body
 
-          Binop op e1 e2 ->
-              Binop op <$> go e1 <*> go e2
+          Binop op leftExpr rightExpr ->
+              Binop op <$> go leftExpr <*> go rightExpr
 
           Case e cases ->
               Case <$> go e <*> mapM (\(p,b) -> (,) p <$> go b) cases
@@ -58,32 +34,34 @@ crawl portInCheck portOutCheck defsTransform =
           Literal lit ->
               return (Literal lit)
 
-          Range e1 e2 ->
-              Range <$> go e1 <*> go e2
+          Range lowExpr highExpr ->
+              Range <$> go lowExpr <*> go highExpr
 
-          ExplicitList es ->
-              ExplicitList <$> mapM go es
+          ExplicitList expressions ->
+              ExplicitList <$> mapM go expressions
 
-          App e1 e2 ->
-              App <$> go e1 <*> go e2
+          App funcExpr argExpr ->
+              App <$> go funcExpr <*> go argExpr
 
           MultiIf branches ->
               MultiIf <$> mapM (\(b,e) -> (,) <$> go b <*> go e) branches
 
-          Access e lbl ->
-              Access <$> go e <*> return lbl
+          Access record field ->
+              Access <$> go record <*> return field
 
-          Remove e lbl ->
-              Remove <$> go e <*> return lbl
+          Remove record field ->
+              Remove <$> go record <*> return field
 
-          Insert e lbl v ->
-              Insert <$> go e <*> return lbl <*> go v
+          Insert record field expr ->
+              Insert <$> go record <*> return field <*> go expr
 
-          Modify e fields ->
-              Modify <$> go e <*> mapM (\(k,v) -> (,) k <$> go v) fields
+          Modify record fields ->
+              Modify
+                <$> go record
+                <*> mapM (\(field,expr) -> (,) field <$> go expr) fields
 
           Record fields ->
-              Record <$> mapM (\(k,v) -> (,) k <$> go v) fields
+              Record <$> mapM (\(field,expr) -> (,) field <$> go expr) fields
 
           Let defs body ->
               Let <$> defsTransform defs <*> go body
@@ -91,10 +69,16 @@ crawl portInCheck portOutCheck defsTransform =
           GLShader uid src gltipe ->
               return $ GLShader uid src gltipe
 
-          PortIn name st ->
-              do portInCheck name st
-                 return $ PortIn name st
+          Port impl ->
+              Port <$>
+                  case impl of
+                    In name tipe ->
+                        return (In name tipe)
 
-          PortOut name st signal ->
-              do portOutCheck name st
-                 PortOut name st <$> go signal
+                    Out name expr tipe ->
+                        do  expr' <- go expr
+                            return (Out name expr' tipe)
+
+                    Task name expr tipe ->
+                        do  expr' <- go expr
+                            return (Task name expr' tipe)

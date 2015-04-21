@@ -22,6 +22,7 @@ import qualified AST.PrettyPrint as P
 import qualified AST.Variable as Variable
 import Elm.Utils ((|>))
 
+
 reserveds :: [String]
 reserveds =
     [ "if", "then", "else"
@@ -29,9 +30,10 @@ reserveds =
     , "let", "in"
     , "type"
     , "module", "where"
-    , "import", "as", "hiding", "open"
-    , "export", "foreign"
-    , "deriving", "port"
+    , "import", "as", "hiding", "exposing"
+    , "port", "export", "foreign"
+    , "perform"
+    , "deriving"
     ]
 
 
@@ -82,7 +84,7 @@ rLabel = lowVar
 
 innerVarChar :: IParser Char
 innerVarChar =
-  alphaNum <|> char '_' <|> char '\'' <?> "" 
+  alphaNum <|> char '_' <|> char '\'' <?> ""
 
 
 makeVar :: IParser Char -> IParser String
@@ -251,23 +253,33 @@ located p =
 
 
 accessible :: IParser Source.Expr -> IParser Source.Expr
-accessible expr =
+accessible exprParser =
   do  start <- getPosition
-      ce@(Annotation.A _ e) <- expr
-      let rest f = do
-            let dot = char '.' >> notFollowedBy (char '.')
-            access <- optionMaybe (try dot <?> "field access (e.g. List.map)")
-            case access of
-              Nothing -> return ce
-              Just _  -> accessible $ do
-                           v <- var <?> "field access (e.g. List.map)"
-                           end <- getPosition
-                           return (Annotation.at start end (f v))
-      case e of
-        E.Var (Variable.Raw (c:cs))
-            | isUpper c -> rest (\v -> E.rawVar (c:cs ++ '.':v))
-            | otherwise -> rest (E.Access ce)
-        _ -> rest (E.Access ce)
+
+      annotatedRootExpr@(Annotation.A _ rootExpr) <- exprParser
+
+      access <- optionMaybe (try dot <?> "field access (e.g. List.map)")
+
+      case access of
+        Nothing ->
+          return annotatedRootExpr
+
+        Just _ ->
+          accessible $
+            do  v <- var <?> "field access (e.g. List.map)"
+                end <- getPosition
+                return . Annotation.at start end $
+                    case rootExpr of
+                      E.Var (Variable.Raw name@(c:_))
+                        | isUpper c ->
+                            E.rawVar (name ++ '.' : v)
+                      _ ->
+                        E.Access annotatedRootExpr v
+
+
+dot :: IParser ()
+dot =
+  char '.' >> notFollowedBy (char '.')
 
 
 -- WHITESPACE
@@ -448,10 +460,10 @@ glSource src =
     Left e -> Left e
     Right (GLS.TranslationUnit decls) ->
       map extractGLinputs decls
-        |> join 
+        |> join
         |> foldr addGLinput emptyDecls
         |> Right
-  where 
+  where
     emptyDecls = L.GLShaderTipe Map.empty Map.empty Map.empty
 
     addGLinput (qual,tipe,name) glDecls =
@@ -480,11 +492,11 @@ glSource src =
             case elem qual [GLS.Attribute, GLS.Varying, GLS.Uniform] of
               False -> []
               True ->
-                  case tipe of 
+                  case tipe of
                     GLS.Int -> return (qual, L.Int,name)
                     GLS.Float -> return (qual, L.Float,name)
                     GLS.Vec2 -> return (qual, L.V2,name)
-                    GLS.Vec3 -> return (qual, L.V3,name) 
+                    GLS.Vec3 -> return (qual, L.V3,name)
                     GLS.Vec4 -> return (qual, L.V4,name)
                     GLS.Mat4 -> return (qual, L.M4,name)
                     GLS.Sampler2D -> return (qual, L.Texture,name)

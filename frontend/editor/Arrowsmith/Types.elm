@@ -1,10 +1,9 @@
 -- This should mirror src/Arrowsmith/Types.hs
 module Arrowsmith.Types where
 
-import Dict (Dict)
+import Dict exposing (Dict)
 
 type alias CompileResponse = String
-type alias CompilationStatus = Result ElmError ElmCode
 type alias ElmCode = String
 type alias ElmError = String
 type alias Name = String
@@ -22,12 +21,16 @@ type alias Module =
   , defs : List Definition
   }
 
+type CompileStatus
+  = Compiled
+  | CompileError ElmError
+
 type alias State =
   { modul : Module
 
   , isCompiling : Bool
-  , compilationStatus : CompilationStatus
-  , dirty : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
+  , compileStatus : CompileStatus
+  , synced : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
 
   , editing : Maybe Name
 
@@ -40,9 +43,6 @@ type alias State =
 type Action
   = NoOp
 
-  | Compile Module
-  | FinishCompiling (CompileResponse, String)
-
   | Edit Name
   | StopEditing Name
   | FinishEditing (Name, Value)
@@ -52,3 +52,6 @@ type Action
 
   | NewDefinition
   | RemoveDefinition Name
+
+  | ModuleCompiled Module
+  | CompilationFailed ElmError

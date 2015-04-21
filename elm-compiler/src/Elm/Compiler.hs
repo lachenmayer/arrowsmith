@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE FlexibleContexts #-}
 module Elm.Compiler
-    ( version
+    ( version, rawVersion
     , parseDependencies, compile
     ) where
 
@@ -13,7 +13,7 @@ import qualified Data.Map as Map
 import qualified Text.PrettyPrint as P
 
 import qualified AST.Module as Module (HeaderAndImports(HeaderAndImports), toInterface)
-import AST.JSON
+import AST.JSON ()
 import qualified Compile
 import qualified Elm.Compiler.Module as PublicModule
 import qualified Elm.Compiler.Version as Version
@@ -28,6 +28,11 @@ import qualified Parse.Module as Parse
 version :: String
 version =
     Version.version
+
+
+rawVersion :: [Int]
+rawVersion =
+    Version.rawVersion
 
 
 -- DEPENDENCIES

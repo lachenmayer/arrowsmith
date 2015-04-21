@@ -1,3 +1,5 @@
+{attachToEnvironment} = require './update.coffee'
+
 updateClient = require 'rest'
   .wrap require('rest/interceptor/mime')
   .wrap require('rest/interceptor/errorCode')
@@ -8,7 +10,7 @@ updateClient = require 'rest'
 updateRequest = (update) ->
   updateClient entity: update
 
-module.exports = (editedValue, moduleUpdates) -> (name) ->
+module.exports = (editedValue, compiledModules, compileErrors) -> (name) ->
   # Send the latest value of an edit field back to Elm.
   # Currently trivial, but hopefully should be able to plug in
   # some fancier editors with this mechanism.
@@ -20,8 +22,18 @@ module.exports = (editedValue, moduleUpdates) -> (name) ->
   editAction = JSON.stringify ["ChangeDefinition", [name, code]]
   request = updateRequest editAction
   request.then (response) ->
-    console.log "YES"
-    console.log response
+    [editStatus, compileResponse] = response.entity
+    # TODO this shouldn't be necessary (use HTTP codes to signal error).
+    console.assert editStatus == "EditSuccess",
+      "edit.coffee: Expected edit success message with successful response."
+    [compileStatus, fileOrError] = compileResponse
+    console.log compileResponse
+    switch compileStatus
+      when "CompileSuccess"
+        attachToEnvironment fileOrError.compiledCode
+        compiledModules fileOrError.modul
+      when "CompileFailure"
+        compileErrors fileOrError
   request.catch (response) ->
-    console.log "NO"
+    console.error "edit.coffee: edit error"
     console.log response

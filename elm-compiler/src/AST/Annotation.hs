@@ -96,7 +96,7 @@ getRegionDocs region =
 
 
 instance Pretty Region where
-  pretty span = 
+  pretty span =
       case span of
         None _ -> P.empty
         Span start end _ ->

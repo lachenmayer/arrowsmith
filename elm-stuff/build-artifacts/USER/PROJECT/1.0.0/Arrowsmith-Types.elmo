@@ -10,11 +10,17 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   _P = _N.Ports.make(_elm),
    $moduleName = "Arrowsmith.Types",
    $Dict = Elm.Dict.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm),
-   $Result = Elm.Result.make(_elm);
+   $Maybe = Elm.Maybe.make(_elm);
+   var CompilationFailed = function (a) {
+      return {ctor: "CompilationFailed"
+             ,_0: a};
+   };
+   var ModuleCompiled = function (a) {
+      return {ctor: "ModuleCompiled"
+             ,_0: a};
+   };
    var RemoveDefinition = function (a) {
       return {ctor: "RemoveDefinition"
              ,_0: a};
@@ -39,14 +45,6 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    var Edit = function (a) {
       return {ctor: "Edit",_0: a};
    };
-   var FinishCompiling = function (a) {
-      return {ctor: "FinishCompiling"
-             ,_0: a};
-   };
-   var Compile = function (a) {
-      return {ctor: "Compile"
-             ,_0: a};
-   };
    var NoOp = {ctor: "NoOp"};
    var State = F8(function (a,
    b,
@@ -57,15 +55,20 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    g,
    h) {
       return {_: {}
-             ,compilationStatus: c
-             ,dirty: d
+             ,compileStatus: c
              ,editing: e
              ,fresh: h
              ,isCompiling: b
              ,modul: a
+             ,synced: d
              ,toEvaluate: g
              ,values: f};
    });
+   var CompileError = function (a) {
+      return {ctor: "CompileError"
+             ,_0: a};
+   };
+   var Compiled = {ctor: "Compiled"};
    var Module = F4(function (a,
    b,
    c,
@@ -78,16 +81,18 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    });
    _elm.Arrowsmith.Types.values = {_op: _op
                                   ,Module: Module
+                                  ,Compiled: Compiled
+                                  ,CompileError: CompileError
                                   ,State: State
                                   ,NoOp: NoOp
-                                  ,Compile: Compile
-                                  ,FinishCompiling: FinishCompiling
                                   ,Edit: Edit
                                   ,StopEditing: StopEditing
                                   ,FinishEditing: FinishEditing
                                   ,Evaluate: Evaluate
                                   ,FinishEvaluating: FinishEvaluating
                                   ,NewDefinition: NewDefinition
-                                  ,RemoveDefinition: RemoveDefinition};
+                                  ,RemoveDefinition: RemoveDefinition
+                                  ,ModuleCompiled: ModuleCompiled
+                                  ,CompilationFailed: CompilationFailed};
    return _elm.Arrowsmith.Types.values;
 };

@@ -1,8 +1,8 @@
 module Arrowsmith.Definition where
 
-import String (join)
+import String exposing (join)
 
-import Arrowsmith.Types (..)
+import Arrowsmith.Types exposing (..)
 
 toString : Definition -> String
 toString (name, tipe, binding) =

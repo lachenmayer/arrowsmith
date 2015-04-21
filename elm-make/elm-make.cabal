@@ -1,5 +1,5 @@
 Name: elm-make
-Version: 0.1.1.1337
+Version: 0.1.2.1337
 
 Synopsis:
     A build tool for Elm projects
@@ -75,7 +75,7 @@ Executable elm-make
         bytestring,
         containers >= 0.3,
         directory,
-        elm-compiler ==0.14.1.1337,
+        elm-compiler ==0.15.1337,
         elm-package,
         filepath,
         mtl,
