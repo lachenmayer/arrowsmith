@@ -61,20 +61,20 @@ getReqProject = do
   projectsRef <- gets _projects
   liftIO $ getProject projectsRef repoInfo'
 
-readElmFile :: AppHandler (Maybe ElmFile)
+readElmFile :: AppHandler (Either String ElmFile)
 readElmFile = do
   project' <- getReqProject
   moduleName <- getReqModuleName
   return $ case project' of
-    Left _ -> Nothing
-    Right p -> getElmFile p moduleName
+    Left err -> Left err
+    Right p -> maybe (Left "elm file not found") Right $ getElmFile p moduleName
 
 moduleHandler :: AppHandler ()
 moduleHandler = do
   elmFile' <- readElmFile
   case elmFile' of
-    Nothing -> notFound "elm file not found.." -- TODO "create file" screen?
-    Just elmFile'' -> do
+    Left err -> serverError err
+    Right elmFile'' -> do
       compiled <- liftIO $ compile elmFile''
       case compiled of
         Left err -> (writeText . pack) err
@@ -131,6 +131,6 @@ badRequest :: MonadSnap m => String -> m ()
 badRequest message =
   withResponseCode 400 message
 
--- serverError :: MonadSnap m => String -> m ()
--- serverError message =
---   withResponseCode 500 message
+serverError :: MonadSnap m => String -> m ()
+serverError message =
+  withResponseCode 500 message

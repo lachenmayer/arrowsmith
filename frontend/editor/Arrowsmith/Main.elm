@@ -40,9 +40,9 @@ actions : S.Mailbox Action
 actions =
   S.mailbox NoOp
 
-action : Action -> S.Message
-action =
-  S.message actions
+--action : Action -> S.Message
+--action =
+--  S.message actions
 
 step : Action -> State -> State
 step action state =
@@ -192,7 +192,7 @@ defHeaderView : ModuleName -> Definition -> Html
 defHeaderView moduleName (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick (action (Evaluate (moduleName, name))) ] [ H.text "eval" ]
+    evalTag = tag "definition-evaluate" [ E.onClick actions.address (Evaluate (moduleName, name)) ] [ H.text "eval" ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
@@ -257,7 +257,7 @@ button : String -> String -> Action -> Html
 button className buttonText act =
   H.div
     [ A.class className
-    , E.onClick (action act)
+    , E.onClick actions.address act
     ]
     [ H.text buttonText ]
 
@@ -270,7 +270,7 @@ editable name tagName additionalAttrs contents =
 
 editActions : Name -> List H.Attribute
 editActions name =
-  [ E.onFocus (action (Edit name)), E.onBlur (action (StopEditing name)) ]
+  [ E.onFocus actions.address (Edit name), E.onBlur actions.address (StopEditing name) ]
 
 visible : Bool -> H.Attribute
 visible v =

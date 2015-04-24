@@ -1,7 +1,7 @@
 module Foo where
 
-import Graphics.Element (..)
-import Text (..)
+import Graphics.Element exposing (..)
+import Text exposing (..)
 
 modulus : number
 modulus =
@@ -19,4 +19,4 @@ bigger first second =if
 
 main : Element
 main =
-  plainText "Hello, World!"
+  show "Hello, World!"
