@@ -1,6 +1,7 @@
 -- This should mirror src/Arrowsmith/Types.hs
 module Arrowsmith.Types where
 
+import Graphics.Element exposing (Element)
 import Dict exposing (Dict)
 
 type alias CompileResponse = String

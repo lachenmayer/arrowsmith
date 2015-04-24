@@ -16,6 +16,8 @@ import Arrowsmith.Definition as Def
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
 
+import Arrowsmith.Views.SimpleView
+
 --
 -- State & Actions
 --
@@ -114,7 +116,7 @@ state =
 -- Editing cycle:
 -- Elm:StopEditing --stopEditing--> JS:get textfield value --editedValue--> Elm:FinishEditing
 
-port editedValue : Signal (Name, Value)
+port editedValue : Signal (Name, ElmCode)
 
 port stopEditing : Signal Name
 port stopEditing =

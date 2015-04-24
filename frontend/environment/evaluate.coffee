@@ -3,6 +3,17 @@ freshContext = ->
   addListener: ->
   node: {}
 
+# TODO ghetto duck-typing
+isElement = (x) ->
+  x.element? and x.props?
+
+appendToDefinition = (defName, valueNode) ->
+  def = document.querySelector ".defname-#{defName}"
+  container = document.createElement 'div'
+  container.className = 'definition-value'
+  container.appendChild valueNode
+  def.appendChild container
+
 module.exports = (done) -> ([moduleName, name]) ->
   executionFrame = document.getElementById 'elm-script'
   unless executionFrame?
@@ -11,9 +22,11 @@ module.exports = (done) -> ([moduleName, name]) ->
 
   context = freshContext()
 
-  # TODO this is where "show" logic is going to go
-  show = executionFrame.contentWindow.Elm.Native.Show.make(context).toString
-  
+  toString = executionFrame.contentWindow.Elm.Native.Show.make(context).toString
+  show = executionFrame.contentWindow.Elm.Graphics.Element.make(context).show
+  render = executionFrame.contentWindow.Elm.Native.Graphics.Element.make(context).render
+  view = (x) -> if isElement x then x else show x
+
   modul = executionFrame.contentWindow.Elm
   for nameSegment in moduleName
     modul = modul[nameSegment]
@@ -21,7 +34,11 @@ module.exports = (done) -> ([moduleName, name]) ->
     if not modul?
       console.log "evaluate: undefined name #{moduleName}"
   modul = modul.make context
-  
-  result = [moduleName, name, show modul[name]]
+
+  renderedNode = render view modul[name]
+  appendToDefinition name, renderedNode
+  debugger
+
+  result = [moduleName, name, toString modul[name]]
   console.log "evaluate: #{result[1]}: #{result[2]}"
   done result

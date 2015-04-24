@@ -1,5 +1,7 @@
 module Foo where
 
+import Color exposing (..)
+import Graphics.Collage exposing (..)
 import Graphics.Element exposing (..)
 import Text exposing (..)
 
@@ -19,4 +21,7 @@ bigger first second =if
 
 main : Element
 main =
-  show "Hello, World!"
+  collage 300 300
+    [ move (-10,0) (filled red (ngon 3 75))
+    , move (50,10) (filled red (ngon 5 50))
+    ]
