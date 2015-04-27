@@ -61,7 +61,6 @@ step action state =
     FinishEditing (name, newBinding) ->
       { state
       | editing <- Nothing
-      , synced <- True
       , modul <- Module.replaceDefinition state.modul name (name, Nothing, newBinding)
       }
 
@@ -71,17 +70,6 @@ step action state =
       { state
       | values <- D.insert name value state.values
       , toEvaluate <- Nothing
-      }
-
-    NewDefinition ->
-      { state
-      | modul <- Module.freshDefinition state.modul state.fresh
-      , fresh <- state.fresh + 1
-      }
-    RemoveDefinition name ->
-      { state
-      | modul <- Module.removeDefinition state.modul name
-      , synced <- True
       }
 
     ModuleCompiled newModule ->
@@ -181,16 +169,11 @@ adtView code =
 codeView : Definition -> Html
 codeView (name, tipe, binding) =
   let
-    content =
-      if (binding == Module.undefinedBinding) || (binding == "") then
-        H.span [ A.class "undefined-definition" ] [ H.text "undefined" ]
-      else
-        H.text binding
     lineCount = List.length (String.lines binding)
   in
     editable name "textarea"
       [ A.class "definition-code", A.rows lineCount ]
-      [ content ]
+      [ H.text binding ]
 
 defHeaderView : ModuleName -> Definition -> Html
 defHeaderView moduleName (name, tipe, _) =
@@ -217,6 +200,11 @@ defView moduleName definition =
       , codeView definition
       ]
 
+newDefView : Html
+newDefView =
+  H.div [ A.class "definition new-definition" ] <|
+    [ codeView Def.newDefinition ]
+
 moduleView : Module -> Html
 moduleView modul =
   let
@@ -227,7 +215,7 @@ moduleView modul =
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map importView imports
       , div "module-adts" <| List.map adtView adts
-      , div "module-defs" <| List.map (defView name) defs ++ [button "new-def-button" "+" NewDefinition]
+      , div "module-defs" <| List.map (defView name) defs ++ [newDefView]
       ]
 
 errorView : CompileStatus -> Html

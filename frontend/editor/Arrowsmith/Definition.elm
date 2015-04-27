@@ -16,3 +16,11 @@ toString (name, tipe, binding) =
         [lhs, rhs]
   in
     join "\n" def
+
+newDefinitionName : String
+newDefinitionName =
+  "__arrowsmithNewDefinition__"
+
+newDefinition : Definition
+newDefinition =
+  (newDefinitionName, Nothing, "")

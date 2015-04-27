@@ -15,6 +15,11 @@ Elm.Arrowsmith.Definition.make = function (_elm) {
    $Basics = Elm.Basics.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $String = Elm.String.make(_elm);
+   var newDefinitionName = "__arrowsmithNewDefinition__";
+   var newDefinition = {ctor: "_Tuple3"
+                       ,_0: newDefinitionName
+                       ,_1: $Maybe.Nothing
+                       ,_2: ""};
    var toString = function (_v0) {
       return function () {
          switch (_v0.ctor)
@@ -50,6 +55,8 @@ Elm.Arrowsmith.Definition.make = function (_elm) {
       }();
    };
    _elm.Arrowsmith.Definition.values = {_op: _op
-                                       ,toString: toString};
+                                       ,toString: toString
+                                       ,newDefinitionName: newDefinitionName
+                                       ,newDefinition: newDefinition};
    return _elm.Arrowsmith.Definition.values;
 };

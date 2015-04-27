@@ -11,22 +11,6 @@ newDefinition : Module -> Definition -> Module
 newDefinition program def =
   { program | defs <- program.defs ++ [def] }
 
-freshName : Int -> String
-freshName fresh =
-  let
-    names = Array.fromList ["foo", "bar", "baz", "buz", "qux", "quux", "corge", "grault", "garply", "waldo", "fred", "plugh", "xyzzy", "thud"]
-    nameCount = Array.length names
-    name idx = case Array.get idx names of
-      Just n -> n
-      Nothing -> name ((idx // nameCount) - 1) ++ name (idx % nameCount)
-  in
-    name fresh
-
-
-freshDefinition : Module -> Int -> Module
-freshDefinition program fresh =
-  newDefinition program (freshName fresh, Nothing, undefinedBinding)
-
 removeDefinition : Module -> Name -> Module
 removeDefinition program toRemove =
   { program | defs <- filter (\(name, _, _) -> name /= toRemove) program.defs }
@@ -68,21 +52,3 @@ empty =
   , adts = []
   , defs = []
   }
-
---helloWorld : Module
---helloWorld =
---  { name = ["Foo", "HelloWorld"]
---  , imports =
---    [ "Graphics.Element (..)"
---    , "Text (..)"
---    ]
---  , adts = []
---  , defs =
---    [ {name = "numbers", tipe = Just "number", binding = "1 + 2"}
---    , {name = "doubles", tipe = Just "number", binding = "numbers * 2"}
---    ]
---  }
-
-undefinedBinding : String
-undefinedBinding =
-  "\"__undefined__\""
