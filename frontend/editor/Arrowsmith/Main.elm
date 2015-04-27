@@ -11,6 +11,7 @@ import Html.Events as E
 import List
 import Maybe
 import Signal as S exposing (Signal, (<~))
+import String
 
 import Arrowsmith.Definition as Def
 import Arrowsmith.Module as Module
@@ -185,9 +186,10 @@ codeView (name, tipe, binding) =
         H.span [ A.class "undefined-definition" ] [ H.text "undefined" ]
       else
         H.text binding
+    lineCount = List.length (String.lines binding)
   in
     editable name "textarea"
-      [ A.class "definition-code" ]
+      [ A.class "definition-code", A.rows lineCount ]
       [ content ]
 
 defHeaderView : ModuleName -> Definition -> Html
@@ -204,22 +206,19 @@ defHeaderView moduleName (name, tipe, _) =
     H.table [ A.class "definition-header" ]
       [ H.tr [] header ]
 
-defView : Values -> ModuleName -> Definition -> Html
-defView values moduleName definition =
+defView : ModuleName -> Definition -> Html
+defView moduleName definition =
   let
     (name, tipe, binding) = definition
     class = "definition defname-" ++ name
-    valueView = case (D.get name values) of
-      Just value -> [ div "definition-value" [ H.text value ] ]
-      Nothing -> []
   in
     H.div [ A.class class ] <|
       [ defHeaderView moduleName definition
       , codeView definition
-      ] ++ valueView
+      ]
 
-moduleView : Values -> Module -> Html
-moduleView values modul =
+moduleView : Module -> Html
+moduleView modul =
   let
     {name, imports, adts, defs} = modul
   in
@@ -228,7 +227,7 @@ moduleView values modul =
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map importView imports
       , div "module-adts" <| List.map adtView adts
-      , div "module-defs" <| List.map (defView values name) defs ++ [button "new-def-button" "+" NewDefinition]
+      , div "module-defs" <| List.map (defView name) defs ++ [button "new-def-button" "+" NewDefinition]
       ]
 
 errorView : CompileStatus -> Html
@@ -238,8 +237,8 @@ errorView status =
     CompileError err -> div "error" [ H.pre [] [ H.text err ] ]
 
 view : State -> Html
-view {modul, values, compileStatus} =
-  div "modules" [ moduleView values modul, errorView compileStatus ]
+view {modul, compileStatus} =
+  div "modules" [ moduleView modul, errorView compileStatus ]
 
 --
 -- Util

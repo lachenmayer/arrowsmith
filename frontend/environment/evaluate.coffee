@@ -9,6 +9,10 @@ isElement = (x) ->
 
 appendToDefinition = (defName, valueNode) ->
   def = document.querySelector ".defname-#{defName}"
+
+  # Remove an older value if it exists.
+  def.querySelector('.definition-value')?.remove()
+
   container = document.createElement 'div'
   container.className = 'definition-value'
   container.appendChild valueNode
@@ -37,7 +41,6 @@ module.exports = (done) -> ([moduleName, name]) ->
 
   renderedNode = render view modul[name]
   appendToDefinition name, renderedNode
-  debugger
 
   result = [moduleName, name, toString modul[name]]
   console.log "evaluate: #{result[1]}: #{result[2]}"
