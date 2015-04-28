@@ -78,4 +78,3 @@ getElmFiles repoInfo' description' = do
       let filesToConvert = filter (\f -> takeExtension f == ".elm") allFiles
       elmFiles' <- mapM (elmFile repoInfo' description') filesToConvert
       (return . catMaybes) elmFiles'
-

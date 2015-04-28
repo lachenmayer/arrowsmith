@@ -78,8 +78,8 @@ moduleHandler = do
       compiled <- liftIO $ compile elmFile''
       case compiled of
         Left err -> (writeText . pack) err
-        Right compiledFile' -> do
-          let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) compiledFile'
+        Right modul -> do
+          let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) modul
               moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
           (writeText . toStrict . renderHtml . template) moduleScript
 

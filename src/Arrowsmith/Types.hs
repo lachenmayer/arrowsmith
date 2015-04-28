@@ -1,5 +1,6 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Arrowsmith.Types where
 
 import Control.Lens.TH
@@ -11,6 +12,7 @@ import Data.IORef
 import qualified Data.FileStore
 import GHC.Generics (Generic)
 import Snap.Snaplet (Handler)
+import System.Exit (ExitCode)
 
 
 -- Editor
@@ -57,6 +59,7 @@ data Repo = Repo
   , latest :: FilePath -> IO RevisionId
   , retrieve :: FilePath -> Maybe RevisionId -> IO String
   , save :: FilePath -> CommitMessage -> String -> IO ()
+  , checkout :: String -> IO ExitCode
   }
 
 data Project = Project

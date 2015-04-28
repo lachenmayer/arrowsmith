@@ -14,6 +14,7 @@ import System.IO.Error (tryIOError)
 import Elm.Compiler.Module (Name(Name), hyphenate)
 import Elm.Package.Description (Description, sourceDirs)
 
+import Arrowsmith.Git
 import Arrowsmith.Module
 import Arrowsmith.Paths
 import Arrowsmith.Repo
@@ -48,8 +49,8 @@ edit elmFile' transform = do
       writeFile sourcePath' newSource
       return $ Just elmFile' { modul = newModule, compiledCode = Nothing }
 
-compile :: ElmFile -> IO (Either String ElmFile)
-compile elmFile' = do
+compile :: ElmFile -> FilePath -> IO (Either String ElmFile)
+compile elmFile' outPath = do
   let repoInfo' = inRepo elmFile'
   let filePath' = filePath elmFile'
 
@@ -57,9 +58,7 @@ compile elmFile' = do
   case repo of
     Left _ -> return $ Left "repo doesn't exist. (compile)"
     Right repo' -> do
-      revision <- latest repo' filePath'
-      let tempPath = backend repoInfo' </> user repoInfo' </> project repoInfo' </> revision
-      tempDirectory <- temporaryDirectory tempPath
+      tempDirectory <- temporaryDirectory outPath
       let tempFile ext = tempDirectory </> hyphenate (Name (fileName elmFile')) <.> ext
 
       let projectRoot = repoPath repoInfo'
@@ -79,7 +78,6 @@ compile elmFile' = do
               source <- readFile inFile
               let modul' = moduleSourceDefs source <$> fromAstFile astFile'
               let newFile = elmFile' { compiledCode = Just compiledCode'
-                                     , lastCompiled = Just revision
                                      , modul = modul'
                                      }
               return $ Right newFile
@@ -94,6 +92,15 @@ compileIfNeeded elmFile' =
   case compiledCode elmFile' of
     Nothing -> compile elmFile'
     Just _ -> return $ Right elmFile' -- TODO check that compiled code is up to date
+
+-- getLatest :: ElmFile -> IO (Either String ElmFile)
+-- getLatest elmFile' = do
+--   repo <- getRepo (inRepo elmFile')
+--   case repo of
+--     Left err -> return $ Left err
+--     Right repo' -> do
+--       -- fileLate <- latest repo' (filePath elmFile')
+--       checkout repo' latestRevision
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =
