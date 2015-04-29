@@ -60,6 +60,9 @@ data Repo = Repo
   , retrieve :: FilePath -> Maybe RevisionId -> IO String
   , save :: FilePath -> CommitMessage -> String -> IO ()
   , checkout :: String -> IO ExitCode
+  , repoHead :: IO RevisionId
+  , repoBranch :: IO String
+  , commitMessage :: RevisionId -> IO String
   }
 
 data Project = Project
@@ -71,16 +74,12 @@ data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
   , fileName :: QualifiedName
   , compiledCode :: Maybe String
-  , lastCompiled :: Maybe RevisionId
   , modul :: Maybe Module
   , inRepo :: RepoInfo
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ElmFile)
 
--- data EditStatus = EditStatus
---   { compileErrors :: [QualifiedName]
---   , action :: (QualifiedName, Action)
---   } deriving (Show, Read, Eq)
+type EditUpdate = (QualifiedName, Maybe RevisionId, Action)
 
 data CompileResponse
   = CompileSuccess ElmFile

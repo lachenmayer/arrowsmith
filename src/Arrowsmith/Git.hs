@@ -1,12 +1,13 @@
 module Arrowsmith.Git where
 
 import Control.Exception (bracket)
-import Data.FileStore (RevisionId)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy as B
 import Data.ByteString.Lazy.UTF8 (toString)
 import System.Exit (ExitCode(..))
 
+import Arrowsmith.Paths
+import Arrowsmith.Types
 
 -- Stolen from https://hackage.haskell.org/package/filestore-0.6.0.6/docs/src/Data-FileStore-Git.html#gitFileStore
 -- | Run a git command and return error status, error output, standard output.  The repository
@@ -42,3 +43,7 @@ runAtRevision repo branchOrRevisionId action = do
     (gitCheckout repo branchOrRevisionId)
     (\_ -> gitCheckout repo branchHead)
     (\_ -> action)
+
+repoRunAtRevision :: Repo -> String -> IO a -> IO a
+repoRunAtRevision repo =
+  runAtRevision (repoPath (repoInfo repo))

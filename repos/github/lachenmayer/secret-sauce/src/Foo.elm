@@ -7,7 +7,7 @@ import Text exposing (..)
 
 modulus : number
 modulus =
-  bigger 103 113
+  bigger 10113 123
 
 encrypt : number -> number -> number
 encrypt m e =
@@ -22,6 +22,6 @@ bigger first second =if
 main : Element
 main =
   collage 300 300
-    [ move (-10,0) (filled red (ngon 3 75))
+    [ move (-10,0) (filled red (ngon 4 75))
     , move (50,10) (filled red (ngon 5 50))
     ]

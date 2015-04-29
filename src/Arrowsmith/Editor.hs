@@ -19,7 +19,6 @@ import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
-import Arrowsmith.Edit
 import Arrowsmith.ElmFile
 import Arrowsmith.Types
 import Arrowsmith.Project
@@ -75,7 +74,7 @@ moduleHandler = do
   case elmFile' of
     Left err -> serverError err
     Right elmFile'' -> do
-      compiled <- liftIO $ compile elmFile''
+      compiled <- liftIO $ getLatest elmFile''
       case compiled of
         Left err -> (writeText . pack) err
         Right modul -> do
@@ -100,15 +99,14 @@ editHandler = do
       case maybeElmFile of
         Nothing -> return $ EditFailure "Elm file not found."
         Just elmFile' -> do
-          compiled <- liftIO $ compileIfNeeded elmFile'
+          compiled <- liftIO $ getLatest elmFile'
           case compiled of
             Left err -> return $ EditFailure err
             Right compiledFile -> do
-              editResult <- liftIO $ performEdit compiledFile action'
+              editResult <- liftIO $ edit compiledFile action'
               case editResult of
                 Just editedFile -> do
-                  newCompiled <- compile editedFile
-                  return $ EditSuccess (toCompileResponse newCompiled)
+                  return $ EditSuccess (toCompileResponse (Right editedFile)) -- TODO
                 Nothing -> return $ EditFailure "Probably couldn't compile the file."
 
 urlFragment :: MonadSnap m => BS.ByteString -> m String

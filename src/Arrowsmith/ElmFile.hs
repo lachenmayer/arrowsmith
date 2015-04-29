@@ -10,11 +10,13 @@ import System.FilePath ((</>), (<.>))
 import System.FilePath.Posix (dropExtension, splitDirectories)
 import System.IO.Strict (readFile, hGetContents)
 import System.IO.Error (tryIOError)
+import Text.Read (readMaybe)
 
 import Elm.Compiler.Module (Name(Name), hyphenate)
 import Elm.Package.Description (Description, sourceDirs)
 
-import Arrowsmith.Git
+import Arrowsmith.Edit
+import Arrowsmith.Git (repoRunAtRevision)
 import Arrowsmith.Module
 import Arrowsmith.Paths
 import Arrowsmith.Repo
@@ -32,75 +34,109 @@ elmFile repoInfo' description' filePath' = do
         { filePath = filePath'
         , fileName = fileNameFromPath (sourceDirs description') filePath'
         , compiledCode = Nothing
-        , lastCompiled = Nothing
         , modul = Nothing
         , inRepo = repoInfo'
         }
     else
       Nothing
 
-edit :: ElmFile -> ((ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)) -> IO (Maybe ElmFile)
-edit elmFile' transform = do
-  let sourcePath' = sourcePath elmFile'
-  source <- readFile sourcePath'
-  case transform (source, modul elmFile') of
-    Nothing -> return Nothing
-    Just (newSource, newModule) -> do
-      writeFile sourcePath' newSource
-      return $ Just elmFile' { modul = newModule, compiledCode = Nothing }
+edit :: ElmFile -> Action -> IO (Maybe ElmFile)
+edit elmFile' action' = do
+  let filePath' = filePath elmFile'
+  repo <- getRepo (inRepo elmFile')
+  case repo of
+    Left _ -> return Nothing
+    Right repo' -> do
+      latestRev <- latest repo' filePath'
+      -- TODO get last working rev!
+      source <- retrieve repo' filePath' (Just latestRev)
+      case performAction action' (source, modul elmFile') of
+        Nothing -> return Nothing
+        Just (newSource, newModule) -> do
+          let editUpdate = (fileName elmFile', Just latestRev, action')
+          save repo' filePath' (show editUpdate) newSource
+          newRev <- latest repo' filePath'
+          newElmFile <- compile elmFile' newRev
+          case newElmFile of
+            Left err ->
+              -- TODO add errors to module.
+              return $ Just elmFile' { modul = newModule {- { errors = [err] } -}, compiledCode = Nothing}
+            Right compiledElmFile -> do
+              -- TODO bump last working to Latest...
+              return $ Just compiledElmFile
 
 compile :: ElmFile -> FilePath -> IO (Either String ElmFile)
 compile elmFile' outPath = do
   let repoInfo' = inRepo elmFile'
-  let filePath' = filePath elmFile'
+  tempDirectory <- temporaryDirectory (backend repoInfo' </> user repoInfo' </> project repoInfo' </> outPath)
+  let tempFile ext = tempDirectory </> hyphenate (Name (fileName elmFile')) <.> ext
+  let projectRoot = repoPath repoInfo'
+  let inFile = projectRoot </> (filePath elmFile')
+  let outFile = tempFile "js"
+  let compilerFlags = [inFile, "--yes", "--output", outFile]
 
-  repo <- getRepo repoInfo'
+  (_, compilerErr, exitCode) <- runCommand projectRoot compilerPath compilerFlags
+
+  case exitCode of
+    ExitSuccess -> do
+      compiledCode' <- readFile outFile
+      astFile <- getAstFile elmFile'
+      case astFile of
+        Right astFile' -> do
+          Right astPath' <- getAstPath elmFile'
+          copyFile astPath' (tempFile "elma")
+          source <- readFile inFile
+          let modul' = moduleSourceDefs source <$> fromAstFile astFile'
+          let newFile = elmFile' { compiledCode = Just compiledCode'
+                                 , modul = modul'
+                                 }
+          return $ Right newFile
+        Left err ->
+          return . Left $ "ast file could not be loaded: " ++ err
+    ExitFailure _ -> do
+      err <- hGetContents compilerErr
+      return $ Left (unlines . drop 2 . lines $ err)
+
+getLatest :: ElmFile -> IO (Either String ElmFile)
+getLatest elmFile' = do
+  repo <- getRepo (inRepo elmFile')
   case repo of
-    Left _ -> return $ Left "repo doesn't exist. (compile)"
+    Left err -> return $ Left err
     Right repo' -> do
-      tempDirectory <- temporaryDirectory outPath
-      let tempFile ext = tempDirectory </> hyphenate (Name (fileName elmFile')) <.> ext
-
-      let projectRoot = repoPath repoInfo'
-      let inFile = projectRoot </> filePath'
-      let outFile = tempFile "js"
-      let compilerFlags = [inFile, "--yes", "--output", outFile]
-      (_, compilerErr, exitCode) <- runCommand projectRoot compilerPath compilerFlags
-
-      case exitCode of
-        ExitSuccess -> do
-          compiledCode' <- readFile outFile
-          astFile <- getAstFile elmFile'
-          case astFile of
-            Right astFile' -> do
-              Right astPath' <- getAstPath elmFile'
-              copyFile astPath' (tempFile "elma")
-              source <- readFile inFile
-              let modul' = moduleSourceDefs source <$> fromAstFile astFile'
-              let newFile = elmFile' { compiledCode = Just compiledCode'
-                                     , modul = modul'
-                                     }
-              return $ Right newFile
-            Left err ->
-              return . Left $ "ast file could not be loaded: " ++ err
-        ExitFailure _ -> do
-          err <- hGetContents compilerErr
-          return $ Left (unlines . drop 2 . lines $ err)
-
-compileIfNeeded :: ElmFile -> IO (Either String ElmFile)
-compileIfNeeded elmFile' =
-  case compiledCode elmFile' of
-    Nothing -> compile elmFile'
-    Just _ -> return $ Right elmFile' -- TODO check that compiled code is up to date
-
--- getLatest :: ElmFile -> IO (Either String ElmFile)
--- getLatest elmFile' = do
---   repo <- getRepo (inRepo elmFile')
---   case repo of
---     Left err -> return $ Left err
---     Right repo' -> do
---       -- fileLate <- latest repo' (filePath elmFile')
---       checkout repo' latestRevision
+      headRev <- repoHead repo'
+      headFileOrErrors <- compile elmFile' headRev
+      case headFileOrErrors of
+        -- The file at HEAD compiles.
+        Right file -> return $ Right file
+        -- The file at HEAD does not compile, look at the last change made to the file.
+        Left headErrors -> do
+          latestRev <- latest repo' (filePath elmFile')
+          message <- commitMessage repo' latestRev
+          case readMaybe message :: Maybe EditUpdate of
+            -- The file has a valid Arrowsmith annotation.
+            Just (updatedFile, lastWorking, update) -> do
+              if updatedFile /= fileName elmFile' then
+                return . Left $ "update annotation in commit:\n"
+                  ++ message
+                  ++ "\ndoes not refer to expected file:\n"
+                  ++ show elmFile'
+              else
+                maybe (recoverLastWorking latestRev) recoverLastWorking lastWorking
+            -- The file doesn't have a valid annotation.
+            Nothing ->
+              recoverLastWorking latestRev
+          where
+            recoverLastWorking lastWorkingRev = do
+              lastWorkingFileOrErrors <- repoRunAtRevision repo' lastWorkingRev (compile elmFile' lastWorkingRev)
+              case lastWorkingFileOrErrors of
+                Left lastWorkingErrors ->
+                  return . Left $ "Last working revision "
+                    ++ lastWorkingRev
+                    ++ " doesn't actually compile: "
+                    ++ lastWorkingErrors
+                Right lastWorkingFile ->
+                  -- TODO replay changes.
+                  return $ Right lastWorkingFile
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =

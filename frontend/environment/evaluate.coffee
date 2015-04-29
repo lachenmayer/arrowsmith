@@ -25,7 +25,6 @@ module.exports = (done) -> ([moduleName, name]) ->
     return # TODO error handling...
 
   context = freshContext()
-
   toString = executionFrame.contentWindow.Elm.Native.Show.make(context).toString
   show = executionFrame.contentWindow.Elm.Graphics.Element.make(context).show
   render = executionFrame.contentWindow.Elm.Native.Graphics.Element.make(context).render

@@ -25,16 +25,16 @@ timelineView tweets =
 
 tweetView : { author : String, text : String } -> Element
 tweetView {author, text} =
-  authorView author `beside` textView text
+  flow down <| [authorView author, textView text]
 
 authorView : String -> Element
 authorView contents =
-  textbox 200 50 "#cfc" contents
+  textbox 200 50 "#ccf" contents
 
 textView : String -> Element
 textView contents =
-tweetView {author, text} =
-  flow down <| [authorView author, textView text]
+  textbox 800 50 "#cfc" contents
+
 userTweets : String -> List { author : String, text : String }
 userTweets user =
   List.filter (\x -> x.author == user) tweets

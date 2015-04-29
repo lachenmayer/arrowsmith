@@ -3,7 +3,6 @@ module Arrowsmith.Edit where
 import Data.List (delete)
 
 import Arrowsmith.Definition
-import Arrowsmith.ElmFile
 import Arrowsmith.Module
 import Arrowsmith.Types
 import Arrowsmith.Util
@@ -41,9 +40,9 @@ removeDefinition varName (source, maybeModule) = do
          , Just modul' { defs = delete def defs' }
          )
 
-performEdit :: ElmFile -> Action -> IO (Maybe ElmFile)
-performEdit elmFile' action' =
-  edit elmFile' $ case action' of
+performAction :: Action -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)
+performAction action' =
+  case action' of
     AddDefinition def -> addDefinition def
     ChangeDefinition varName elmCode -> changeDefinition varName elmCode
     RemoveDefinition varName -> removeDefinition varName
