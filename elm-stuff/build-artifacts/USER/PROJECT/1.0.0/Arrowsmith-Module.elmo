@@ -19,6 +19,7 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    var empty = {_: {}
                ,adts: _L.fromArray([])
                ,defs: _L.fromArray([])
+               ,errors: _L.fromArray([])
                ,imports: _L.fromArray([])
                ,name: _L.fromArray(["Program"])};
    var nameToString = function (name) {

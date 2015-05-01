@@ -8,16 +8,16 @@ import Arrowsmith.Types
 import Arrowsmith.Util
 
 
-addDefinition :: Definition -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)
+addDefinition :: Definition -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
 addDefinition def@(defName, defType, defBinding) (source, maybeModule) = do
   modul' <- maybeModule
   let (_, _, _, lastStart, lastEnd) = last (defs modul')
       (before, lastDef, after) = breakSource source lastStart lastEnd
   return ( before ++ lastDef ++ "\n\n" ++ prettyPrint def ++ "\n" ++ after
-         , Just modul' { defs = defs modul' ++ [(defName, defType, defBinding, (0, 0), (0,0))] }
+         , modul' { defs = defs modul' ++ [(defName, defType, defBinding, (0, 0), (0,0))] }
          )
 
-changeDefinition :: VarName -> ElmCode -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)
+changeDefinition :: VarName -> ElmCode -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
 changeDefinition varName elmCode (source, maybeModule) = do
   modul' <- maybeModule
   let defs' = defs modul'
@@ -26,10 +26,10 @@ changeDefinition varName elmCode (source, maybeModule) = do
       (before, _, after) = breakSource source defStart defEnd
       newDef = (varName, Nothing, elmCode, defStart, defEnd)
   return ( before ++ prettyPrintLocated newDef ++ after
-         , Just modul' { defs = update def newDef defs' } -- TODO wrong def{Start,End}
+         , modul' { defs = update def newDef defs' } -- TODO wrong def{Start,End}
          )
 
-removeDefinition :: VarName -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)
+removeDefinition :: VarName -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
 removeDefinition varName (source, maybeModule) = do
   modul' <- maybeModule
   let defs' = defs modul'
@@ -37,10 +37,10 @@ removeDefinition varName (source, maybeModule) = do
   let (_, _, _, defStart, defEnd) = def
       (before, _, after) = breakSource source defStart defEnd
   return ( before ++ after
-         , Just modul' { defs = delete def defs' }
+         , modul' { defs = delete def defs' }
          )
 
-performAction :: Action -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Maybe Module)
+performAction :: Action -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
 performAction action' =
   case action' of
     AddDefinition def -> addDefinition def

@@ -12,7 +12,6 @@ import Data.IORef
 import qualified Data.FileStore
 import GHC.Generics (Generic)
 import Snap.Snaplet (Handler)
-import System.Exit (ExitCode)
 
 
 -- Editor
@@ -32,6 +31,7 @@ data Module = Module
   , imports :: [String]
   , adts :: [String]
   , defs :: [LocatedDefinition]
+  , errors :: [ElmError]
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
 
@@ -53,17 +53,7 @@ instance Hashable RepoInfo
 type CommitMessage = Data.FileStore.Description
 type RevisionId = Data.FileStore.RevisionId
 
-data Repo = Repo
-  { repoInfo :: RepoInfo
-  , index :: IO [FilePath]
-  , latest :: FilePath -> IO RevisionId
-  , retrieve :: FilePath -> Maybe RevisionId -> IO String
-  , save :: FilePath -> CommitMessage -> String -> IO ()
-  , checkout :: String -> IO ExitCode
-  , repoHead :: IO RevisionId
-  , repoBranch :: IO String
-  , commitMessage :: RevisionId -> IO String
-  }
+data Repo = Repo { repoInfo :: RepoInfo }
 
 data Project = Project
   { projectRepo :: RepoInfo

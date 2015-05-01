@@ -33,6 +33,7 @@ makeModule defTransform m =
          , imports = []
          , adts = []
          , defs = sortByLocation $ map defTransform (definitions m)
+         , errors = []
          }
 
 modulePrettyPrintedDefs :: ModuleTransform

@@ -51,4 +51,5 @@ empty =
   , imports = []
   , adts = []
   , defs = []
+  , errors = []
   }

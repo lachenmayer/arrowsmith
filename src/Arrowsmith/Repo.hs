@@ -3,6 +3,7 @@ module Arrowsmith.Repo where
 import Control.Monad (liftM)
 import qualified Data.FileStore
 import System.Directory (doesDirectoryExist)
+import System.Exit (ExitCode)
 
 import qualified Arrowsmith.Git
 import Arrowsmith.Paths
@@ -16,21 +17,48 @@ getRepo repoInfo' = do
   -- TODO check if git directory exists
   return $ if exists
     then
-      let
-        fileStore = Data.FileStore.gitFileStore repoPath'
-      in
-        Right Repo
-          { repoInfo = repoInfo'
-          , index = Data.FileStore.index fileStore
-          , latest = Data.FileStore.latest fileStore
-          , retrieve = Data.FileStore.retrieve fileStore
-          , save = \p -> Data.FileStore.save fileStore p author
-          , checkout = Arrowsmith.Git.gitCheckout repoPath'
-          , repoHead = Arrowsmith.Git.gitHead repoPath'
-          , repoBranch = Arrowsmith.Git.gitBranchName repoPath'
-          , commitMessage = \rev -> liftM Data.FileStore.revDescription (Data.FileStore.revision fileStore rev)
-          }
+      Right Repo { repoInfo = repoInfo' }
     else
       Left "unimplemented: get it from github?"
+
+index :: Repo -> IO [FilePath]
+index repo' =
+  Data.FileStore.index (gitFileStore repo')
+
+latest :: Repo -> FilePath -> IO RevisionId
+latest repo' =
+  Data.FileStore.latest (gitFileStore repo')
+
+retrieve :: Repo -> FilePath -> Maybe RevisionId -> IO String
+retrieve repo' =
+  Data.FileStore.retrieve (gitFileStore repo')
+
+save :: Repo -> FilePath -> CommitMessage -> String -> IO ()
+save repo' path =
+  Data.FileStore.save (gitFileStore repo') path author
   where
     author = Data.FileStore.Author "Arrowsmith" "arrowsmith@no.email"
+
+checkout :: Repo -> String -> IO ExitCode
+checkout repo' =
+  Arrowsmith.Git.gitCheckout (repoPath (repoInfo repo'))
+
+repoHead :: Repo -> IO RevisionId
+repoHead repo' =
+  Arrowsmith.Git.gitHead (repoPath (repoInfo repo'))
+
+branch :: Repo -> IO String
+branch repo' =
+  Arrowsmith.Git.gitBranchName (repoPath (repoInfo repo'))
+
+commitMessage :: Repo -> RevisionId -> IO String
+commitMessage repo' revision =
+  liftM Data.FileStore.revDescription (Data.FileStore.revision (gitFileStore repo') revision)
+
+amendCommitMessage :: Repo -> String -> IO ExitCode
+amendCommitMessage repo' =
+  Arrowsmith.Git.amendCommitMessage (repoPath (repoInfo repo'))
+
+gitFileStore :: Repo -> Data.FileStore.FileStore
+gitFileStore repo' =
+  Data.FileStore.gitFileStore (repoPath (repoInfo repo'))

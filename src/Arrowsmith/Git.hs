@@ -35,6 +35,11 @@ gitCheckout repo branchOrRevisionId = do
   (status, _err, _out) <- runGitCommand repo "checkout" [branchOrRevisionId]
   return status
 
+amendCommitMessage :: FilePath -> String -> IO ExitCode
+amendCommitMessage repo message = do
+  (status, _err, _out) <- runGitCommand repo "commit" ["--amend", "-o", "-m", show message]
+  return status
+
 -- TODO very optimistic.
 runAtRevision :: FilePath -> String -> IO a -> IO a
 runAtRevision repo branchOrRevisionId action = do

@@ -20,6 +20,7 @@ type alias Module =
   , imports : List ElmCode
   , adts : List ElmCode
   , defs : List Definition
+  , errors : List ElmError
   }
 
 type CompileStatus

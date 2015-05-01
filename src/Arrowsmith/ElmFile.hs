@@ -48,21 +48,20 @@ edit elmFile' action' = do
     Left _ -> return Nothing
     Right repo' -> do
       latestRev <- latest repo' filePath'
-      -- TODO get last working rev!
+      -- TODO get last working rev! Need to replay actions if broken.
       source <- retrieve repo' filePath' (Just latestRev)
       case performAction action' (source, modul elmFile') of
         Nothing -> return Nothing
         Just (newSource, newModule) -> do
-          let editUpdate = (fileName elmFile', Just latestRev, action')
-          save repo' filePath' (show editUpdate) newSource
+          let editUpdate rev = (fileName elmFile', rev, action') :: EditUpdate
+          save repo' filePath' (show (editUpdate (Just latestRev))) newSource
           newRev <- latest repo' filePath'
           newElmFile <- compile elmFile' newRev
           case newElmFile of
             Left err ->
-              -- TODO add errors to module.
-              return $ Just elmFile' { modul = newModule {- { errors = [err] } -}, compiledCode = Nothing}
+              return $ Just elmFile' { modul = Just newModule { errors = [err] }, compiledCode = Nothing }
             Right compiledElmFile -> do
-              -- TODO bump last working to Latest...
+              amendCommitMessage repo' (show (editUpdate Nothing)) -- The current revision is the last working.
               return $ Just compiledElmFile
 
 compile :: ElmFile -> FilePath -> IO (Either String ElmFile)

@@ -7,7 +7,7 @@ import Text exposing (..)
 
 modulus : number
 modulus =
-  bigger 10113 123
+  bigger 103 113
 
 encrypt : number -> number -> number
 encrypt m e =

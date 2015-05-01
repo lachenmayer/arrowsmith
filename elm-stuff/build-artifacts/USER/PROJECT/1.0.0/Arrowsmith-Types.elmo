@@ -69,13 +69,15 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,_0: a};
    };
    var Compiled = {ctor: "Compiled"};
-   var Module = F4(function (a,
+   var Module = F5(function (a,
    b,
    c,
-   d) {
+   d,
+   e) {
       return {_: {}
              ,adts: c
              ,defs: d
+             ,errors: e
              ,imports: b
              ,name: a};
    });
