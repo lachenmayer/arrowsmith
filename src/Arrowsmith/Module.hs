@@ -127,10 +127,10 @@ sourceRegion source (startLine, startColumn) (endLine, endColumn) =
     columnRange lines' =
       case lines' of
         [] -> ""
-        [x] -> region startColumn endColumn x
-        (x:xs) ->
-          let (middle, lastLine) = (init xs, last xs) in
-            unlines $ [drop (startColumn - 1) x] ++ middle ++ [take endColumn lastLine]
+        [x] -> region startColumn (endColumn - 1) x
+        (firstLine:remainingLines) ->
+          let (middle, lastLine) = (init remainingLines, last remainingLines) in
+            unlines $ [drop (startColumn - 1) firstLine] ++ middle ++ [take (endColumn - 1) lastLine]
 
 breakSource :: String -> Location -> Location -> (String, String, String)
 breakSource source start end =
