@@ -208,7 +208,7 @@ newDefView =
 moduleView : Module -> Html
 moduleView modul =
   let
-    {name, imports, adts, defs} = modul
+    {name, imports, adts, defs, errors} = modul
   in
     div "module"
       [ div "module-header"
@@ -216,17 +216,16 @@ moduleView modul =
       , div "module-imports" <| List.map importView imports
       , div "module-adts" <| List.map adtView adts
       , div "module-defs" <| List.map (defView name) defs ++ [newDefView]
+      , div "module-errors" <| List.map errorView errors
       ]
 
-errorView : CompileStatus -> Html
-errorView status =
-  case status of
-    Compiled -> div "no-error" []
-    CompileError err -> div "error" [ H.pre [] [ H.text err ] ]
+errorView : ElmError -> Html
+errorView error =
+  div "error" [ H.pre [] [ H.text error ] ]
 
 view : State -> Html
 view {modul, compileStatus} =
-  div "modules" [ moduleView modul, errorView compileStatus ]
+  div "modules" [ moduleView modul ]
 
 --
 -- Util
