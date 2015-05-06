@@ -24,9 +24,9 @@ changeDefinition varName elmCode (source, maybeModule) = do
   def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
       (before, _, after) = breakSource source defStart defEnd
-      newDef = (varName, Nothing, elmCode, defStart, defEnd)
+      newDef = (varName, Nothing, elmCode, defStart, defEnd) -- TODO wrong def{Start,End}
   return ( before ++ prettyPrintLocated newDef ++ after
-         , modul' { defs = update def newDef defs' } -- TODO wrong def{Start,End}
+         , modul' { defs = update def newDef defs' }
          )
 
 removeDefinition :: VarName -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)

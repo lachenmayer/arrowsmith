@@ -6,13 +6,11 @@ import Graphics.Element exposing (..)
 import Text exposing (..)
 
 modulus : number
-modulus =
-  bigger 103 113
+modulus = bigger 103 113
 
 encrypt : number -> number -> number
 encrypt m e =
   m ^ e % modulus
-
 --bigger : number -> number -> number
 bigger first second =if
     first > second

@@ -21,6 +21,7 @@ import Arrowsmith.Module
 import Arrowsmith.Paths
 import Arrowsmith.Repo
 import Arrowsmith.Types
+import Arrowsmith.Update
 import Arrowsmith.Util
 
 
@@ -43,25 +44,25 @@ elmFile repoInfo' description' filePath' = do
 edit :: ElmFile -> Action -> IO (Maybe ElmFile)
 edit elmFile' action' = do
   let filePath' = filePath elmFile'
-  repo <- getRepo (inRepo elmFile')
-  case repo of
-    Left _ -> return Nothing
-    Right repo' -> do
-      latestRev <- latest repo' filePath'
-      -- TODO get last working rev! Need to replay actions if broken.
-      source <- retrieve repo' filePath' (Just latestRev)
-      case performAction action' (source, modul elmFile') of
+  Right repo <- getRepo (inRepo elmFile')
+  latestElmFile <- getLatest elmFile'
+  case latestElmFile of
+    Left err -> error err
+    Right elmFile'' -> do
+      latestRev <- latest repo filePath'
+      source <- retrieve repo filePath' (Just latestRev)
+      case performAction action' (source, modul elmFile'') of
         Nothing -> return Nothing
         Just (newSource, newModule) -> do
-          let editUpdate rev = (fileName elmFile', rev, action') :: EditUpdate
-          save repo' filePath' (show (editUpdate (Just latestRev))) newSource
-          newRev <- latest repo' filePath'
-          newElmFile <- compile elmFile' newRev
+          let editUpdate rev = (fileName elmFile'', rev, action') :: EditUpdate
+          save repo filePath' (show (editUpdate (Just latestRev))) newSource
+          newRev <- latest repo filePath'
+          newElmFile <- compile elmFile'' newRev
           case newElmFile of
             Left err ->
-              return $ Just elmFile' { modul = Just newModule { errors = [err] }, compiledCode = Nothing }
+              return $ Just elmFile'' { modul = Just newModule { errors = [err] }, compiledCode = Nothing }
             Right compiledElmFile -> do
-              amendCommitMessage repo' (show (editUpdate Nothing)) -- The current revision is the last working.
+              amendCommitMessage repo (show (editUpdate Nothing)) -- The current revision is the last working.
               return $ Just compiledElmFile
 
 compile :: ElmFile -> FilePath -> IO (Either String ElmFile)
@@ -108,12 +109,12 @@ getLatest elmFile' = do
         -- The file at HEAD compiles.
         Right file -> return $ Right file
         -- The file at HEAD does not compile, look at the last change made to the file.
-        Left headErrors -> do
+        Left _headErrors -> do
           latestRev <- latest repo' (filePath elmFile')
           message <- commitMessage repo' latestRev
           case readMaybe message :: Maybe EditUpdate of
             -- The file has a valid Arrowsmith annotation.
-            Just (updatedFile, lastWorking, update) -> do
+            Just (updatedFile, lastWorking, _action) -> do
               if updatedFile /= fileName elmFile' then
                 return . Left $ "update annotation in commit:\n"
                   ++ message
@@ -133,9 +134,9 @@ getLatest elmFile' = do
                     ++ lastWorkingRev
                     ++ " doesn't actually compile: "
                     ++ lastWorkingErrors
-                Right lastWorkingFile ->
-                  -- TODO replay changes.
-                  return $ Right lastWorkingFile
+                Right lastWorkingFile -> do
+                  annotations <- getUpdateAnnotations repo lastWorkingFile lastWorkingRev
+                  return . Right $ applyAnnotations annotations lastWorkingFile
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =

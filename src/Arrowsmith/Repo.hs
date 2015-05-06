@@ -39,6 +39,14 @@ save repo' path =
   where
     author = Data.FileStore.Author "Arrowsmith" "arrowsmith@no.email"
 
+history :: Repo -> [FilePath] -> Data.FileStore.TimeRange -> Maybe Int -> IO [Data.FileStore.Revision]
+history repo' =
+  Data.FileStore.history (gitFileStore repo')
+
+commitMessage :: Repo -> RevisionId -> IO String
+commitMessage repo' revision =
+  liftM Data.FileStore.revDescription (Data.FileStore.revision (gitFileStore repo') revision)
+
 checkout :: Repo -> String -> IO ExitCode
 checkout repo' =
   Arrowsmith.Git.gitCheckout (repoPath (repoInfo repo'))
@@ -50,10 +58,6 @@ repoHead repo' =
 branch :: Repo -> IO String
 branch repo' =
   Arrowsmith.Git.gitBranchName (repoPath (repoInfo repo'))
-
-commitMessage :: Repo -> RevisionId -> IO String
-commitMessage repo' revision =
-  liftM Data.FileStore.revDescription (Data.FileStore.revision (gitFileStore repo') revision)
 
 amendCommitMessage :: Repo -> String -> IO ExitCode
 amendCommitMessage repo' =
