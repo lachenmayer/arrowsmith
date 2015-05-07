@@ -14,7 +14,8 @@ encrypt m e =
   m ^ e % modulus
 
 --bigger : number -> number -> number
-bigger first second =if
+bigger first second =
+  if
     first > second
   then first
   else second

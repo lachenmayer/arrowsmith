@@ -130,15 +130,15 @@ sourceRegion source' (startLine, startColumn) (endLine, endColumn) =
 
 -- (before, definition (bounded by locations), after)
 breakSource :: String -> Location -> Location -> (String, String, String)
-breakSource source' (startCol, startRow) (endCol, endRow) =
-  (unlines linesBefore ++ firstLineBefore, unlines (init defLines) ++ lastDefLine, lastLineAfter ++ unlines linesAfter)
+breakSource source' (startLine, startCol) (endLine, endCol) =
+  (unlines linesBefore ++ firstLineBefore, (unlines . init) defLines ++ lastDefLine, lastLineAfter ++ unlines linesAfter)
   where
     idx x = max 0 (x - 1)
     sourceLines = lines source'
-    (linesBefore, (firstLine:remainingLines)) = splitAt (idx startCol) sourceLines
-    (firstLineBefore, firstDefLine) = splitAt (idx startRow) firstLine
-    (defLines, linesAfter) = splitAt (idx endCol - idx startRow) (firstDefLine:remainingLines)
-    (lastDefLine, lastLineAfter) = splitAt (idx endRow) (last defLines)
+    (linesBefore, (firstLine:remainingLines)) = splitAt (idx startLine) sourceLines
+    (firstLineBefore, firstDefLine) = splitAt (idx startCol) firstLine
+    (defLines, linesAfter) = splitAt (endLine - idx startLine) (firstDefLine:remainingLines)
+    (lastDefLine, lastLineAfter) = splitAt endCol (last defLines)
 
 endLocation :: Location -> String -> Location
 endLocation (startRow, _) def =

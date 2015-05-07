@@ -54,10 +54,15 @@ table
 .definition-type
   background-color $clr-blue-500
 
-.definition-code
-  background-color $clr-grey-800
+.definition-code, pre
   font-family Inconsolata, monospace
   padding 16px
+
+pre
+  margin 0
+
+.definition-code
+  background-color $clr-grey-800
 
 textarea
   color $clr-grey-200
@@ -82,12 +87,6 @@ textarea
   background-color $clr-grey-200
   padding 16px
 
-.undefined-definition
-  color $clr-grey-600
-  font-style italic
-
-.new-def-button
-  background-color $clr-grey-800
-  font-size 36px
-  text-align center
-  font-weight bold
+.error
+  background $clr-red-900
+  color white
