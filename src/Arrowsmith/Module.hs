@@ -4,9 +4,6 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy as LazyBS
 import Data.Function (on)
 import Data.List (sortBy)
-import Data.List.Split (splitOn)
---import qualified Data.ByteString.Lazy.Char8 as C8
---import qualified Data.ByteString.UTF8 as UTF8BS
 
 -- elm-compiler
 import qualified AST.Annotation as Annotation
@@ -16,7 +13,6 @@ import qualified AST.JSON ()
 import qualified AST.Module
 import qualified AST.Pattern as Pattern
 import qualified AST.PrettyPrint as PP
---import qualified AST.Variable as Var
 
 import Arrowsmith.Types
 import Arrowsmith.Util
@@ -72,24 +68,24 @@ defPrettyPrinted def =
   , tipe >>= Just . PP.renderPretty
   , PP.renderPretty binding
   , startLocation
-  , endLocation
+  , endLocation'
   )
   where
     Canonical.Definition (Pattern.Var varName) binding tipe = def
-    (startLocation, endLocation) = sourceRange def
+    (startLocation, endLocation') = sourceRange def
 
 -- Looks up the regions in the code itself to match the style the code was written in originally.
 defFromSource :: String -> DefTransform
 defFromSource source' def =
   ( varName
   , tipe >>= Just . PP.renderPretty
-  , sourceRegion source' lhsStartLocation endLocation
+  , sourceRegion source' lhsStartLocation endLocation'
   , lhsStartLocation
-  , endLocation
+  , endLocation'
   )
   where
     Canonical.Definition (Pattern.Var varName) _ tipe = def
-    (startLocation, endLocation) = sourceRange def
+    (startLocation, endLocation') = sourceRange def
     lhsStartLocation = expandToLhs source' varName startLocation
 
 -- Returns the start position of a definition including the left hand side.
@@ -132,9 +128,21 @@ sourceRegion source' (startLine, startColumn) (endLine, endColumn) =
           let (middle, lastLine) = (init remainingLines, last remainingLines) in
             unlines $ [drop (startColumn - 1) firstLine] ++ middle ++ [take (endColumn - 1) lastLine]
 
+-- (before, definition (bounded by locations), after)
 breakSource :: String -> Location -> Location -> (String, String, String)
-breakSource source' start end =
-  (before, def, after)
+breakSource source' (startCol, startRow) (endCol, endRow) =
+  (unlines linesBefore ++ firstLineBefore, unlines (init defLines) ++ lastDefLine, lastLineAfter ++ unlines linesAfter)
   where
-    (before:after:_) = splitOn def source' -- let's hope the def only appears once...
-    def = sourceRegion source' start end
+    idx x = max 0 (x - 1)
+    sourceLines = lines source'
+    (linesBefore, (firstLine:remainingLines)) = splitAt (idx startCol) sourceLines
+    (firstLineBefore, firstDefLine) = splitAt (idx startRow) firstLine
+    (defLines, linesAfter) = splitAt (idx endCol - idx startRow) (firstDefLine:remainingLines)
+    (lastDefLine, lastLineAfter) = splitAt (idx endRow) (last defLines)
+
+endLocation :: Location -> String -> Location
+endLocation (startRow, _) def =
+  (startRow + length defLines - 1, length lastLine)
+  where
+    defLines = lines def
+    lastLine = last defLines

@@ -13,9 +13,13 @@ addDefinition def@(defName, defType, defBinding) elmFile' = do
   modul' <- modul elmFile'
   let (_, _, _, lastStart, lastEnd) = last (defs modul')
       (before, lastDef, after) = breakSource (source elmFile') lastStart lastEnd
+      (lastEndRow, _) = lastEnd
+      newStart = (lastEndRow + 2, 0)
+      defSource = prettyPrint def
+      newDef = (defName, defType, defBinding, newStart, endLocation newStart defSource)
   return elmFile'
-    { source = before ++ lastDef ++ "\n\n" ++ prettyPrint def ++ "\n" ++ after
-    , modul = Just modul' { defs = defs modul' ++ [(defName, defType, defBinding, (0, 0), (0,0))] }
+    { source = before ++ lastDef ++ "\n\n" ++ defSource ++ "\n" ++ after
+    , modul = Just modul' { defs = defs modul' ++ [newDef] }
     }
 
 changeDefinition :: VarName -> ElmCode -> ElmFile -> Maybe ElmFile
@@ -25,9 +29,10 @@ changeDefinition varName elmCode elmFile' = do
   def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
       (before, _, after) = breakSource (source elmFile') defStart defEnd
-      newDef = (varName, Nothing, elmCode, defStart, defEnd) -- TODO wrong def{Start,End}
+      defSource = prettyPrintLocated newDef
+      newDef = (varName, Nothing, elmCode, defStart, endLocation defStart defSource)
   return elmFile'
-    { source = before ++ prettyPrintLocated newDef ++ after
+    { source = before ++ defSource ++ after
     , modul = Just modul' { defs = update def newDef defs' }
     }
 

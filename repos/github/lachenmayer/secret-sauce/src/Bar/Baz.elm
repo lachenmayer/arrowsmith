@@ -1,3 +1,3 @@
 module Bar.Baz where
 
-buzz = "sure."asdfasdfasdf
+buzz = "sure."

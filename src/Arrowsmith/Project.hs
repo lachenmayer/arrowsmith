@@ -1,5 +1,7 @@
 module Arrowsmith.Project where
 
+import Debug.Trace
+
 import Control.Applicative (Applicative)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.Either.Combinators (whenRight)
@@ -66,7 +68,7 @@ updateElmFile projectsRef repoInfo' fileName' updateFn = do
               newProject = oldProject { elmFiles = insertFile newFile (elmFiles oldProject) }
           liftIO $ saveProject projectsRef newProject
           return updated
-        _ -> return updated
+        failure -> trace ("failed: " ++ show failure) $ return updated
 
 getElmFiles :: RepoInfo -> Description -> IO [ElmFile]
 getElmFiles repoInfo' description' = do

@@ -94,20 +94,20 @@ editHandler = do
       editResponse <- liftIO $ updateElmFile projectsRef repoInfo' moduleName (performEdit action'')
       writeJSON editResponse
 
-  where
-    performEdit action' maybeElmFile = do
-      case maybeElmFile of
-        Nothing -> return $ EditFailure "Elm file not found."
-        Just elmFile' -> do
-          compiled <- liftIO $ getLatest elmFile'
-          case compiled of
-            Left err -> return $ EditFailure err
-            Right compiledFile -> do
-              editResult <- liftIO $ edit compiledFile action'
-              case editResult of
-                Just editedFile -> do
-                  return $ EditSuccess (toCompileResponse (Right editedFile)) -- TODO
-                Nothing -> return $ EditFailure "Probably couldn't compile the file."
+performEdit :: Action -> Maybe ElmFile -> IO EditResponse
+performEdit action' maybeElmFile = do
+  case maybeElmFile of
+    Nothing -> return $ EditFailure "Elm file not found."
+    Just elmFile' -> do
+      compiled <- liftIO $ getLatest elmFile'
+      case compiled of
+        Left err -> return $ EditFailure err
+        Right compiledFile -> do
+          editResult <- liftIO $ edit compiledFile action'
+          case editResult of
+            Just editedFile -> do
+              return $ EditSuccess (toCompileResponse (Right editedFile)) -- TODO
+            Nothing -> return $ EditFailure "Probably couldn't compile the file."
 
 urlFragment :: MonadSnap m => BS.ByteString -> m String
 urlFragment paramName = do

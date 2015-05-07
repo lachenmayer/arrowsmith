@@ -75,6 +75,7 @@ type EditUpdate = (QualifiedName, Maybe RevisionId, Action)
 data CompileResponse
   = CompileSuccess ElmFile
   | CompileFailure ElmError
+  deriving (Show)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''CompileResponse)
 
 toCompileResponse :: Either ElmError ElmFile -> CompileResponse
@@ -84,6 +85,7 @@ toCompileResponse (Right elmFile') = CompileSuccess elmFile'
 data EditResponse
   = EditSuccess CompileResponse
   | EditFailure String
+  deriving (Show)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''EditResponse)
 
 
