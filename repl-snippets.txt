@@ -5,6 +5,9 @@ let ri = RepoInfo {backend = "github", user = "lachenmayer", project = "secret-s
 p' <- createProject ri
 let Right p = p'
 
+let Just b = Data.HashMap.Strict.lookup ["Bar", "Baz"] (elmFiles p)
+Right l <- getLatest b
+
 Right f <- compile (head $ sources p)
 
 performEdit f (AddDefinition ("wateva", Just "String", "wateva = \"unoit\""))
@@ -28,4 +31,4 @@ moduleSourceDefs src ast
 
 map (defFromSource src) (definitions ast)
 
-
+let f = ElmFile {filePath = "src/Bar/Baz.elm", fileName = ["Bar","Baz"], source = "module Bar.Baz where\n\nbuzz = \"sure.\"asdfasdfasdf", compiledCode = Just "nope", modul = Just (Module {name = ["Bar","Baz"], imports = [], adts = [], defs = [("buzz",Nothing,"buzz = \"sure.\"",(3,1),(3,15))], errors = []}), inRepo = RepoInfo {backend = "github", user = "lachenmayer", project = "secret-sauce"}}

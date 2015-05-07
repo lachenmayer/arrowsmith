@@ -8,39 +8,42 @@ import Arrowsmith.Types
 import Arrowsmith.Util
 
 
-addDefinition :: Definition -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
-addDefinition def@(defName, defType, defBinding) (source, maybeModule) = do
-  modul' <- maybeModule
+addDefinition :: Definition -> ElmFile -> Maybe ElmFile
+addDefinition def@(defName, defType, defBinding) elmFile' = do
+  modul' <- modul elmFile'
   let (_, _, _, lastStart, lastEnd) = last (defs modul')
-      (before, lastDef, after) = breakSource source lastStart lastEnd
-  return ( before ++ lastDef ++ "\n\n" ++ prettyPrint def ++ "\n" ++ after
-         , modul' { defs = defs modul' ++ [(defName, defType, defBinding, (0, 0), (0,0))] }
-         )
+      (before, lastDef, after) = breakSource (source elmFile') lastStart lastEnd
+  return elmFile'
+    { source = before ++ lastDef ++ "\n\n" ++ prettyPrint def ++ "\n" ++ after
+    , modul = Just modul' { defs = defs modul' ++ [(defName, defType, defBinding, (0, 0), (0,0))] }
+    }
 
-changeDefinition :: VarName -> ElmCode -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
-changeDefinition varName elmCode (source, maybeModule) = do
-  modul' <- maybeModule
+changeDefinition :: VarName -> ElmCode -> ElmFile -> Maybe ElmFile
+changeDefinition varName elmCode elmFile' = do
+  modul' <- modul elmFile'
   let defs' = defs modul'
   def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
-      (before, _, after) = breakSource source defStart defEnd
+      (before, _, after) = breakSource (source elmFile') defStart defEnd
       newDef = (varName, Nothing, elmCode, defStart, defEnd) -- TODO wrong def{Start,End}
-  return ( before ++ prettyPrintLocated newDef ++ after
-         , modul' { defs = update def newDef defs' }
-         )
+  return elmFile'
+    { source = before ++ prettyPrintLocated newDef ++ after
+    , modul = Just modul' { defs = update def newDef defs' }
+    }
 
-removeDefinition :: VarName -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
-removeDefinition varName (source, maybeModule) = do
-  modul' <- maybeModule
+removeDefinition :: VarName -> ElmFile -> Maybe ElmFile
+removeDefinition varName elmFile' = do
+  modul' <- modul elmFile'
   let defs' = defs modul'
   def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
-      (before, _, after) = breakSource source defStart defEnd
-  return ( before ++ after
-         , modul' { defs = delete def defs' }
-         )
+      (before, _, after) = breakSource (source elmFile') defStart defEnd
+  return elmFile'
+    { source = before ++ after
+    , modul = Just modul' { defs = delete def defs' }
+    }
 
-performAction :: Action -> (ElmCode, Maybe Module) -> Maybe (ElmCode, Module)
+performAction :: Action -> ElmFile -> Maybe ElmFile
 performAction action' =
   case action' of
     AddDefinition def -> addDefinition def

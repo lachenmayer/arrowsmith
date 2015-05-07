@@ -77,8 +77,8 @@ moduleHandler = do
       compiled <- liftIO $ getLatest elmFile''
       case compiled of
         Left err -> (writeText . pack) err
-        Right modul -> do
-          let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) modul
+        Right modul' -> do
+          let moduleJson = (UTF8BS.toString . LazyBS.toStrict . encode . toJSON) modul'
               moduleScript = H.script ! A.class_ "initial-module" ! A.type_ "text/json" $ H.preEscapedString moduleJson
           (writeText . toStrict . renderHtml . template) moduleScript
 
@@ -91,11 +91,11 @@ editHandler = do
   case action' of
     Left err -> badRequest err
     Right action'' -> do
-      editResponse <- liftIO $ editElmFile projectsRef repoInfo' moduleName (getEditResponse action'')
+      editResponse <- liftIO $ updateElmFile projectsRef repoInfo' moduleName (performEdit action'')
       writeJSON editResponse
 
   where
-    getEditResponse action' maybeElmFile = do
+    performEdit action' maybeElmFile = do
       case maybeElmFile of
         Nothing -> return $ EditFailure "Elm file not found."
         Just elmFile' -> do
@@ -121,9 +121,9 @@ withResponseCode code message = do
   modifyResponse $ setResponseCode code
   (writeText . pack) message
 
-notFound :: MonadSnap m => String -> m ()
-notFound message =
-  withResponseCode 404 message
+-- notFound :: MonadSnap m => String -> m ()
+-- notFound message =
+--   withResponseCode 404 message
 
 badRequest :: MonadSnap m => String -> m ()
 badRequest message =

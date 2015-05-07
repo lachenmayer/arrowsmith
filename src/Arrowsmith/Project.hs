@@ -52,8 +52,8 @@ getElmFile project' name' =
 -- saveElmFile projectsRef elmFile' = do
 --   project' <- getProject projectsRef (inRepo elmFile')
 
-editElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> QualifiedName -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
-editElmFile projectsRef repoInfo' fileName' updateFn = do
+updateElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> QualifiedName -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
+updateElmFile projectsRef repoInfo' fileName' updateFn = do
   project' <- liftIO $ getProject projectsRef repoInfo'
   case project' of
     Left _ -> return $ EditFailure "Couldn't get project."

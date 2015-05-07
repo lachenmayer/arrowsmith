@@ -63,6 +63,7 @@ data Project = Project
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
   , fileName :: QualifiedName
+  , source :: String
   , compiledCode :: Maybe String
   , modul :: Maybe Module
   , inRepo :: RepoInfo

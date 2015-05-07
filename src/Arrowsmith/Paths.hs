@@ -53,6 +53,13 @@ stuffDirectory description' =
     </> Name.toFilePath (Desc.name description')
     </> Version.toString (Desc.version description')
 
+getStuffDirectory :: FilePath -> IO FilePath
+getStuffDirectory projectRoot = do
+  desc <- getDescription projectRoot
+  case desc of
+    Left err -> error err
+    Right description -> return $ projectRoot </> stuffDirectory description
+
 astPath :: Desc.Description -> QualifiedName -> FilePath
 astPath description' moduleName =
   stuffDirectory description' </> intercalate "-" moduleName <.> "elma"
