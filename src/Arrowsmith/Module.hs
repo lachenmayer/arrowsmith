@@ -27,7 +27,7 @@ makeModule :: DefTransform -> ModuleTransform
 makeModule defTransform m =
   Module { name = AST.Module.names m
          , imports = []
-         , adts = []
+         , datatypes = []
          , defs = sortByLocation $ map defTransform (definitions m)
          , errors = []
          }
@@ -38,7 +38,7 @@ modulePrettyPrintedDefs =
 
 moduleSourceDefs :: String -> ModuleTransform
 moduleSourceDefs source' =
-  makeModule (defFromSource source')
+  makeModule . defFromSource $ source'
 
 sortByLocation :: [LocatedDefinition] -> [LocatedDefinition]
 sortByLocation =
@@ -57,7 +57,7 @@ definitions modoole =
     -- Definitions are in one big 'let' block, turn them into a list.
     letDefs (Annotation.A _ ds) =
       case ds of
-        General.Var _ -> [] -- should be the "_save_the_environment!!!" varaible.
+        General.Var _ -> [] -- should be the "_save_the_environment!!!" variable.
         General.Let [def] next -> def : letDefs next
         _ -> error "unexpected AST structure. (letDefs)"
 
@@ -146,3 +146,7 @@ endLocation (startRow, _) def =
   where
     defLines = lines def
     lastLine = last defLines
+
+moduleTypes :: AST.Module.CanonicalModule -> AST.Module.Types
+moduleTypes modoole =
+  AST.Module.types (AST.Module.body modoole)

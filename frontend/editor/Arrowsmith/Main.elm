@@ -14,10 +14,9 @@ import Signal as S exposing (Signal, (<~))
 import String
 
 import Arrowsmith.Definition as Def
+import Arrowsmith.Imports as Imports
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
-
-import Arrowsmith.Views.SimpleView
 
 --
 -- State & Actions
@@ -162,9 +161,9 @@ importView : ElmCode -> Html
 importView code =
   div "import" [ H.text code ]
 
-adtView : ElmCode -> Html
-adtView code =
-  div "adt" [ H.code [] [ H.text code ] ]
+datatypeView : ElmCode -> Html
+datatypeView code =
+  div "datatype" [ H.code [] [ H.text code ] ]
 
 codeView : Definition -> Html
 codeView (name, tipe, binding) =
@@ -208,13 +207,13 @@ newDefView =
 moduleView : Module -> Html
 moduleView modul =
   let
-    {name, imports, adts, defs, errors} = modul
+    {name, imports, datatypes, defs, errors} = modul
   in
     div "module"
       [ div "module-header"
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map importView imports
-      , div "module-adts" <| List.map adtView adts
+      , div "module-adts" <| List.map datatypeView datatypes
       , div "module-defs" <| List.map (defView name) defs ++ [newDefView]
       , div "module-errors" <| List.map errorView errors
       ]

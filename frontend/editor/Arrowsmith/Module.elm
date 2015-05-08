@@ -32,7 +32,7 @@ nameToString name =
   if isEmpty name then "Program" else concat <| intersperse "." name
 
 toString : Module -> ElmCode
-toString {name, imports, adts, defs} =
+toString {name, imports, datatypes, defs} =
   let
     lines = join "\n"
     moduleDeclaration = "module " ++ nameToString name ++ " where"
@@ -41,7 +41,7 @@ toString {name, imports, adts, defs} =
     join "\n\n"
       [ moduleDeclaration
       , lines (map ((++) "import ") imports)
-      , lines adts
+      , lines datatypes
       , lines definitions
       ]
 
@@ -49,7 +49,7 @@ empty : Module
 empty =
   { name = ["Program"]
   , imports = []
-  , adts = []
+  , datatypes = []
   , defs = []
   , errors = []
   }

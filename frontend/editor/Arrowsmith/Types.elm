@@ -18,7 +18,7 @@ type alias Definition = (Name, Maybe Type, ElmCode)
 type alias Module =
   { name : ModuleName
   , imports : List ElmCode
-  , adts : List ElmCode
+  , datatypes : List ElmCode
   , defs : List Definition
   , errors : List ElmError
   }
@@ -57,3 +57,20 @@ type Action
 
   | ModuleCompiled Module
   | CompilationFailed ElmError
+
+
+type alias Listing a =
+  { explicits : List a
+  , open : Bool
+  }
+
+type VarValue
+  = VarValue String
+  | VarAlias String
+  | VarUnion String (Listing String)
+
+type alias Import =
+  { name : ModuleName
+  , alias : Maybe Name
+  , exposedVars : Listing VarValue
+  }

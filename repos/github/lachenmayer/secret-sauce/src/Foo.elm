@@ -15,8 +15,7 @@ encrypt m e =
 
 --bigger : number -> number -> number
 bigger first second =
-  if
-    first > second
+  if first > second
   then first
   else second
 

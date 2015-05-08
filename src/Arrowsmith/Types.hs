@@ -29,7 +29,7 @@ type Type = String
 data Module = Module
   { name :: QualifiedName
   , imports :: [String]
-  , adts :: [String]
+  , datatypes :: [String]
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)
