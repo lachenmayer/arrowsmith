@@ -2,11 +2,13 @@ module Arrowsmith.ImportView where
 
 import Debug
 
+import Char
 import Color
 import Graphics.Element exposing (..)
 import Graphics.Input exposing (clickable)
 import Graphics.Input.Field exposing (..)
 import Signal exposing ((<~))
+import String
 import Text
 
 import Arrowsmith.Module exposing (nameToString)
@@ -39,13 +41,19 @@ step action state =
     ReadOnly readState ->
       case action of
         NoOp -> state
-        StartEditing -> Editing { import_ = readState.import_, nameContent = (content << nameToString) readState.import_.name }
+        StartEditing ->
+          Editing { import_ = readState.import_, nameContent = (content << nameToString) readState.import_.name }
         _ -> Debug.crash "Should not get into this state..."
     Editing editState ->
       case action of
         NoOp -> state
-        StopEditing -> ReadOnly { import_ = editState.import_ }
-        ChangeName newContent -> Editing { editState | nameContent <- newContent }
+        StopEditing ->
+          let
+            oldImport = editState.import_
+            newImport = { oldImport | name <- String.split "." editState.nameContent.string }
+          in ReadOnly { import_ = newImport }
+        ChangeName newContent ->
+          Editing { editState | nameContent <- validate newContent }
         _ -> Debug.crash "Should not get into this state..."
 
 state : Import -> Signal State
@@ -56,8 +64,18 @@ content : String -> Content
 content str =
   { string = str, selection = Selection 0 0 Forward }
 
+initialState : Import -> State
 initialState i =
   ReadOnly { import_ = i }
+
+validate : Content -> Content
+validate content =
+  let
+    validateString =
+      String.filter (\c -> (List.any (\f -> f c) [Char.isUpper, Char.isLower, (==) '.']))
+  in
+    { string = validateString content.string, selection = content.selection }
+
 
 --
 -- View
@@ -71,16 +89,25 @@ scene : State -> Element
 scene state =
   flow right <| case state of
     ReadOnly {import_} ->
-      [nameReadOnly import_.name]
-    Editing {import_, nameContent} ->
-      [nameField nameContent]
+      let
+        aliasPart = case import_.alias of
+          Just alias -> [label "as", label alias]
+          Nothing -> []
+        exposingPart = [label "exposing"] ++ [label "..."]
+      in
+        [label (nameToString import_.name)] ++ aliasPart ++ exposingPart
+    Editing {nameContent} ->
+      [nameField nameContent, doneButton]
 
-nameReadOnly name =
-  Text.fromString (nameToString name)
+label str =
+  Text.fromString str
     |> Text.style textStyle
     |> leftAligned
     |> color Color.white
     |> clickable (action StartEditing)
+
+doneButton =
+  Graphics.Input.button (action StopEditing) "&#10004;" --"✔"
 
 nameField content =
   field fieldStyle (ChangeName >> action) "Module name" content
