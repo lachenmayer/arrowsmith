@@ -2,7 +2,7 @@ ready = require 'domready'
 {attachToEnvironment} = require './update.coffee'
 
 ready ->
-  Elm.fullscreen Elm.Arrowsmith.Imports, {}
+  Elm.fullscreen Elm.Arrowsmith.ImportView, {}
 
 # ready ->
 ->

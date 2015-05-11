@@ -14,7 +14,7 @@ import Signal as S exposing (Signal, (<~))
 import String
 
 import Arrowsmith.Definition as Def
-import Arrowsmith.Imports as Imports
+import Arrowsmith.ImportView as ImportView
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
 
@@ -41,10 +41,6 @@ initialState =
 actions : S.Mailbox Action
 actions =
   S.mailbox NoOp
-
---action : Action -> S.Message
---action =
---  S.message actions
 
 step : Action -> State -> State
 step action state =
