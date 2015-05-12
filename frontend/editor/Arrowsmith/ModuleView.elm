@@ -1,4 +1,4 @@
-module Arrowsmith.ModuleView (Model, Action, init, update, view) where
+module Arrowsmith.ModuleView (Model, Action(..), init, update, view) where
 
 import Debug
 
