@@ -28,44 +28,40 @@ type Action
   | ChangeAlias String
   | ChangeExposed String
 
-type alias State =
+type alias Model =
   { import_ : Import, editing : Bool }
 
 actions : Signal.Mailbox Action
 actions =
   Signal.mailbox NoOp
 
-step : Action -> State -> State
-step action state =
+update : Action -> Model -> Model
+update action model =
   case Debug.log "action" action of
-    NoOp -> state
+    NoOp -> model
     StartEditing ->
-      { state | editing <- True }
+      { model | editing <- True }
     StopEditing ->
-      { state | editing <- False }
+      { model | editing <- False }
     ChangeName input ->
       let
-        i = state.import_
+        i = model.import_
         validatedName = validate input
-      in { state | import_ <- { i | name <- String.split "." validatedName } }
+      in { model | import_ <- { i | name <- String.split "." validatedName } }
     ChangeAlias input ->
       let
-        i = state.import_
+        i = model.import_
         validatedInput = validate input
         alias = if String.isEmpty validatedInput then Nothing else Just validatedInput
-      in { state | import_ <- { i | alias <- alias } }
+      in { model | import_ <- { i | alias <- alias } }
     --ChangeExposed input ->
     --  let
-    --    i = state.import_
-    --  in { state | import_ <- { i | exposedVars }}
+    --    i = model.import_
+    --  in { model | import_ <- { i | exposedVars }}
 
-state : Import -> Signal State
-state import_ =
-  Signal.foldp step (initialState import_) actions.signal
-
-initialState : Import -> State
-initialState i =
-  { import_ = i, editing = False }
+model : Import -> Signal Model
+model import_ =
+  Signal.foldp update { import_ = import_, editing = False } actions.signal
 
 validate : String -> String
 validate =
@@ -85,10 +81,10 @@ validate =
 
 importView : Import -> Signal H.Html
 importView import_ =
-  scene <~ (state import_)
+  view <~ (model import_)
 
-scene : State -> H.Html
-scene {editing, import_} =
+view : Model -> H.Html
+view {editing, import_} =
   H.div [ A.class "import" ] <|
     nameField editing import_ ++ aliasField editing import_ ++ {-exposingField editing import_ ++-} doneButton editing
 
