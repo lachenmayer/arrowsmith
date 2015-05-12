@@ -72,5 +72,5 @@ type VarValue
 type alias Import =
   { name : ModuleName
   , alias : Maybe Name
-  , exposedVars : Listing VarValue
+  , exposedVars : Listing String
   }

@@ -4,15 +4,17 @@ import Debug
 
 import Char
 import Color
-import Graphics.Element exposing (..)
-import Graphics.Input exposing (clickable)
-import Graphics.Input.Field exposing (..)
+import FontAwesome
+import Html as H
+import Html.Attributes as A
+import Html.Events as E
+import Json.Decode as Json
 import Signal exposing ((<~))
 import String
 import Text
 
 import Arrowsmith.Module exposing (nameToString)
-import Arrowsmith.Types exposing (Import, VarValue(..))
+import Arrowsmith.Types exposing (Import, Listing)
 
 --
 -- Model
@@ -22,122 +24,136 @@ type Action
   = NoOp
   | StartEditing
   | StopEditing
-  | ChangeName Content
+  | ChangeName String
+  | ChangeAlias String
+  | ChangeExposed String
 
-type State
-  = ReadOnly { import_ : Import }
-  | Editing { import_ : Import, nameContent : Content }
+type alias State =
+  { import_ : Import, editing : Bool }
 
 actions : Signal.Mailbox Action
 actions =
   Signal.mailbox NoOp
 
-action : Action -> Signal.Message
-action =
-  Signal.message actions.address
-
+step : Action -> State -> State
 step action state =
-  case state of
-    ReadOnly readState ->
-      case action of
-        NoOp -> state
-        StartEditing ->
-          Editing { import_ = readState.import_, nameContent = (content << nameToString) readState.import_.name }
-        _ -> Debug.crash "Should not get into this state..."
-    Editing editState ->
-      case action of
-        NoOp -> state
-        StopEditing ->
-          let
-            oldImport = editState.import_
-            newImport = { oldImport | name <- String.split "." editState.nameContent.string }
-          in ReadOnly { import_ = newImport }
-        ChangeName newContent ->
-          Editing { editState | nameContent <- validate newContent }
-        _ -> Debug.crash "Should not get into this state..."
+  case Debug.log "action" action of
+    NoOp -> state
+    StartEditing ->
+      { state | editing <- True }
+    StopEditing ->
+      { state | editing <- False }
+    ChangeName input ->
+      let
+        i = state.import_
+        validatedName = validate input
+      in { state | import_ <- { i | name <- String.split "." validatedName } }
+    ChangeAlias input ->
+      let
+        i = state.import_
+        validatedInput = validate input
+        alias = if String.isEmpty validatedInput then Nothing else Just validatedInput
+      in { state | import_ <- { i | alias <- alias } }
+    --ChangeExposed input ->
+    --  let
+    --    i = state.import_
+    --  in { state | import_ <- { i | exposedVars }}
 
 state : Import -> Signal State
 state import_ =
   Signal.foldp step (initialState import_) actions.signal
 
-content : String -> Content
-content str =
-  { string = str, selection = Selection 0 0 Forward }
-
 initialState : Import -> State
 initialState i =
-  ReadOnly { import_ = i }
+  { import_ = i, editing = False }
 
-validate : Content -> Content
-validate content =
-  let
-    validateString =
-      String.filter (\c -> (List.any (\f -> f c) [Char.isUpper, Char.isLower, (==) '.']))
-  in
-    { string = validateString content.string, selection = content.selection }
+validate : String -> String
+validate =
+  String.filter (\c -> (List.any (\f -> f c) [Char.isUpper, Char.isLower, (==) '.']))
 
+--listingToString : Listing String -> String
+--listingToString listing =
+--  "TODO"
+
+--isEmptyListing : Listing a -> Bool
+--isEmptyListing {explicits, open} =
+--  not open && List.isEmpty explicits
 
 --
 -- View
 --
 
-importView : Import -> Signal Element
+importView : Import -> Signal H.Html
 importView import_ =
   scene <~ (state import_)
 
-scene : State -> Element
-scene state =
-  flow right <| case state of
-    ReadOnly {import_} ->
-      let
-        aliasPart = case import_.alias of
-          Just alias -> [label "as", label alias]
-          Nothing -> []
-        exposingPart = [label "exposing"] ++ [label "..."]
-      in
-        [label (nameToString import_.name)] ++ aliasPart ++ exposingPart
-    Editing {nameContent} ->
-      [nameField nameContent, doneButton]
+scene : State -> H.Html
+scene {editing, import_} =
+  H.div [ A.class "import" ] <|
+    nameField editing import_ ++ aliasField editing import_ ++ {-exposingField editing import_ ++-} doneButton editing
+
+nameField : Bool -> Import -> List H.Html
+nameField editing import_ =
+  if editing then
+    [ editable "import-name import-editing" (nameToString import_.name) ChangeName StopEditing ]
+  else
+    [ clickable "import-name" (nameToString import_.name) StartEditing ]
+
+aliasField : Bool -> Import -> List H.Html
+aliasField editing import_ =
+  if editing then
+    [ label "as", editable "import-alias import-editing" (Maybe.withDefault "" import_.alias) ChangeAlias StopEditing ]
+  else
+    case import_.alias of
+      Just alias -> [ label "as", clickable "import-alias" alias StartEditing ]
+      Nothing -> []
+
+--exposingField editing import_ =
+--  if editing then
+--    [ label "exposing", editable "import-exposing import-editing" (listingToString import_.exposedVars) ChangeExposed StopEditing ]
+--  else
+--    if isEmptyListing import_.exposedVars then
+--      []
+--    else
+--      [ label "exposing", clickable "import-exposing" (listingToString import_.exposedVars) StartEditing ]
+
+doneButton editing =
+  if editing then
+    [ H.span [ A.class "import-done-button", E.onClick actions.address StopEditing ] [ FontAwesome.check Color.white 16 ] ]
+  else
+    []
 
 label str =
-  Text.fromString str
-    |> Text.style textStyle
-    |> leftAligned
-    |> color Color.white
-    |> clickable (action StartEditing)
+  H.span [ A.class "import-label" ] [ H.text str ]
 
-doneButton =
-  Graphics.Input.button (action StopEditing) "&#10004;" --"✔"
+clickable className value clickAction =
+  H.span [ A.class className, E.onClick actions.address clickAction ] [ H.text value ]
 
-nameField content =
-  field fieldStyle (ChangeName >> action) "Module name" content
+editable className value inputAction enterAction =
+  H.input
+    [ A.class className
+    , A.value value
+    , E.on "input" E.targetValue (inputAction >> Signal.message actions.address)
+    , onEnter enterAction
+    ]
+    []
 
-textStyle =
-  { typeface = ["Roboto", "sans-serif"]
-  , height = Just 16
-  , color = Color.black
-  , bold = False
-  , italic = False
-  , line = Nothing
-  }
-
-fieldStyle =
-  { padding = uniformly 10
-  , outline = noOutline
-  , highlight = noHighlight
-  , style = textStyle
-  }
+onEnter : Action -> H.Attribute
+onEnter action =
+  E.on "keydown"
+    (Json.customDecoder E.keyCode (\code -> if code == 13 then Ok () else Err ""))
+    (\_ -> Signal.message actions.address action)
 
 --
 -- Testing
 --
 
-exampleImport : Import
-exampleImport =
-  { name = ["Bar", "Baz"]
-  , alias = Just "BB"
-  , exposedVars = { explicits = [VarValue "foo", VarValue "beb"], open = False }
-  }
+--exampleImport : Import
+--exampleImport =
+--  { name = ["Bar", "Baz"]
+--  , alias = Just "BB"
+--  , exposedVars = { explicits = ["foo", "beb"], open = False }
+--  }
 
-main =
-  importView exampleImport
+--main =
+--  importView exampleImport
