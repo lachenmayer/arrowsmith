@@ -27,38 +27,6 @@ type CompileStatus
   = Compiled
   | CompileError ElmError
 
-type alias State =
-  { modul : Module
-
-  , isCompiling : Bool
-  , compileStatus : CompileStatus
-  , synced : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
-
-  , editing : Maybe Name
-
-  , values : Dict Name Value
-  , toEvaluate : Maybe (ModuleName, Name)
-
-  , fresh : Int
-  }
-
-type Action
-  = NoOp
-
-  | Edit Name
-  | StopEditing Name
-  | FinishEditing (Name, Value)
-
-  | Evaluate (ModuleName, Name)
-  | FinishEvaluating (ModuleName, Name, Value)
-
-  | NewDefinition
-  | RemoveDefinition Name
-
-  | ModuleCompiled Module
-  | CompilationFailed ElmError
-
-
 type alias Listing a =
   { explicits : List a
   , open : Bool

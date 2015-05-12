@@ -1,10 +1,10 @@
 ready = require 'domready'
 {attachToEnvironment} = require './update.coffee'
 
-ready ->
-  Elm.fullscreen Elm.Arrowsmith.ImportView, {}
+# ready ->
+#   Elm.fullscreen Elm.Arrowsmith.ImportView, {}
 
-->#ready ->
+ready ->
   initialModule = document.querySelector('.initial-module')
   unless initialModule?
     console.log 'expected an initial module, but none found'

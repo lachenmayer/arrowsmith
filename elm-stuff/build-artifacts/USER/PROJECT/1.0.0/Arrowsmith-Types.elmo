@@ -41,57 +41,6 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,explicits: a
              ,open: b};
    });
-   var CompilationFailed = function (a) {
-      return {ctor: "CompilationFailed"
-             ,_0: a};
-   };
-   var ModuleCompiled = function (a) {
-      return {ctor: "ModuleCompiled"
-             ,_0: a};
-   };
-   var RemoveDefinition = function (a) {
-      return {ctor: "RemoveDefinition"
-             ,_0: a};
-   };
-   var NewDefinition = {ctor: "NewDefinition"};
-   var FinishEvaluating = function (a) {
-      return {ctor: "FinishEvaluating"
-             ,_0: a};
-   };
-   var Evaluate = function (a) {
-      return {ctor: "Evaluate"
-             ,_0: a};
-   };
-   var FinishEditing = function (a) {
-      return {ctor: "FinishEditing"
-             ,_0: a};
-   };
-   var StopEditing = function (a) {
-      return {ctor: "StopEditing"
-             ,_0: a};
-   };
-   var Edit = function (a) {
-      return {ctor: "Edit",_0: a};
-   };
-   var NoOp = {ctor: "NoOp"};
-   var State = F8(function (a,
-   b,
-   c,
-   d,
-   e,
-   f,
-   g,
-   h) {
-      return {_: {}
-             ,compileStatus: c
-             ,editing: e
-             ,fresh: h
-             ,isCompiling: b
-             ,modul: a
-             ,synced: d
-             ,toEvaluate: g
-             ,values: f};
-   });
    var CompileError = function (a) {
       return {ctor: "CompileError"
              ,_0: a};
@@ -113,17 +62,6 @@ Elm.Arrowsmith.Types.make = function (_elm) {
                                   ,Module: Module
                                   ,Compiled: Compiled
                                   ,CompileError: CompileError
-                                  ,State: State
-                                  ,NoOp: NoOp
-                                  ,Edit: Edit
-                                  ,StopEditing: StopEditing
-                                  ,FinishEditing: FinishEditing
-                                  ,Evaluate: Evaluate
-                                  ,FinishEvaluating: FinishEvaluating
-                                  ,NewDefinition: NewDefinition
-                                  ,RemoveDefinition: RemoveDefinition
-                                  ,ModuleCompiled: ModuleCompiled
-                                  ,CompilationFailed: CompilationFailed
                                   ,Listing: Listing
                                   ,VarValue: VarValue
                                   ,VarAlias: VarAlias
