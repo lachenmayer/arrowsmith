@@ -4,6 +4,7 @@ import Data.Aeson
 import qualified Data.ByteString.Lazy as LazyBS
 import Data.Function (on)
 import Data.List (intercalate, sortBy)
+import qualified Data.Map as Map
 
 -- elm-compiler
 import qualified AST.Annotation as Annotation
@@ -28,7 +29,7 @@ makeModule :: DefTransform -> ModuleTransform
 makeModule defTransform m =
   Module { name = AST.Module.names m
          , imports = moduleImports m
-         , types = []
+         , types = moduleTypes m
          , defs = sortByLocation $ map defTransform (definitions m)
          , errors = []
          }
@@ -148,9 +149,9 @@ endLocation (startRow, _) def =
     defLines = lines def
     lastLine = last defLines
 
-moduleTypes :: AST.Module.CanonicalModule -> AST.Module.Types
+moduleTypes :: AST.Module.CanonicalModule -> [(VarName, Type)]
 moduleTypes modoole =
-  AST.Module.types (AST.Module.body modoole)
+  map (\(n, tipe) -> (n, PP.renderPretty tipe)) . Map.toList $ AST.Module.types (AST.Module.body modoole)
 
 moduleImports :: AST.Module.CanonicalModule -> [Import]
 moduleImports modoole =

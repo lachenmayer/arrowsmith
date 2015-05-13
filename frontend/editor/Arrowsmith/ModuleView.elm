@@ -2,7 +2,9 @@ module Arrowsmith.ModuleView (Model, Action(..), init, update, view) where
 
 import Debug
 
+import Color
 import Dict as D exposing (Dict)
+import FontAwesome
 import Graphics.Element exposing (Element, flow, down)
 import Graphics.Input as Input
 import Html as H exposing (Html)
@@ -14,6 +16,7 @@ import Signal as S exposing (Signal, (<~))
 import String
 
 import Arrowsmith.Definition as Def
+import Arrowsmith.ImportView as ImportView
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
 
@@ -117,41 +120,37 @@ moduleView address modul =
     div "module"
       [ div "module-header"
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
-      , div "module-imports" <| List.map importView imports
-      , div "module-adts" <| List.map typeView types
-      , div "module-defs" <| List.map (defView address name) defs ++ [newDefView address]
+      , div "module-imports" <| List.map (\i -> ImportView.view {import_ = i, editing = False}) imports
+      --, div "module-adts" <| List.map datatypeView datatypes
+      , div "module-defs" <| List.map (defView address types name) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
-
-importView : Import -> Html
-importView (name, _) =
-  div "import" [ H.text (Module.nameToString name) ]
 
 typeView : ElmCode -> Html
 typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
-defView : S.Address Action -> Name -> Definition -> Html
-defView address moduleName definition =
+defView : S.Address Action -> List (VarName, Type) -> Name -> Definition -> Html
+defView address inferredTypes moduleName definition =
   let
     (name, tipe, binding) = definition
     class = "definition defname-" ++ name
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address moduleName definition
+      [ defHeaderView address inferredTypes moduleName definition
       , codeView address definition
       ]
 
-defHeaderView : S.Address Action -> Name -> Definition -> Html
-defHeaderView address moduleName (name, tipe, _) =
+defHeaderView : S.Address Action -> List (VarName, Type) -> Name -> Definition -> Html
+defHeaderView address inferredTypes moduleName (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate (moduleName, name)) ] [ H.text "eval" ]
+    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate (moduleName, name)) ] [ FontAwesome.play Color.white 16 ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
       Nothing ->
-        [ nameTag, evalTag ]
+        [ nameTag, tag "definition-type-inferred" [] [ H.text <| lookup inferredTypes ], evalTag ]
   in
     H.table [ A.class "definition-header" ]
       [ H.tr [] header ]
@@ -218,3 +217,7 @@ div class =
 tag : String -> List H.Attribute -> List Html -> Html
 tag class attrs =
   H.td (A.class ("tag " ++ class) :: attrs)
+
+lookup : List (a, b) -> a -> b
+lookup =
+  snd << Maybe.withDefault ("","") << List.head <| List.filter (fst >> (==) name)

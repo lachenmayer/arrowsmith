@@ -46,7 +46,7 @@ type Import = (Name, ImportMethod)
 data Module = Module
   { name :: Name
   , imports :: [Import]
-  , types :: [String]
+  , types :: [(VarName, Type)]
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)

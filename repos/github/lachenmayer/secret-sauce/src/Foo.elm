@@ -1,7 +1,7 @@
 module Foo where
 
 import Color exposing (..)
-import Graphics.Collage exposing (..)
+import Graphics.Collage exposing (collage, move, filled, ngon)
 import Graphics.Element exposing (..)
 import Text exposing (..)
 
@@ -15,13 +15,14 @@ encrypt m e =
 
 --bigger : number -> number -> number
 bigger first second =
-  if first > second
+  if
+    first > second
   then first
   else second
 
 main : Element
 main =
   collage 300 300
-    [ move (-10,0) (filled red (ngon 4 75))
+    [ move (-10,0) (filled blue (ngon 4 75))
     , move (50,10) (filled red (ngon 5 50))
     ]

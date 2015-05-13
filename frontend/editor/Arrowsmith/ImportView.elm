@@ -45,15 +45,15 @@ update action model =
       { model | editing <- False }
     ChangeName input ->
       let
-        i = model.import_
+        (_, importMethod) = model.import_
         validatedName = validate input
-      in { model | import_ <- { i | name <- String.split "." validatedName } }
+      in { model | import_ <- (String.split "." validatedName, importMethod) }
     ChangeAlias input ->
       let
-        i = model.import_
+        (name, importMethod) = model.import_
         validatedInput = validate input
         alias = if String.isEmpty validatedInput then Nothing else Just validatedInput
-      in { model | import_ <- { i | alias <- alias } }
+      in { model | import_ <- (name, { importMethod | alias <- alias }) }
     --ChangeExposed input ->
     --  let
     --    i = model.import_
@@ -67,13 +67,15 @@ validate : String -> String
 validate =
   String.filter (\c -> (List.any (\f -> f c) [Char.isUpper, Char.isLower, (==) '.']))
 
---listingToString : Listing String -> String
---listingToString listing =
---  "TODO"
+listingToString : Listing String -> String
+listingToString {explicits, open} =
+  let explicits' = if open then explicits ++ [".."] else explicits in
+    "(" ++ String.join ", " explicits' ++ ")"
 
---isEmptyListing : Listing a -> Bool
---isEmptyListing {explicits, open} =
---  not open && List.isEmpty explicits
+
+isEmptyListing : Listing a -> Bool
+isEmptyListing {explicits, open} =
+  not open && List.isEmpty explicits
 
 --
 -- View
@@ -86,32 +88,32 @@ importView import_ =
 view : Model -> H.Html
 view {editing, import_} =
   H.div [ A.class "import" ] <|
-    nameField editing import_ ++ aliasField editing import_ ++ {-exposingField editing import_ ++-} doneButton editing
+    nameField editing import_ ++ aliasField editing import_ ++ exposingField editing import_ ++ doneButton editing
 
 nameField : Bool -> Import -> List H.Html
-nameField editing import_ =
+nameField editing (importName, _) =
   if editing then
-    [ editable "import-name import-editing" (nameToString import_.name) ChangeName StopEditing ]
+    [ editable "import-name import-editing" (nameToString importName) ChangeName StopEditing ]
   else
-    [ clickable "import-name" (nameToString import_.name) StartEditing ]
+    [ clickable "import-name" (nameToString importName) StartEditing ]
 
 aliasField : Bool -> Import -> List H.Html
-aliasField editing import_ =
+aliasField editing (_, importMethod) =
   if editing then
-    [ label "as", editable "import-alias import-editing" (Maybe.withDefault "" import_.alias) ChangeAlias StopEditing ]
+    [ label " as ", editable "import-alias import-editing" (Maybe.withDefault "" importMethod.alias) ChangeAlias StopEditing ]
   else
-    case import_.alias of
-      Just alias -> [ label "as", clickable "import-alias" alias StartEditing ]
+    case importMethod.alias of
+      Just alias -> [ label " as ", clickable "import-alias" alias StartEditing ]
       Nothing -> []
 
---exposingField editing import_ =
---  if editing then
---    [ label "exposing", editable "import-exposing import-editing" (listingToString import_.exposedVars) ChangeExposed StopEditing ]
---  else
---    if isEmptyListing import_.exposedVars then
---      []
---    else
---      [ label "exposing", clickable "import-exposing" (listingToString import_.exposedVars) StartEditing ]
+exposingField editing (_, {exposedVars}) =
+  if editing then
+    [ label " exposing ", editable "import-exposing import-editing" (listingToString exposedVars) ChangeExposed StopEditing ]
+  else
+    if isEmptyListing exposedVars then
+      []
+    else
+      [ label " exposing ", clickable "import-exposing" (listingToString exposedVars) StartEditing ]
 
 doneButton editing =
   if editing then

@@ -18,7 +18,7 @@ type alias Definition = (VarName, Maybe Type, ElmCode)
 type alias Module =
   { name : Name
   , imports : List Import
-  , types : List ElmCode
+  , types : List (VarName, Type)
   , defs : List Definition
   , errors : List ElmError
   }
