@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 module Arrowsmith.Types where
 
@@ -19,17 +20,33 @@ import Snap.Snaplet (Handler)
 type ElmCode = String
 type ElmError = String -- TODO add ranges
 type VarName = String
-type QualifiedName = [String]
+type Name = [String]
 type Location = (Int {- line -}, Int {- column -}) -- 1-indexed
 type Definition = (VarName, Maybe Type, ElmCode)
 type PartialDefinition = (Maybe VarName, Maybe Type, Maybe ElmCode)
 type LocatedDefinition = (VarName, Maybe Type, ElmCode, Location {- start -}, Location {- end -})
 type Type = String
 
+-- Re-implementation of elm-compiler:AST.Variable.Listing
+data Listing a = Listing
+  { explicits :: [a]
+  , open :: Bool
+  } deriving (Show, Eq)
+$(deriveJSON defaultOptions ''Listing)
+
+-- Re-implementation of elm-compiler:AST.Module.ImportMethod
+data ImportMethod = ImportMethod
+  { alias :: Maybe VarName
+  , exposedVars :: Listing String
+  } deriving (Show, Eq)
+$(deriveJSON defaultOptions ''ImportMethod)
+
+type Import = (Name, ImportMethod)
+
 data Module = Module
-  { name :: QualifiedName
-  , imports :: [String]
-  , datatypes :: [String]
+  { name :: Name
+  , imports :: [Import]
+  , types :: [String]
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)
@@ -57,12 +74,12 @@ data Repo = Repo { repoInfo :: RepoInfo }
 
 data Project = Project
   { projectRepo :: RepoInfo
-  , elmFiles :: HashMap QualifiedName ElmFile
+  , elmFiles :: HashMap Name ElmFile
   } deriving (Show, Eq)
 
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
-  , fileName :: QualifiedName
+  , fileName :: Name
   , source :: String
   , compiledCode :: Maybe String
   , modul :: Maybe Module
@@ -70,7 +87,7 @@ data ElmFile = ElmFile
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ElmFile)
 
-type EditUpdate = (QualifiedName, Maybe RevisionId, Action)
+type EditUpdate = (Name, Maybe RevisionId, Action)
 
 data CompileResponse
   = CompileSuccess ElmFile

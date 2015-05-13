@@ -12,7 +12,8 @@ import System.IO.Strict (readFile, hGetContents)
 import System.IO.Error (tryIOError, catchIOError)
 import Text.Read (readMaybe)
 
-import Elm.Compiler.Module (Name(Name), hyphenate)
+import Elm.Compiler.Module (hyphenate)
+import qualified Elm.Compiler.Module as Elm
 import Elm.Package.Description (Description, sourceDirs)
 
 import Arrowsmith.Edit
@@ -66,7 +67,7 @@ compile :: ElmFile -> FilePath -> IO (Either String ElmFile)
 compile elmFile' outPath = do
   let repoInfo' = inRepo elmFile'
   tempDirectory <- temporaryDirectory (backend repoInfo' </> user repoInfo' </> project repoInfo' </> outPath)
-  let tempFile ext = tempDirectory </> hyphenate (Name (fileName elmFile')) <.> ext
+  let tempFile ext = tempDirectory </> hyphenate (Elm.Name (fileName elmFile')) <.> ext
       projectRoot = repoPath repoInfo'
       inFile = projectRoot </> (filePath elmFile')
       outFile = tempFile "js"
@@ -144,7 +145,7 @@ fullPath :: ElmFile -> FilePath
 fullPath elmFile' =
   repoPath (inRepo elmFile') </> filePath elmFile'
 
-fileNameFromPath :: [FilePath] -> FilePath -> QualifiedName
+fileNameFromPath :: [FilePath] -> FilePath -> Name
 fileNameFromPath sourceDirs' filePath' =
   splitDirectories . dropExtension $ stripLongestPrefix sourceDirs' filePath'
 
@@ -170,9 +171,9 @@ getAstFile elmFile' = do
       ast <- (tryIOError . LazyBS.readFile) path'
       return $ either (Left . show) Right ast
 
-removeBuildArtifacts :: FilePath -> QualifiedName -> IO ()
+removeBuildArtifacts :: FilePath -> Name -> IO ()
 removeBuildArtifacts projectRoot fileName' = do
-  let fileName'' = hyphenate (Name fileName')
+  let fileName'' = hyphenate (Elm.Name fileName')
   stuffDirectory' <- getStuffDirectory projectRoot
   let basePath = stuffDirectory' </> fileName''
       artifacts = map (addExtension basePath) ["elmi", "elma", "elmo"]

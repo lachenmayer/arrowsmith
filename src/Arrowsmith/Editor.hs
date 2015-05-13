@@ -49,7 +49,7 @@ getReqRepoInfo = do
   p <- urlFragment "project"
   return RepoInfo { backend = b, user = u, project = p }
 
-getReqModuleName :: AppHandler QualifiedName
+getReqModuleName :: AppHandler Name
 getReqModuleName = do
   moduleName <- urlFragment "module"
   return $ split "." moduleName

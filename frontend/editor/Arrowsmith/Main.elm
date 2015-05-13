@@ -13,9 +13,9 @@ import Arrowsmith.Types exposing (..)
 -- Editing cycle:
 -- Elm:StopEditing --stopEditing--> JS:get textfield value --editedValue--> Elm:FinishEditing
 
-port editedValue : Signal (Name, ElmCode)
+port editedValue : Signal (VarName, ElmCode)
 
-port stopEditing : Signal Name
+port stopEditing : Signal VarName
 port stopEditing =
   let
     extractValue a =
@@ -32,9 +32,9 @@ port stopEditing =
 -- Evaluation cycle:
 -- Elm:Evaluate --evaluate--> JS:do evaluation --evaluatedValue--> Elm:FinishEvaluating
 
-port evaluatedValue : Signal (ModuleName, Name, Value)
+port evaluatedValue : Signal (Name, VarName, String)
 
-port evaluate : Signal (ModuleName, Name)
+port evaluate : Signal (Name, VarName)
 port evaluate =
   let
     extractValue a =

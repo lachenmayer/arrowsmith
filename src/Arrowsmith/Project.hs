@@ -46,7 +46,7 @@ saveProject projectsRef project' =
   atomicModifyIORef' projectsRef $ \ps ->
     (HashMap.insert (projectRepo project') project' ps, ())
 
-getElmFile :: Project -> QualifiedName -> Maybe ElmFile
+getElmFile :: Project -> Name -> Maybe ElmFile
 getElmFile project' name' =
   HashMap.lookup name' (elmFiles project')
 
@@ -54,7 +54,7 @@ getElmFile project' name' =
 -- saveElmFile projectsRef elmFile' = do
 --   project' <- getProject projectsRef (inRepo elmFile')
 
-updateElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> QualifiedName -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
+updateElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> Name -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
 updateElmFile projectsRef repoInfo' fileName' updateFn = do
   project' <- liftIO $ getProject projectsRef repoInfo'
   case project' of

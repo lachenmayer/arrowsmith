@@ -7,18 +7,18 @@ import Dict exposing (Dict)
 type alias CompileResponse = String
 type alias ElmCode = String
 type alias ElmError = String
-type alias Name = String
-type alias ModuleName = List Name
-type alias Value = String
-type alias Values = Dict Name Value
+type alias VarName = String
+type alias Name = List VarName
+--type alias Value = String
+type alias Values = Dict VarName String
 type alias Type = String -- TODO...
 
-type alias Definition = (Name, Maybe Type, ElmCode)
+type alias Definition = (VarName, Maybe Type, ElmCode)
 
 type alias Module =
-  { name : ModuleName
-  , imports : List ElmCode
-  , datatypes : List ElmCode
+  { name : Name
+  , imports : List Import
+  , types : List ElmCode
   , defs : List Definition
   , errors : List ElmError
   }
@@ -32,13 +32,10 @@ type alias Listing a =
   , open : Bool
   }
 
-type VarValue
-  = VarValue String
-  | VarAlias String
-  | VarUnion String (Listing String)
-
-type alias Import =
-  { name : ModuleName
-  , alias : Maybe Name
+type alias ImportMethod =
+  { alias : Maybe VarName
   , exposedVars : Listing String
   }
+
+type alias Import =
+  (Name, ImportMethod)

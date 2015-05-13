@@ -13,28 +13,12 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    $moduleName = "Arrowsmith.Types",
    $Dict = Elm.Dict.make(_elm),
    $Maybe = Elm.Maybe.make(_elm);
-   var Import = F3(function (a,
-   b,
-   c) {
-      return {_: {}
-             ,alias: b
-             ,exposedVars: c
-             ,name: a};
-   });
-   var VarUnion = F2(function (a,
+   var ImportMethod = F2(function (a,
    b) {
-      return {ctor: "VarUnion"
-             ,_0: a
-             ,_1: b};
+      return {_: {}
+             ,alias: a
+             ,exposedVars: b};
    });
-   var VarAlias = function (a) {
-      return {ctor: "VarAlias"
-             ,_0: a};
-   };
-   var VarValue = function (a) {
-      return {ctor: "VarValue"
-             ,_0: a};
-   };
    var Listing = F2(function (a,
    b) {
       return {_: {}
@@ -52,20 +36,17 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    d,
    e) {
       return {_: {}
-             ,datatypes: c
              ,defs: d
              ,errors: e
              ,imports: b
-             ,name: a};
+             ,name: a
+             ,types: c};
    });
    _elm.Arrowsmith.Types.values = {_op: _op
                                   ,Module: Module
                                   ,Compiled: Compiled
                                   ,CompileError: CompileError
                                   ,Listing: Listing
-                                  ,VarValue: VarValue
-                                  ,VarAlias: VarAlias
-                                  ,VarUnion: VarUnion
-                                  ,Import: Import};
+                                  ,ImportMethod: ImportMethod};
    return _elm.Arrowsmith.Types.values;
 };

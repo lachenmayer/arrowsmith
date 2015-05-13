@@ -60,6 +60,6 @@ getStuffDirectory projectRoot = do
     Left err -> error err
     Right description -> return $ projectRoot </> stuffDirectory description
 
-astPath :: Desc.Description -> QualifiedName -> FilePath
+astPath :: Desc.Description -> Name -> FilePath
 astPath description' moduleName =
   stuffDirectory description' </> intercalate "-" moduleName <.> "elma"

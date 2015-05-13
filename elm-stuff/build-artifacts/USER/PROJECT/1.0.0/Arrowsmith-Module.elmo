@@ -17,11 +17,11 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $String = Elm.String.make(_elm);
    var empty = {_: {}
-               ,datatypes: _L.fromArray([])
                ,defs: _L.fromArray([])
                ,errors: _L.fromArray([])
                ,imports: _L.fromArray([])
-               ,name: _L.fromArray(["Program"])};
+               ,name: _L.fromArray(["Program"])
+               ,types: _L.fromArray([])};
    var nameToString = function (name) {
       return $List.isEmpty(name) ? "Program" : $String.concat(A2($List.intersperse,
       ".",
@@ -42,14 +42,7 @@ Elm.Arrowsmith.Module.make = function (_elm) {
             return A2($String.join,
             "\n\n",
             _L.fromArray([moduleDeclaration
-                         ,lines(A2($List.map,
-                         F2(function (x,y) {
-                            return A2($Basics._op["++"],
-                            x,
-                            y);
-                         })("import "),
-                         _v0.imports))
-                         ,lines(_v0.datatypes)
+                         ,lines(_v0.types)
                          ,lines(definitions)]));
          }();
       }();

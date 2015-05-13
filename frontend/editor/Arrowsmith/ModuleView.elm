@@ -24,10 +24,10 @@ type alias Model =
   , compileStatus : CompileStatus
   , synced : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
 
-  , editing : Maybe Name
+  , editing : Maybe VarName
 
-  , values : Dict Name Value
-  , toEvaluate : Maybe (ModuleName, Name)
+  , values : Values
+  , toEvaluate : Maybe (Name, VarName)
 
   , fresh : Int
   }
@@ -35,15 +35,15 @@ type alias Model =
 type Action
   = NoOp
 
-  | Edit Name
-  | StopEditing Name
-  | FinishEditing (Name, Value)
+  | Edit VarName
+  | StopEditing VarName
+  | FinishEditing (VarName, String)
 
-  | Evaluate (ModuleName, Name)
-  | FinishEvaluating (ModuleName, Name, Value)
+  | Evaluate (Name, VarName)
+  | FinishEvaluating (Name, VarName, String)
 
   | NewDefinition
-  | RemoveDefinition Name
+  | RemoveDefinition VarName
 
   | ModuleCompiled Module
   | CompilationFailed ElmError
@@ -112,26 +112,26 @@ view address {modul, compileStatus} =
 moduleView : S.Address Action -> Module -> Html
 moduleView address modul =
   let
-    {name, imports, datatypes, defs, errors} = modul
+    {name, imports, types, defs, errors} = modul
   in
     div "module"
       [ div "module-header"
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map importView imports
-      , div "module-adts" <| List.map datatypeView datatypes
+      , div "module-adts" <| List.map typeView types
       , div "module-defs" <| List.map (defView address name) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
 
-importView : ElmCode -> Html
-importView code =
-  div "import" [ H.text code ]
+importView : Import -> Html
+importView (name, _) =
+  div "import" [ H.text (Module.nameToString name) ]
 
-datatypeView : ElmCode -> Html
-datatypeView code =
+typeView : ElmCode -> Html
+typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
-defView : S.Address Action -> ModuleName -> Definition -> Html
+defView : S.Address Action -> Name -> Definition -> Html
 defView address moduleName definition =
   let
     (name, tipe, binding) = definition
@@ -142,7 +142,7 @@ defView address moduleName definition =
       , codeView address definition
       ]
 
-defHeaderView : S.Address Action -> ModuleName -> Definition -> Html
+defHeaderView : S.Address Action -> Name -> Definition -> Html
 defHeaderView address moduleName (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
@@ -182,7 +182,7 @@ button address className buttonText act =
     ]
     [ H.text buttonText ]
 
-editable : S.Address Action -> Name -> String -> List H.Attribute -> List Html -> Html
+editable : S.Address Action -> VarName -> String -> List H.Attribute -> List Html -> Html
 editable address name tagName additionalAttrs contents =
   let
     attrs = A.contenteditable True :: editActions address name ++ additionalAttrs
@@ -203,7 +203,7 @@ keepJust maybes default =
   in
     snd <~ S.filter fst (False, default) (decorate <~ maybes)
 
-editActions : S.Address Action -> Name -> List H.Attribute
+editActions : S.Address Action -> VarName -> List H.Attribute
 editActions address name =
   [ E.onFocus address (Edit name), E.onBlur address (StopEditing name) ]
 

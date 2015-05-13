@@ -3,7 +3,7 @@ module Arrowsmith.Module where
 import Data.Aeson
 import qualified Data.ByteString.Lazy as LazyBS
 import Data.Function (on)
-import Data.List (sortBy)
+import Data.List (intercalate, sortBy)
 
 -- elm-compiler
 import qualified AST.Annotation as Annotation
@@ -13,6 +13,7 @@ import qualified AST.JSON ()
 import qualified AST.Module
 import qualified AST.Pattern as Pattern
 import qualified AST.PrettyPrint as PP
+import qualified AST.Variable as Var
 
 import Arrowsmith.Types
 import Arrowsmith.Util
@@ -26,8 +27,8 @@ type ModuleTransform = AST.Module.CanonicalModule -> Module
 makeModule :: DefTransform -> ModuleTransform
 makeModule defTransform m =
   Module { name = AST.Module.names m
-         , imports = []
-         , datatypes = []
+         , imports = moduleImports m
+         , types = []
          , defs = sortByLocation $ map defTransform (definitions m)
          , errors = []
          }
@@ -150,3 +151,20 @@ endLocation (startRow, _) def =
 moduleTypes :: AST.Module.CanonicalModule -> AST.Module.Types
 moduleTypes modoole =
   AST.Module.types (AST.Module.body modoole)
+
+moduleImports :: AST.Module.CanonicalModule -> [Import]
+moduleImports modoole =
+  map importFromElm (AST.Module.imports modoole)
+  where
+    importFromElm (name', importMethod) =
+      (name', importMethodFromElm importMethod)
+    importMethodFromElm (AST.Module.ImportMethod alias' exposedVars') =
+      ImportMethod alias' (listingFromElm exposedVars')
+    listingFromElm (Var.Listing explicits' open') =
+      Listing (map valueToString explicits') open'
+    valueToString (Var.Value str) = str
+    valueToString (Var.Alias str) = str
+    valueToString (Var.Union str (Var.Listing explicits' open')) =
+      str ++ "(" ++ (intercalate ", " $ explicits' ++ [openDots]) ++ ")"
+      where
+        openDots = if open' then ".." else ""
