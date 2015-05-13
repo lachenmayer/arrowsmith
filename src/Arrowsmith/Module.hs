@@ -28,7 +28,7 @@ makeModule :: DefTransform -> ModuleTransform
 makeModule defTransform m =
   Module { name = AST.Module.names m
          , imports = moduleImports m
-         , types = moduleTypes m
+         , types = []
          , defs = sortByLocation $ map defTransform (definitions m)
          , errors = []
          }

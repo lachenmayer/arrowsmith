@@ -23,13 +23,11 @@ client(method: 'POST', path: 'http://localhost:8000/github/lachenmayer/secret-sa
 
 import Arrowsmith.Module
 import qualified Data.ByteString.Lazy as BS
-src <- readFile "repos/github/lachenmayer/secret-sauce/src/Foo.elm"
-f <- BS.readFile "tmp/github/lachenmayer/secret-sauce/82cd8a22004abb7068a094ad3398ba705df105c4/Tweets.elma"
+src <- readFile "repos/github/lachenmayer/secret-sauce/src/Bar/Baz.elm"
+f <- BS.readFile "tmp/github/lachenmayer/secret-sauce/a19eff0dae50558a6c2d5c7f510181aa5f279c61/Bar-Baz.elma"
 let Just ast = fromAstFile f
 
-modulePrettyPrintedDefs ast
 moduleSourceDefs src ast
-
 
 map (defFromSource src) (definitions ast)
 

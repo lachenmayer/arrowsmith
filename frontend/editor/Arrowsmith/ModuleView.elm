@@ -2,9 +2,7 @@ module Arrowsmith.ModuleView (Model, Action(..), init, update, view) where
 
 import Debug
 
-import Color
 import Dict as D exposing (Dict)
-import FontAwesome
 import Graphics.Element exposing (Element, flow, down)
 import Graphics.Input as Input
 import Html as H exposing (Html)
@@ -18,7 +16,6 @@ import String
 import Arrowsmith.Definition as Def
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
-import Arrowsmith.TypeView exposing (typeView)
 
 type alias Model =
   { modul : Module
@@ -121,7 +118,7 @@ moduleView address modul =
       [ div "module-header"
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map importView imports
-      --, div "module-adts" <| List.map datatypeView types -- TODO
+      , div "module-adts" <| List.map typeView types
       , div "module-defs" <| List.map (defView address name) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
@@ -130,8 +127,8 @@ importView : Import -> Html
 importView (name, _) =
   div "import" [ H.text (Module.nameToString name) ]
 
-datatypeView : ElmCode -> Html
-datatypeView code =
+typeView : ElmCode -> Html
+typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
 defView : S.Address Action -> Name -> Definition -> Html
@@ -149,7 +146,7 @@ defHeaderView : S.Address Action -> Name -> Definition -> Html
 defHeaderView address moduleName (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate (moduleName, name)) ] [ FontAwesome.play Color.white 16 ]
+    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate (moduleName, name)) ] [ H.text "eval" ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]

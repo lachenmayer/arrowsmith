@@ -3,7 +3,6 @@ module Arrowsmith.Main where
 import Html exposing (Html)
 import Signal as S exposing (Signal, (<~))
 
-import Arrowsmith.Module exposing (fromPort)
 import Arrowsmith.ModuleView as ModuleView
 import Arrowsmith.Types exposing (..)
 
@@ -49,9 +48,9 @@ port evaluate =
   in
     extractValue <~ S.filter isEvaluateAction NoOp actions.signal
 
-port initialModule : PortModule
+port initialModule : Module
 
-port compiledModules : Signal PortModule
+port compiledModules : Signal Module
 
 port compileErrors : Signal ElmError
 
@@ -64,7 +63,7 @@ type alias Model =
 
 init : Model
 init =
-  { moduleView = ModuleView.init (fromPort initialModule) }
+  { moduleView = ModuleView.init initialModule }
 
 actions : S.Mailbox Action
 actions =
@@ -77,13 +76,12 @@ update action model =
     ModuleView moduleAction ->
       { model | moduleView <- ModuleView.update moduleAction model.moduleView }
 
-model : Signal Model
 model =
   let
     events = S.mergeMany [ actions.signal
                          , ModuleView << ModuleView.FinishEditing <~ editedValue
                          , ModuleView << ModuleView.FinishEvaluating <~ evaluatedValue
-                         , ModuleView << ModuleView.ModuleCompiled << fromPort <~ compiledModules
+                         , ModuleView << ModuleView.ModuleCompiled <~ compiledModules
                          , ModuleView << ModuleView.CompilationFailed <~ compileErrors
                          ]
   in
