@@ -20,11 +20,11 @@ port stopEditing =
   let
     extractValue a =
       case a of
-        ModuleView (ModuleView.StopEditing v) -> v
+        MainModule (ModuleView.StopEditing v) -> v
         _ -> ""
     isStopEditingAction a =
       case a of
-        ModuleView (ModuleView.StopEditing _) -> True
+        MainModule (ModuleView.StopEditing _) -> True
         _ -> False
   in
     extractValue <~ S.filter isStopEditingAction NoOp actions.signal
@@ -34,19 +34,28 @@ port stopEditing =
 
 port evaluatedValue : Signal (Name, VarName, String)
 
-port evaluate : Signal (Name, VarName)
+port evaluate : Signal (Name, List VarName)
 port evaluate =
   let
-    extractValue a =
-      case a of
-        ModuleView (ModuleView.Evaluate v) -> v
-        _ -> ([], "")
     isEvaluateAction a =
       case a of
-        ModuleView (ModuleView.Evaluate _) -> True
+        ModuleView.Evaluate _ -> True
         _ -> False
+    isModuleCompiledAction a =
+      case a of
+        ModuleView.ModuleCompiled _ -> True
+        _ -> False
+    evaluateActions (lastAction, _) =
+      isEvaluateAction lastAction || isModuleCompiledAction lastAction
   in
-    extractValue <~ S.filter isEvaluateAction NoOp actions.signal
+    S.map snd <| S.filter evaluateActions (ModuleView.NoOp, ([], [])) <| S.map (\{moduleView} -> (moduleView.lastAction, (moduleView.modul.name, moduleView.toEvaluate))) model
+  --let
+  --  extractValue a =
+  --    case a of
+  --      ModuleView (ModuleView.Evaluate v) -> v
+  --      _ -> ([], [])
+  --in
+  --  extractValue <~ S.filter isEvaluateAction NoOp actions.signal
 
 port initialModule : Module
 
@@ -56,7 +65,7 @@ port compileErrors : Signal ElmError
 
 type Action
   = NoOp
-  | ModuleView ModuleView.Action
+  | MainModule ModuleView.Action
 
 type alias Model =
   { moduleView : ModuleView.Model }
@@ -73,23 +82,23 @@ update : Action -> Model -> Model
 update action model =
   case action of
     NoOp -> model
-    ModuleView moduleAction ->
+    MainModule moduleAction ->
       { model | moduleView <- ModuleView.update moduleAction model.moduleView }
 
 model =
   let
     events = S.mergeMany [ actions.signal
-                         , ModuleView << ModuleView.FinishEditing <~ editedValue
-                         , ModuleView << ModuleView.FinishEvaluating <~ evaluatedValue
-                         , ModuleView << ModuleView.ModuleCompiled <~ compiledModules
-                         , ModuleView << ModuleView.CompilationFailed <~ compileErrors
+                         , MainModule << ModuleView.FinishEditing <~ editedValue
+                         , MainModule << ModuleView.FinishEvaluating <~ evaluatedValue
+                         , MainModule << ModuleView.ModuleCompiled <~ compiledModules
+                         , MainModule << ModuleView.CompilationFailed <~ compileErrors
                          ]
   in
     S.foldp update init events
 
 view : S.Address Action -> Model -> Html
 view address model =
-  ModuleView.view (S.forwardTo address ModuleView) model.moduleView
+  ModuleView.view (S.forwardTo address MainModule) model.moduleView
 
 main : Signal Html
 main =

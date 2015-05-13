@@ -30,9 +30,9 @@ type alias Model =
   , editing : Maybe VarName
 
   , values : Values
-  , toEvaluate : Maybe (Name, VarName)
+  , toEvaluate : List VarName
 
-  , fresh : Int
+  , lastAction : Action
   }
 
 type Action
@@ -42,7 +42,7 @@ type Action
   | StopEditing VarName
   | FinishEditing (VarName, String)
 
-  | Evaluate (Name, VarName)
+  | Evaluate VarName
   | FinishEvaluating (Name, VarName, String)
 
   | NewDefinition
@@ -62,58 +62,69 @@ init initialModule =
   , editing = Nothing
 
   , values = D.empty
-  , toEvaluate = Nothing
+  , toEvaluate = []
 
-  , fresh = 0
+  , lastAction = NoOp
   }
 
 update : Action -> Model -> Model
 update action model =
-  --Debug.log "model" <| case action of
+  --Debug.log "ModuleView:model" <| case action of
   case (Debug.log "ModuleView:action" action) of
     NoOp ->
       model
 
     Edit name ->
-      { model | editing <- Just name }
-    StopEditing _ ->
-      model -- Nothing happens, this is only used to call the JS "edit" function.
+      { model
+      | lastAction <- Edit name
+      , editing <- Just name
+      }
+    StopEditing name ->
+      { model -- Nothing happens, this is only used to call the JS "edit" function.
+      | lastAction <- StopEditing name
+      }
     FinishEditing (name, newBinding) ->
       { model
-      | editing <- Nothing
+      | lastAction <- FinishEditing (name, newBinding)
+      , editing <- Nothing
       , modul <- Module.replaceDefinition model.modul name (name, Nothing, newBinding)
+      , toEvaluate <- D.keys model.values
       }
 
     Evaluate e ->
-      { model | toEvaluate <- Just e }
+      { model
+      | lastAction <- Evaluate e
+      , toEvaluate <- [e] }
     FinishEvaluating (moduleName, name, value) ->
       { model
-      | values <- D.insert name value model.values
-      , toEvaluate <- Nothing
+      | lastAction <- FinishEvaluating (moduleName, name, value)
+      , values <- D.insert name value model.values
       }
 
     ModuleCompiled newModule ->
       { model
-      | compileStatus <- Compiled
+      | lastAction <- ModuleCompiled newModule
+      , compileStatus <- Compiled
       , synced <- True
       , modul <- newModule
       }
     CompilationFailed error ->
       { model
-      | compileStatus <- CompileError error
+      | lastAction <- CompilationFailed error
+      , compileStatus <- CompileError error
       , synced <- True
       }
 
 view : S.Address Action -> Model -> Html
-view address {modul, compileStatus} =
-  div "modules" [ moduleView address modul ]
+view address {modul, values, compileStatus} =
+  div "modules" [ moduleView address values modul ]
 
 --
 -- Views
 --
 
-moduleView : S.Address Action -> Module -> Html
-moduleView address modul =
+moduleView : S.Address Action -> Values -> Module -> Html
+moduleView address values modul =
   let
     {name, imports, types, defs, errors} = modul
   in
@@ -122,7 +133,7 @@ moduleView address modul =
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , div "module-imports" <| List.map (\i -> ImportView.view {import_ = i, editing = False}) imports
       --, div "module-adts" <| List.map datatypeView datatypes
-      , div "module-defs" <| List.map (defView address types name) defs ++ [newDefView address]
+      , div "module-defs" <| List.map (defView address types values) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
 
@@ -130,27 +141,27 @@ typeView : ElmCode -> Html
 typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
-defView : S.Address Action -> List (VarName, Type) -> Name -> Definition -> Html
-defView address inferredTypes moduleName definition =
+defView : S.Address Action -> List (VarName, Type) -> Values -> Definition -> Html
+defView address inferredTypes values definition =
   let
     (name, tipe, binding) = definition
     class = "definition defname-" ++ name
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address inferredTypes moduleName definition
+      [ defHeaderView address inferredTypes values definition
       , codeView address definition
       ]
 
-defHeaderView : S.Address Action -> List (VarName, Type) -> Name -> Definition -> Html
-defHeaderView address inferredTypes moduleName (name, tipe, _) =
+defHeaderView : S.Address Action -> List (VarName, Type) -> Values -> Definition -> Html
+defHeaderView address inferredTypes values (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate (moduleName, name)) ] [ FontAwesome.play Color.white 16 ]
+    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name) ] [ FontAwesome.play Color.white 16 ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
       Nothing ->
-        [ nameTag, tag "definition-type-inferred" [] [ H.text <| lookup inferredTypes ], evalTag ]
+        [ nameTag, tag "definition-type-inferred" [] [ H.text <| lookup name inferredTypes ], evalTag ]
   in
     H.table [ A.class "definition-header" ]
       [ H.tr [] header ]
@@ -218,6 +229,6 @@ tag : String -> List H.Attribute -> List Html -> Html
 tag class attrs =
   H.td (A.class ("tag " ++ class) :: attrs)
 
-lookup : List (a, b) -> a -> b
-lookup =
-  snd << Maybe.withDefault ("","") << List.head <| List.filter (fst >> (==) name)
+--lookup : a -> List (a, b) -> b
+lookup x xs =
+  snd << Maybe.withDefault ("","") << List.head <| List.filter (fst >> (==) x) xs

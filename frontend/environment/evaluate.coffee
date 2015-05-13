@@ -18,7 +18,11 @@ appendToDefinition = (defName, valueNode) ->
   container.appendChild valueNode
   def.appendChild container
 
-module.exports = (done) -> ([moduleName, name]) ->
+module.exports = (done) -> ([moduleName, names]) ->
+  console.log "evaluate", names
+  if names.length is 0
+    console.log "nothing to evaluate"
+    return
   executionFrame = document.getElementById 'elm-script'
   unless executionFrame?
     console.log 'evaluate: execution frame does not exist'
@@ -38,9 +42,10 @@ module.exports = (done) -> ([moduleName, name]) ->
       console.log "evaluate: undefined name #{moduleName}"
   modul = modul.make context
 
-  renderedNode = render view modul[name]
-  appendToDefinition name, renderedNode
+  for name in names
+    renderedNode = render view modul[name]
+    appendToDefinition name, renderedNode
 
-  result = [moduleName, name, toString modul[name]]
-  console.log "evaluate: #{result[1]}: #{result[2]}"
-  done result
+    result = [moduleName, name, toString modul[name]]
+    console.log "evaluate: #{result[1]}: #{result[2]}"
+    done result
