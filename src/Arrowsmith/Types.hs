@@ -14,6 +14,9 @@ import qualified Data.FileStore
 import GHC.Generics (Generic)
 import Snap.Snaplet (Handler)
 
+import AST.JSON ()
+import qualified AST.Module
+
 
 -- Editor
 
@@ -46,7 +49,7 @@ type Import = (Name, ImportMethod)
 data Module = Module
   { name :: Name
   , imports :: [Import]
-  , types :: [String]
+  , types :: AST.Module.Types
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)

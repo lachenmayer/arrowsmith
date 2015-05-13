@@ -11,6 +11,7 @@ ready ->
     return
 
   elmFile = JSON.parse initialModule.innerHTML
+  debugger
   initialModule.parentNode.removeChild initialModule
   attachToEnvironment elmFile.compiledCode
 

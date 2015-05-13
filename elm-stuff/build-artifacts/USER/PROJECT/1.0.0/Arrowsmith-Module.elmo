@@ -11,41 +11,31 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "Arrowsmith.Module",
-   $Arrowsmith$Definition = Elm.Arrowsmith.Definition.make(_elm),
    $Arrowsmith$Types = Elm.Arrowsmith.Types.make(_elm),
    $Basics = Elm.Basics.make(_elm),
+   $Dict = Elm.Dict.make(_elm),
    $List = Elm.List.make(_elm),
    $String = Elm.String.make(_elm);
+   var fromPort = function (portModule) {
+      return {_: {}
+             ,defs: portModule.defs
+             ,errors: portModule.errors
+             ,imports: portModule.imports
+             ,name: portModule.name
+             ,types: A2($Dict.singleton,
+             "encode",
+             $Arrowsmith$Types.Var("foo"))};
+   };
    var empty = {_: {}
                ,defs: _L.fromArray([])
                ,errors: _L.fromArray([])
                ,imports: _L.fromArray([])
                ,name: _L.fromArray(["Program"])
-               ,types: _L.fromArray([])};
+               ,types: $Dict.empty};
    var nameToString = function (name) {
       return $List.isEmpty(name) ? "Program" : $String.concat(A2($List.intersperse,
       ".",
       name));
-   };
-   var toString = function (_v0) {
-      return function () {
-         return function () {
-            var definitions = A2($List.map,
-            $Arrowsmith$Definition.toString,
-            _v0.defs);
-            var moduleDeclaration = A2($Basics._op["++"],
-            "module ",
-            A2($Basics._op["++"],
-            nameToString(_v0.name),
-            " where"));
-            var lines = $String.join("\n");
-            return A2($String.join,
-            "\n\n",
-            _L.fromArray([moduleDeclaration
-                         ,lines(_v0.types)
-                         ,lines(definitions)]));
-         }();
-      }();
    };
    var replaceDefinition = F3(function (program,
    name,
@@ -58,7 +48,7 @@ Elm.Arrowsmith.Module.make = function (_elm) {
                   switch (_.ctor)
                   {case "_Tuple3": return _._0;}
                   _U.badCase($moduleName,
-                  "on line 22, column 29 to 42");
+                  "on line 23, column 29 to 42");
                }();
                return _U.eq(oldName,
                name) ? newDefinition : oldDefinition;
@@ -75,13 +65,13 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    toRemove) {
       return _U.replace([["defs"
                          ,A2($List.filter,
-                         function (_v6) {
+                         function (_v4) {
                             return function () {
-                               switch (_v6.ctor)
+                               switch (_v4.ctor)
                                {case "_Tuple3":
-                                  return !_U.eq(_v6._0,toRemove);}
+                                  return !_U.eq(_v4._0,toRemove);}
                                _U.badCase($moduleName,
-                               "on line 16, column 48 to 64");
+                               "on line 17, column 48 to 64");
                             }();
                          },
                          program.defs)]],
@@ -100,7 +90,7 @@ Elm.Arrowsmith.Module.make = function (_elm) {
                                    ,removeDefinition: removeDefinition
                                    ,replaceDefinition: replaceDefinition
                                    ,nameToString: nameToString
-                                   ,toString: toString
-                                   ,empty: empty};
+                                   ,empty: empty
+                                   ,fromPort: fromPort};
    return _elm.Arrowsmith.Module.values;
 };

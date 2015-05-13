@@ -11,8 +11,46 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
    $moduleName = "Arrowsmith.Types",
+   $Arrowsmith$Variable = Elm.Arrowsmith.Variable.make(_elm),
    $Dict = Elm.Dict.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
    $Maybe = Elm.Maybe.make(_elm);
+   var Aliased = F3(function (a,
+   b,
+   c) {
+      return {ctor: "Aliased"
+             ,_0: a
+             ,_1: b
+             ,_2: c};
+   });
+   var Record = F2(function (a,b) {
+      return {ctor: "Record"
+             ,_0: a
+             ,_1: b};
+   });
+   var App = F2(function (a,b) {
+      return {ctor: "App"
+             ,_0: a
+             ,_1: b};
+   });
+   var Type = function (a) {
+      return {ctor: "Type",_0: a};
+   };
+   var Var = function (a) {
+      return {ctor: "Var",_0: a};
+   };
+   var Lambda = F2(function (a,b) {
+      return {ctor: "Lambda"
+             ,_0: a
+             ,_1: b};
+   });
+   var Filled = function (a) {
+      return {ctor: "Filled"
+             ,_0: a};
+   };
+   var Holey = function (a) {
+      return {ctor: "Holey",_0: a};
+   };
    var ImportMethod = F2(function (a,
    b) {
       return {_: {}
@@ -30,6 +68,18 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,_0: a};
    };
    var Compiled = {ctor: "Compiled"};
+   var PortModule = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,defs: d
+             ,errors: e
+             ,imports: b
+             ,name: a
+             ,types: c};
+   });
    var Module = F5(function (a,
    b,
    c,
@@ -44,9 +94,18 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    });
    _elm.Arrowsmith.Types.values = {_op: _op
                                   ,Module: Module
+                                  ,PortModule: PortModule
                                   ,Compiled: Compiled
                                   ,CompileError: CompileError
                                   ,Listing: Listing
-                                  ,ImportMethod: ImportMethod};
+                                  ,ImportMethod: ImportMethod
+                                  ,Holey: Holey
+                                  ,Filled: Filled
+                                  ,Lambda: Lambda
+                                  ,Var: Var
+                                  ,Type: Type
+                                  ,App: App
+                                  ,Record: Record
+                                  ,Aliased: Aliased};
    return _elm.Arrowsmith.Types.values;
 };
