@@ -18,7 +18,7 @@ appendToDefinition = (defName, valueNode) ->
   container.appendChild valueNode
   def.appendChild container
 
-module.exports = (done) -> ([moduleName, names]) ->
+evaluate = (done) -> ([moduleName, names]) ->
   console.log "evaluate", names
   if names.length is 0
     console.log "nothing to evaluate"
@@ -49,3 +49,35 @@ module.exports = (done) -> ([moduleName, names]) ->
     result = [moduleName, name, toString modul[name]]
     console.log "evaluate: #{result[1]}: #{result[2]}"
     done result
+
+evaluateMain = (moduleName) ->
+  executionFrame = document.getElementById 'elm-script'
+  unless executionFrame?
+    console.log 'evaluate: execution frame does not exist'
+    return # TODO error handling...
+
+  resultFrame = document.createElement 'iframe'
+  resultFrame.className = 'module-result'
+  resultFrame.style = "width: 100%;"
+
+  moduleDiv = document.querySelector ".module-#{moduleName.join "-"}"
+  moduleDiv.querySelector("iframe")?.remove()
+  moduleDiv.appendChild resultFrame
+
+  script = document.createElement 'script'
+  script.text = executionFrame.contentDocument.querySelector('script').text
+  resultFrame.contentDocument.body.appendChild script
+
+  modul = resultFrame.contentWindow.Elm
+  for nameSegment in moduleName
+    modul = modul[nameSegment]
+    if not modul?
+      console.log "evaluate: undefined name #{moduleName}"
+  resultFrame.contentWindow.Elm.fullscreen modul, {}
+
+  resultFrame.height = resultFrame.contentDocument.body.scrollHeight
+
+  console.log "evaluateMain done"
+
+module.exports =
+  {evaluate, evaluateMain}

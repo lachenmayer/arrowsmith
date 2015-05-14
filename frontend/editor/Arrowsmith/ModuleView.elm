@@ -43,6 +43,7 @@ type Action
   | FinishEditing (VarName, String)
 
   | Evaluate VarName
+  | EvaluateMain -- evaluates "main" and runs it.
   | FinishEvaluating (Name, VarName, String)
 
   | NewDefinition
@@ -95,6 +96,10 @@ update action model =
       { model
       | lastAction <- Evaluate e
       , toEvaluate <- [e] }
+    EvaluateMain ->
+      { model
+      | lastAction <- EvaluateMain
+      }
     FinishEvaluating (moduleName, name, value) ->
       { model
       | lastAction <- FinishEvaluating (moduleName, name, value)
@@ -127,13 +132,16 @@ moduleView : S.Address Action -> Values -> Module -> Html
 moduleView address values modul =
   let
     {name, imports, types, defs, errors} = modul
+    moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
   in
-    div "module"
+    div ("module module-" ++ (String.join "-" name))
       [ div "module-header"
-        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
+        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ]
+        , H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
+        ]
       , div "module-imports" <| List.map (\i -> ImportView.view {import_ = i, editing = False}) imports
       --, div "module-adts" <| List.map datatypeView datatypes
-      , div "module-defs" <| List.map (defView address types values) defs ++ [newDefView address]
+      , div moduleDefsClass <| List.map (defView address types values) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
 

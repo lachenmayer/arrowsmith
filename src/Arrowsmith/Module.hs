@@ -81,14 +81,15 @@ defFromSource :: String -> DefTransform
 defFromSource source' def =
   ( varName
   , tipe >>= Just . PP.renderPretty
-  , sourceRegion source' lhsStartLocation endLocation'
+  , sourceRegion source' lhsStartLocation eolEndLocation
   , lhsStartLocation
-  , endLocation'
+  , eolEndLocation
   )
   where
     Canonical.Definition (Pattern.Var varName) _ tipe = def
     (startLocation, endLocation') = sourceRange def
     lhsStartLocation = expandToLhs source' varName startLocation
+    eolEndLocation = expandToEndOfLine source' endLocation'
 
 -- Returns the start position of a definition including the left hand side.
 -- expandToLhs "foo\n  baz\nbal = baz\nbar" "baz" (3, 6) == (2, 3)
@@ -105,6 +106,10 @@ expandToLhs source' varName (startLine, startColumn) =
       case indexOf line varName of
         Just i -> (lineCount, i)
         Nothing -> findInPrevious previous (lineCount - 1)
+
+expandToEndOfLine :: String -> Location -> Location
+expandToEndOfLine source' (line, _) =
+  (line, length (lines source' !! (line - 1)) + 1)
 
 toLocation :: Annotation.Position -> Location
 toLocation p =

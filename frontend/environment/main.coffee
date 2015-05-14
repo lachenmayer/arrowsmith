@@ -25,5 +25,7 @@ ready ->
   edit = require('./edit.coffee')(editor.ports.editedValue.send, editor.ports.compiledModules.send, editor.ports.compileErrors.send)
   editor.ports.stopEditing.subscribe edit
 
-  evaluate = require('./evaluate.coffee')(editor.ports.evaluatedValue.send)
-  editor.ports.evaluate.subscribe evaluate
+  {evaluate, evaluateMain} = require('./evaluate.coffee')
+
+  editor.ports.evaluate.subscribe evaluate editor.ports.evaluatedValue.send
+  editor.ports.evaluateMain.subscribe evaluateMain

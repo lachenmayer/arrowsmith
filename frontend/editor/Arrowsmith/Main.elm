@@ -49,13 +49,10 @@ port evaluate =
       isEvaluateAction lastAction || isModuleCompiledAction lastAction
   in
     S.map snd <| S.filter evaluateActions (ModuleView.NoOp, ([], [])) <| S.map (\{moduleView} -> (moduleView.lastAction, (moduleView.modul.name, moduleView.toEvaluate))) model
-  --let
-  --  extractValue a =
-  --    case a of
-  --      ModuleView (ModuleView.Evaluate v) -> v
-  --      _ -> ([], [])
-  --in
-  --  extractValue <~ S.filter isEvaluateAction NoOp actions.signal
+
+port evaluateMain : Signal (Name)
+port evaluateMain =
+  S.map snd <| S.filter (fst >> (==) ModuleView.EvaluateMain) (ModuleView.NoOp, []) <| S.map (\{moduleView} -> (moduleView.lastAction, moduleView.modul.name)) model
 
 port initialModule : Module
 
