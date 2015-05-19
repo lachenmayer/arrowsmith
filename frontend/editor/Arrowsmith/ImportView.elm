@@ -9,7 +9,7 @@ import Html as H
 import Html.Attributes as A
 import Html.Events as E
 import Json.Decode as Json
-import Signal exposing ((<~))
+import Signal exposing (Address, (<~))
 import String
 import Text
 
@@ -87,64 +87,68 @@ isEmptyListing {explicits, open} =
 
 importView : Import -> Signal H.Html
 importView import_ =
-  view <~ (model import_)
+  view actions.address <~ (model import_)
 
-view : Model -> H.Html
-view {editing, import_} =
+view : Address Action -> Model -> H.Html
+view address {editing, import_} =
   H.div [ A.class "import" ] <|
-    nameField editing import_ ++ aliasField editing import_ ++ exposingField editing import_ ++ doneButton editing
+    nameField address editing import_ ++ aliasField address editing import_ ++ exposingField address editing import_ ++ doneButton address editing
 
-nameField : Bool -> Import -> List H.Html
-nameField editing (importName, _) =
+nameField : Address Action -> Bool -> Import -> List H.Html
+nameField address editing (importName, _) =
   if editing then
-    [ editable "import-name import-editing" (nameToString importName) ChangeName StopEditing ]
+    [ editable address "import-name import-editing" (nameToString importName) ChangeName StopEditing ]
   else
-    [ clickable "import-name" (nameToString importName) StartEditing ]
+    [ clickable address "import-name" (nameToString importName) StartEditing ]
 
-aliasField : Bool -> Import -> List H.Html
-aliasField editing (_, importMethod) =
+aliasField : Address Action -> Bool -> Import -> List H.Html
+aliasField address editing (_, importMethod) =
   if editing then
-    [ label " as ", editable "import-alias import-editing" (Maybe.withDefault "" importMethod.alias) ChangeAlias StopEditing ]
+    [ label " as ", editable address "import-alias import-editing" (Maybe.withDefault "" importMethod.alias) ChangeAlias StopEditing ]
   else
     case importMethod.alias of
-      Just alias -> [ label " as ", clickable "import-alias" alias StartEditing ]
+      Just alias -> [ label " as ", clickable address "import-alias" alias StartEditing ]
       Nothing -> []
 
-exposingField editing (_, {exposedVars}) =
+exposingField : Address Action -> Bool -> Import -> List H.Html
+exposingField address editing (_, {exposedVars}) =
   if editing then
-    [ label " exposing ", editable "import-exposing import-editing" (listingToString exposedVars) ChangeExposed StopEditing ]
+    [ label " exposing ", editable address "import-exposing import-editing" (listingToString exposedVars) ChangeExposed StopEditing ]
   else
     if isEmptyListing exposedVars then
       []
     else
-      [ label " exposing ", clickable "import-exposing" (listingToString exposedVars) StartEditing ]
+      [ label " exposing ", clickable address "import-exposing" (listingToString exposedVars) StartEditing ]
 
-doneButton editing =
+doneButton : Address Action -> Bool -> List H.Html
+doneButton address editing =
   if editing then
-    [ H.span [ A.class "import-done-button", E.onClick actions.address StopEditing ] [ FontAwesome.check Color.white 16 ] ]
+    [ H.span [ A.class "import-done-button", E.onClick address StopEditing ] [ FontAwesome.check Color.white 16 ] ]
   else
     []
 
 label str =
   H.span [ A.class "import-label" ] [ H.text str ]
 
-clickable className value clickAction =
-  H.span [ A.class className, E.onClick actions.address clickAction ] [ H.text value ]
+--clickable : Address Action -> String -> String -> Action -> H.Html
+clickable address className value clickAction =
+  H.span [ A.class className, E.onClick address clickAction ] [ H.text value ]
 
-editable className value inputAction enterAction =
+--editable : Address Action -> String -> String -> Action -> Action -> H.Html
+editable address className value inputAction enterAction =
   H.input
     [ A.class className
     , A.value value
-    , E.on "input" E.targetValue (inputAction >> Signal.message actions.address)
-    , onEnter enterAction
+    , E.on "input" E.targetValue (inputAction >> Signal.message address)
+    , onEnter address enterAction
     ]
     []
 
-onEnter : Action -> H.Attribute
-onEnter action =
+onEnter : Address Action -> Action -> H.Attribute
+onEnter address action =
   E.on "keydown"
     (Json.customDecoder E.keyCode (\code -> if code == 13 then Ok () else Err ""))
-    (\_ -> Signal.message actions.address action)
+    (\_ -> Signal.message address action)
 
 --
 -- Testing

@@ -34,8 +34,12 @@ model imports =
   S.foldp update (init imports) actions.signal
 
 view : Address Action -> Model -> Html
-view address model =
-  H.div [ A.class "module-imports" ] [ H.text "yeah buddy" ]
+view address {importViews} =
+  H.div [ A.class "module-imports" ] <| List.indexedMap (importView address) importViews
+
+importView : Address Action -> Int -> ImportView.Model -> Html
+importView address id model =
+  ImportView.view (S.forwardTo address (Change id)) model
 
 main : Signal Html
 main =
