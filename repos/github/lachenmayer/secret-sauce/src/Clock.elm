@@ -25,4 +25,3 @@ hand clr len time =
   in
       segment (0,0) (fromPolar (len,angle))
         |> traced (solid clr)
-

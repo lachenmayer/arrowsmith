@@ -1,5 +1,4 @@
 gulp = require 'gulp'
-coffee = require 'gulp-coffee'
 run = require 'gulp-run'
 stylus = require 'gulp-stylus'
 nib = require 'nib'

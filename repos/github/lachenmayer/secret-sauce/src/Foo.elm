@@ -23,8 +23,6 @@ bigger first second =
 main : Element
 main =
   collage 300 300
-    [ move position (filled blue (ngon 4 75))
+    [ move (-10,0) (filled blue (ngon 4 75))
     , move (50,10) (filled red (ngon 5 50))
     ]
-
-position = (-50, 10)

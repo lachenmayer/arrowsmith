@@ -1,4 +1,4 @@
-module Arrowsmith.ImportView where
+module Arrowsmith.ImportView (Action, Model, init, update, view) where
 
 import Debug
 
@@ -31,6 +31,10 @@ type Action
 type alias Model =
   { import_ : Import, editing : Bool }
 
+init : Import -> Model
+init import_ =
+  { import_ = import_, editing = False }
+
 actions : Signal.Mailbox Action
 actions =
   Signal.mailbox NoOp
@@ -61,7 +65,7 @@ update action model =
 
 model : Import -> Signal Model
 model import_ =
-  Signal.foldp update { import_ = import_, editing = False } actions.signal
+  Signal.foldp update (init import_) actions.signal
 
 validate : String -> String
 validate =

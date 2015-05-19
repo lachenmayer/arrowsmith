@@ -16,7 +16,7 @@ import Signal as S exposing (Signal, (<~))
 import String
 
 import Arrowsmith.Definition as Def
-import Arrowsmith.ImportView as ImportView
+import Arrowsmith.ImportsView as ImportsView
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
 
@@ -25,7 +25,6 @@ type alias Model =
 
   , isCompiling : Bool
   , compileStatus : CompileStatus
-  , synced : Bool -- The code has changed (eg. by editing), but it has not been recompiled yet.
 
   , editing : Maybe VarName
 
@@ -33,6 +32,8 @@ type alias Model =
   , toEvaluate : List VarName
 
   , lastAction : Action
+
+  , importsViewModel : ImportsView.Model
   }
 
 type Action
@@ -43,7 +44,7 @@ type Action
   | FinishEditing (VarName, String)
 
   | Evaluate VarName
-  | EvaluateMain -- evaluates "main" and runs it.
+  | EvaluateMain
   | FinishEvaluating (Name, VarName, String)
 
   | NewDefinition
@@ -52,13 +53,14 @@ type Action
   | ModuleCompiled Module
   | CompilationFailed ElmError
 
+  | ChangeImports ImportsView.Action
+
 init : Module -> Model
 init initialModule =
   { modul = initialModule
 
   , isCompiling = False
   , compileStatus = Compiled
-  , synced = True
 
   , editing = Nothing
 
@@ -66,6 +68,8 @@ init initialModule =
   , toEvaluate = []
 
   , lastAction = NoOp
+
+  , importsViewModel = ImportsView.init initialModule.imports
   }
 
 update : Action -> Model -> Model
@@ -110,28 +114,31 @@ update action model =
       { model
       | lastAction <- ModuleCompiled newModule
       , compileStatus <- Compiled
-      , synced <- True
       , modul <- newModule
       }
     CompilationFailed error ->
       { model
       | lastAction <- CompilationFailed error
       , compileStatus <- CompileError error
-      , synced <- True
+      }
+
+    ChangeImports action ->
+      { model
+      | importsViewModel <- ImportsView.update action model.importsViewModel
       }
 
 view : S.Address Action -> Model -> Html
-view address {modul, values, compileStatus} =
-  div "modules" [ moduleView address values modul ]
+view address {modul, values, compileStatus, importsViewModel} =
+  div "modules" [ moduleView address values modul importsViewModel ]
 
 --
 -- Views
 --
 
-moduleView : S.Address Action -> Values -> Module -> Html
-moduleView address values modul =
+moduleView : S.Address Action -> Values -> Module -> ImportsView.Model -> Html
+moduleView address values modul importsViewModel =
   let
-    {name, imports, types, defs, errors} = modul
+    {name, types, defs, errors} = modul
     moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
   in
     div ("module module-" ++ (String.join "-" name))
@@ -139,7 +146,7 @@ moduleView address values modul =
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ]
         , H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
         ]
-      , div "module-imports" <| List.map (\i -> ImportView.view {import_ = i, editing = False}) imports
+      , ImportsView.view (S.forwardTo address ChangeImports) importsViewModel
       --, div "module-adts" <| List.map datatypeView datatypes
       , div moduleDefsClass <| List.map (defView address types values) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors

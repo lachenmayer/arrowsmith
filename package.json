@@ -10,7 +10,6 @@
     "coffee-script": "^1.8.0",
     "domready": "^1.0.7",
     "gulp": "^3.8.10",
-    "gulp-coffee": "^2.2.0",
     "gulp-elm": "^0.2.0",
     "gulp-plumber": "^0.6.6",
     "gulp-run": "^1.6.6",
