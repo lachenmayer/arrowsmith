@@ -1,16 +1,42 @@
 # Update the environment, usually based on newly compiled code.
+Promise = require 'bluebird'
+{attachToEnvironment} = require './environment.coffee'
 
-attachToEnvironment = (compiledCode) ->
-  document.getElementById('elm-script')?.remove()
-  executionFrame = document.createElement 'iframe'
-  executionFrame.id = 'elm-script'
-  executionFrame.style.display = 'none'
-  document.body.appendChild executionFrame
+updateClient = require 'rest'
+  .wrap require('rest/interceptor/mime')
+  .wrap require('rest/interceptor/errorCode')
+  .wrap require('rest/interceptor/defaultRequest'),
+    method: 'POST'
+    path: "#{document.location.pathname}/edit"
 
-  script = document.createElement 'script'
-  script.text = compiledCode
+updateRequest = (update) ->
+  updateClient entity: update
 
-  executionFrame.contentDocument.body.appendChild script
+sendUpdateRequest = (editAction) ->
+  requestBody = JSON.stringify editAction
+  request = updateRequest requestBody
+  request.then (response) ->
+    [editStatus, compileResponse] = response.entity
+    # TODO this shouldn't be necessary (use HTTP codes to signal error).
+    console.assert editStatus == 'EditSuccess',
+      "edit.coffee: Expected edit success message with successful response. Instead got: #{response.entity}"
+    compileResponse
+
+handleCompileResponse = ({compiledModules, compileErrors}) ->
+  ([compileStatus, fileOrError]) ->
+    switch compileStatus
+      when 'CompileSuccess'
+        attachToEnvironment fileOrError.compiledCode
+        compiledModules fileOrError.modul
+      when 'CompileFailure'
+        compileErrors fileOrError
+
+update = (action, ports) ->
+  request = sendUpdateRequest action
+  request.then handleCompileResponse ports
+  request.catch (response) ->
+    console.error 'edit.coffee: edit error'
+    console.log response
 
 module.exports =
-  {attachToEnvironment}
+  {update}

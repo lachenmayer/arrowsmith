@@ -1,7 +1,9 @@
 {
+    "circuithub/elm-array-focus": "1.0.2",
     "evancz/virtual-dom": "1.2.3",
     "jystic/elm-font-awesome": "1.0.4",
     "evancz/elm-html": "3.0.0",
+    "evancz/focus": "1.0.1",
     "evancz/elm-svg": "1.0.2",
     "elm-lang/core": "2.0.1"
 }

@@ -1,7 +1,5 @@
 module Arrowsmith.ModuleView (Model, Action(..), init, update, view) where
 
-import Debug
-
 import Color
 import Dict as D exposing (Dict)
 import FontAwesome
@@ -74,8 +72,7 @@ init initialModule =
 
 update : Action -> Model -> Model
 update action model =
-  --Debug.log "ModuleView:model" <| case action of
-  case (Debug.log "ModuleView:action" action) of
+  case action of
     NoOp ->
       model
 
@@ -99,7 +96,8 @@ update action model =
     Evaluate e ->
       { model
       | lastAction <- Evaluate e
-      , toEvaluate <- [e] }
+      , toEvaluate <- [e]
+      }
     EvaluateMain ->
       { model
       | lastAction <- EvaluateMain
@@ -124,7 +122,8 @@ update action model =
 
     ChangeImports action ->
       { model
-      | importsViewModel <- ImportsView.update action model.importsViewModel
+      | lastAction <- ChangeImports action
+      , importsViewModel <- ImportsView.update action model.importsViewModel
       }
 
 view : S.Address Action -> Model -> Html

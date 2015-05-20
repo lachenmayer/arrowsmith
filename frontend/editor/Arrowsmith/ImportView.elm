@@ -41,7 +41,7 @@ actions =
 
 update : Action -> Model -> Model
 update action model =
-  case Debug.log "action" action of
+  case action of
     NoOp -> model
     StartEditing ->
       { model | editing <- True }

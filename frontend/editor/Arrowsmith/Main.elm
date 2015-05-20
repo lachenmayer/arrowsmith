@@ -1,5 +1,7 @@
 module Arrowsmith.Main where
 
+import Debug
+
 import Html exposing (Html)
 import Signal as S exposing (Signal, (<~))
 
@@ -10,13 +12,10 @@ import Arrowsmith.Types exposing (..)
 -- Ports
 --
 
--- Editing cycle:
--- Elm:StopEditing --stopEditing--> JS:get textfield value --editedValue--> Elm:FinishEditing
-
 port editedValue : Signal (VarName, ElmCode)
 
-port stopEditing : Signal VarName
-port stopEditing =
+port editDefinition : Signal VarName
+port editDefinition =
   let
     extractValue a =
       case a of
@@ -28,6 +27,10 @@ port stopEditing =
         _ -> False
   in
     extractValue <~ S.filter isStopEditingAction NoOp actions.signal
+
+--port editImport : Signal Import
+--port editImport =
+--  S.filter importActions (ModuleView.NoOp, ()) <| S.map (\{moduleView} -> (moduleView.lastAction, moduleView.importsView)) model
 
 -- Evaluation cycle:
 -- Elm:Evaluate --evaluate--> JS:do evaluation --evaluatedValue--> Elm:FinishEvaluating
@@ -77,7 +80,7 @@ actions =
 
 update : Action -> Model -> Model
 update action model =
-  case action of
+  case (Debug.log "action" action) of
     NoOp -> model
     MainModule moduleAction ->
       { model | moduleView <- ModuleView.update moduleAction model.moduleView }

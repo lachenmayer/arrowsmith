@@ -1,5 +1,5 @@
 ready = require 'domready'
-{attachToEnvironment} = require './update.coffee'
+{attachToEnvironment} = require './environment.coffee'
 
 # ready ->
 #   Elm.fullscreen Elm.Arrowsmith.ImportView, {}
@@ -22,10 +22,9 @@ ready ->
     compileErrors: "" # : ElmError(~ String)
   editor = Elm.fullscreen Elm.Arrowsmith.Main, ports
 
-  edit = require('./edit.coffee')(editor.ports.editedValue.send, editor.ports.compiledModules.send, editor.ports.compileErrors.send)
-  editor.ports.stopEditing.subscribe edit
+  {editDefinition} = require('./edit.coffee')
+  editor.ports.editDefinition.subscribe editDefinition(editor.ports.editedValue.send, editor.ports.compiledModules.send, editor.ports.compileErrors.send)
 
   {evaluate, evaluateMain} = require('./evaluate.coffee')
-
   editor.ports.evaluate.subscribe evaluate editor.ports.evaluatedValue.send
   editor.ports.evaluateMain.subscribe evaluateMain
