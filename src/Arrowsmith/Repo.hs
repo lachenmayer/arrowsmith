@@ -3,7 +3,7 @@ module Arrowsmith.Repo where
 import Control.Monad (liftM)
 import qualified Data.FileStore
 import System.Directory (doesDirectoryExist)
-import System.Exit (ExitCode)
+import System.Exit (ExitCode(..))
 
 import qualified Arrowsmith.Git
 import Arrowsmith.Paths
@@ -15,11 +15,13 @@ getRepo repoInfo' = do
   let repoPath' = repoPath repoInfo'
   exists <- doesDirectoryExist repoPath'
   -- TODO check if git directory exists
-  return $ if exists
-    then
-      Right Repo { repoInfo = repoInfo' }
-    else
-      Left "unimplemented: get it from github?"
+  if exists then
+    return $ Right Repo { repoInfo = repoInfo' }
+  else do
+    (exitCode, err, _out) <- Arrowsmith.Git.gitClone repoInfo'
+    case exitCode of
+      ExitSuccess -> return $ Right Repo { repoInfo = repoInfo' }
+      ExitFailure _ -> return $ Left err
 
 index :: Repo -> IO [FilePath]
 index repo' =

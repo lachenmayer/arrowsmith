@@ -28,11 +28,12 @@ replace element with =
 
 -- stripLongestPrefix [".", "src"] "src/Foo.elm" == "Foo.elm"
 stripLongestPrefix :: [FilePath] -> FilePath -> FilePath
-stripLongestPrefix [] path =
-  path
-stripLongestPrefix dirs path =
-  joinPath . minimumBy (comparing (length . concat)) . mapMaybe (`stripPrefix` splitPath) $ splitDirs
+stripLongestPrefix dirs path
+  | dirs == [] = path
+  | suffixes == [] = path
+  | otherwise = joinPath . minimumBy (comparing (length . concat)) $ suffixes
   where
+    suffixes = mapMaybe (`stripPrefix` splitPath) splitDirs
     splitPath = splitDirectories path
     splitDirs = map splitDirectories . replace "." "" . map normalise $ dirs
 

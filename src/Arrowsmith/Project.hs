@@ -19,16 +19,21 @@ import Arrowsmith.Types
 
 createProject :: RepoInfo -> IO (Either String Project)
 createProject repoInfo' = do
-  d <- getDescription (repoPath repoInfo')
-  case d of
+  repo <- getRepo repoInfo' -- will clone the repo if it doesn't exist
+  case repo of
     Left err ->
       return . Left $ "repo at " ++ repoPath repoInfo' ++ " is not a valid elm project: " ++ err
-    Right description' -> do
-      elmFiles' <- getElmFiles repoInfo' description'
-      return $ Right Project
-        { projectRepo = repoInfo'
-        , elmFiles = HashMap.fromList $ map (\f -> (fileName f, f)) elmFiles'
-        }
+    Right _ -> do
+      d <- getDescription (repoPath repoInfo')
+      case d of
+        Left err ->
+          return . Left $ "repo at " ++ repoPath repoInfo' ++ " is not a valid elm project: " ++ err
+        Right description' -> do
+          elmFiles' <- getElmFiles repoInfo' description'
+          return $ Right Project
+            { projectRepo = repoInfo'
+            , elmFiles = HashMap.fromList $ map (\f -> (fileName f, f)) elmFiles'
+            }
 
 -- Creates a new project if not found.
 getProject :: IORef ProjectsMap -> RepoInfo -> IO (Either String Project)

@@ -20,8 +20,8 @@ editDefinition = (editedValue, compiledModules, compileErrors) -> (name) ->
   else
     changeDefinition name, ports
 
-editImport = (editedValue, compiledModules, compileErrors) -> (import) ->
-  console.log import
+editImport = (editedValue, compiledModules, compileErrors) -> (import_) ->
+  console.log import_
 
 module.exports =
   {editDefinition}
