@@ -39,6 +39,8 @@ gitClone :: RepoInfo -> IO (ExitCode, String, String)
 gitClone repoInfo'
   | backend repoInfo' == "github" =
     runGitCommand "." "clone" ["https://github.com" </> user repoInfo' </> project repoInfo', repoPath repoInfo']
+  | otherwise =
+    error $ "backend " ++ (backend repoInfo') ++ " not implemented"
 
 amendCommitMessage :: FilePath -> String -> IO ExitCode
 amendCommitMessage repo message = do

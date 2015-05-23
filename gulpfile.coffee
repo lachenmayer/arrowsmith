@@ -34,4 +34,5 @@ gulp.task 'styles', ->
 gulp.task 'default', ['editor', 'environment', 'styles'] , ->
   gulp.watch "#{editorDir}/**/*.elm", ['editor']
   gulp.watch "#{environmentDir}/*.coffee", ['environment']
+  gulp.watch "#{environmentDir}/*.js", ['environment']
   gulp.watch "#{stylesDir}/*.styl", ['styles']

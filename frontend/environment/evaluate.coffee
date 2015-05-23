@@ -1,11 +1,12 @@
-freshContext = ->
-  inputs: []
-  addListener: ->
-  node: {}
+{Display, makeRuntime, run} = require './runtime.js'
 
-# TODO ghetto duck-typing
-isElement = (x) ->
-  x.element? and x.props?
+get = (parent, nameList) ->
+  child = parent
+  for nameSegment in nameList
+    child = child[nameSegment]
+    if not child?
+      console.error "evaluate: undefined name #{nameList} in object: ", parent
+  child
 
 appendToDefinition = (defName, valueNode) ->
   def = document.querySelector ".defname-#{defName}"
@@ -18,6 +19,11 @@ appendToDefinition = (defName, valueNode) ->
   container.appendChild valueNode
   def.appendChild container
 
+makeView = (resultNode, viewName) ->
+  viewRuntime = makeRuntime Display.COMPONENT, resultNode, {}
+  ViewModule = get Elm, viewName
+  ViewModule.make viewRuntime
+
 evaluate = (done) -> ([moduleName, names]) ->
   console.log "evaluate", names
   if names.length is 0
@@ -28,25 +34,16 @@ evaluate = (done) -> ([moduleName, names]) ->
     console.log 'evaluate: execution frame does not exist'
     return # TODO error handling...
 
-  context = freshContext()
-  toString = executionFrame.contentWindow.Elm.Native.Show.make(context).toString
-  show = executionFrame.contentWindow.Elm.Graphics.Element.make(context).show
-  render = executionFrame.contentWindow.Elm.Native.Graphics.Element.make(context).render
-  view = (x) -> if isElement x then x else show x
+  modul = get executionFrame.contentWindow.Elm, moduleName
 
-  modul = executionFrame.contentWindow.Elm
-  for nameSegment in moduleName
-    modul = modul[nameSegment]
-    # TODO error handling...
-    if not modul?
-      console.log "evaluate: undefined name #{moduleName}"
-  modul = modul.make context
+  for [name, viewName] in names
+    console.log name, viewName
+    resultNode = document.createElement 'div'
+    view = makeView resultNode, viewName
+    run resultNode, modul, {}, name, view
+    appendToDefinition name, resultNode
 
-  for name in names
-    renderedNode = render view modul[name]
-    appendToDefinition name, renderedNode
-
-    result = [moduleName, name, toString modul[name]]
+    result = [moduleName, name, viewName]
     console.log "evaluate: #{result[1]}: #{result[2]}"
     done result
 

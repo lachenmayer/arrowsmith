@@ -54,8 +54,8 @@ model imports =
 view : Address Action -> Model -> Html
 view address {importViews} =
   let
-    row (id, model) = [ removeButton address id, importView address (id, model) ]
-    rows = List.concatMap row <| Array.toIndexedList importViews
+    row (id, model) = H.div [ A.class "import-row" ] [ removeButton address id, importView address (id, model) ]
+    rows = List.map row <| Array.toIndexedList importViews
   in
     H.div [ A.class "module-imports" ] <| rows ++ [addButton address]
 
@@ -69,7 +69,7 @@ addButton address =
 
 removeButton : Address Action -> Int -> Html
 removeButton address id =
-  H.div [ E.onClick address (Remove id) ] [ FontAwesome.times Color.white 16 ]
+  H.div [ A.class "import-remove-button", E.onClick address (Remove id) ] [ FontAwesome.times Color.white 16 ]
 
 main : Signal Html
 main =

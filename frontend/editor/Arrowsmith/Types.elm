@@ -8,15 +8,14 @@ type alias CompileResponse = String
 type alias ElmCode = String
 type alias ElmError = String
 type alias VarName = String
-type alias Name = List VarName
---type alias Value = String
-type alias Values = Dict VarName String
+type alias ModuleName = List VarName
+type alias ValueViews = Dict VarName ModuleName
 type alias Type = String -- TODO...
 
 type alias Definition = (VarName, Maybe Type, ElmCode)
 
 type alias Module =
-  { name : Name
+  { name : ModuleName
   , imports : List Import
   , types : List (VarName, Type)
   , defs : List Definition
@@ -38,4 +37,4 @@ type alias ImportMethod =
   }
 
 type alias Import =
-  (Name, ImportMethod)
+  (ModuleName, ImportMethod)

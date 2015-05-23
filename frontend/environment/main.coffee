@@ -17,7 +17,7 @@ ready ->
   ports =
     initialModule: elmFile.modul # : Module
     editedValue: ["", ""] # : (Name, Value)
-    evaluatedValue: [[], "", ""] # : (ModuleName, Name, Value)
+    finishEvaluating: [[], "", [""]] # : (ModuleName, Name, ModuleName)
     compiledModules: elmFile.modul # : Module
     compileErrors: "" # : ElmError(~ String)
   editor = Elm.fullscreen Elm.Arrowsmith.Main, ports
@@ -26,5 +26,5 @@ ready ->
   editor.ports.editDefinition.subscribe editDefinition(editor.ports.editedValue.send, editor.ports.compiledModules.send, editor.ports.compileErrors.send)
 
   {evaluate, evaluateMain} = require('./evaluate.coffee')
-  editor.ports.evaluate.subscribe evaluate editor.ports.evaluatedValue.send
+  editor.ports.evaluate.subscribe evaluate editor.ports.finishEvaluating.send
   editor.ports.evaluateMain.subscribe evaluateMain

@@ -8,6 +8,10 @@ import Signal as S exposing (Signal, (<~))
 import Arrowsmith.ModuleView as ModuleView
 import Arrowsmith.Types exposing (..)
 
+-- Views
+-- Not used anywhere here, but called from JS.
+import Arrowsmith.Views.SimpleView
+
 --
 -- Ports
 --
@@ -35,14 +39,14 @@ port editDefinition =
 -- Evaluation cycle:
 -- Elm:Evaluate --evaluate--> JS:do evaluation --evaluatedValue--> Elm:FinishEvaluating
 
-port evaluatedValue : Signal (Name, VarName, String)
+port finishEvaluating : Signal (ModuleName, VarName, ModuleName)
 
-port evaluate : Signal (Name, List VarName)
+port evaluate : Signal (ModuleName, List (VarName, ModuleName))
 port evaluate =
   let
     isEvaluateAction a =
       case a of
-        ModuleView.Evaluate _ -> True
+        ModuleView.Evaluate _ _ -> True
         _ -> False
     isModuleCompiledAction a =
       case a of
@@ -53,7 +57,7 @@ port evaluate =
   in
     S.map snd <| S.filter evaluateActions (ModuleView.NoOp, ([], [])) <| S.map (\{moduleView} -> (moduleView.lastAction, (moduleView.modul.name, moduleView.toEvaluate))) model
 
-port evaluateMain : Signal (Name)
+port evaluateMain : Signal (ModuleName)
 port evaluateMain =
   S.map snd <| S.filter (fst >> (==) ModuleView.EvaluateMain) (ModuleView.NoOp, []) <| S.map (\{moduleView} -> (moduleView.lastAction, moduleView.modul.name)) model
 
@@ -89,7 +93,7 @@ model =
   let
     events = S.mergeMany [ actions.signal
                          , MainModule << ModuleView.FinishEditing <~ editedValue
-                         , MainModule << ModuleView.FinishEvaluating <~ evaluatedValue
+                         , MainModule << ModuleView.FinishEvaluating <~ finishEvaluating
                          , MainModule << ModuleView.ModuleCompiled <~ compiledModules
                          , MainModule << ModuleView.CompilationFailed <~ compileErrors
                          ]

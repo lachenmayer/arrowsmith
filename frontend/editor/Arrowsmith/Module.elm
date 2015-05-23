@@ -27,7 +27,7 @@ replaceDefinition program name newDefinition =
   in
     { program | defs <- map update program.defs }
 
-nameToString : Name -> String
+nameToString : ModuleName -> String
 nameToString name =
   if isEmpty name then "Program" else concat <| intersperse "." name
 

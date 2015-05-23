@@ -26,8 +26,8 @@ type alias Model =
 
   , editing : Maybe VarName
 
-  , values : Values
-  , toEvaluate : List VarName
+  , valueViews : ValueViews
+  , toEvaluate : List (VarName, ModuleName)
 
   , lastAction : Action
 
@@ -41,9 +41,9 @@ type Action
   | StopEditing VarName
   | FinishEditing (VarName, String)
 
-  | Evaluate VarName
+  | Evaluate VarName ModuleName {- view module name -}
   | EvaluateMain
-  | FinishEvaluating (Name, VarName, String)
+  | FinishEvaluating (ModuleName, VarName, ModuleName)
 
   | NewDefinition
   | RemoveDefinition VarName
@@ -62,7 +62,7 @@ init initialModule =
 
   , editing = Nothing
 
-  , values = D.empty
+  , valueViews = D.empty
   , toEvaluate = []
 
   , lastAction = NoOp
@@ -90,22 +90,22 @@ update action model =
       | lastAction <- FinishEditing (name, newBinding)
       , editing <- Nothing
       , modul <- Module.replaceDefinition model.modul name (name, Nothing, newBinding)
-      , toEvaluate <- D.keys model.values
+      , toEvaluate <- D.toList model.valueViews
       }
 
-    Evaluate e ->
+    Evaluate e view ->
       { model
-      | lastAction <- Evaluate e
-      , toEvaluate <- [e]
+      | lastAction <- Evaluate e view
+      , toEvaluate <- [(e, view)]
       }
     EvaluateMain ->
       { model
       | lastAction <- EvaluateMain
       }
-    FinishEvaluating (moduleName, name, value) ->
+    FinishEvaluating (moduleName, name, view) ->
       { model
-      | lastAction <- FinishEvaluating (moduleName, name, value)
-      , values <- D.insert name value model.values
+      | lastAction <- FinishEvaluating (moduleName, name, view)
+      , valueViews <- D.insert name view model.valueViews
       }
 
     ModuleCompiled newModule ->
@@ -127,15 +127,15 @@ update action model =
       }
 
 view : S.Address Action -> Model -> Html
-view address {modul, values, compileStatus, importsViewModel} =
-  div "modules" [ moduleView address values modul importsViewModel ]
+view address {modul, valueViews, compileStatus, importsViewModel} =
+  div "modules" [ moduleView address valueViews modul importsViewModel ]
 
 --
 -- Views
 --
 
-moduleView : S.Address Action -> Values -> Module -> ImportsView.Model -> Html
-moduleView address values modul importsViewModel =
+moduleView : S.Address Action -> ValueViews -> Module -> ImportsView.Model -> Html
+moduleView address valueViews modul importsViewModel =
   let
     {name, types, defs, errors} = modul
     moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
@@ -147,7 +147,7 @@ moduleView address values modul importsViewModel =
         ]
       , ImportsView.view (S.forwardTo address ChangeImports) importsViewModel
       --, div "module-adts" <| List.map datatypeView datatypes
-      , div moduleDefsClass <| List.map (defView address types values) defs ++ [newDefView address]
+      , div moduleDefsClass <| List.map (defView address types valueViews) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
 
@@ -155,22 +155,22 @@ typeView : ElmCode -> Html
 typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
-defView : S.Address Action -> List (VarName, Type) -> Values -> Definition -> Html
-defView address inferredTypes values definition =
+defView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
+defView address inferredTypes valueViews definition =
   let
     (name, tipe, binding) = definition
     class = "definition defname-" ++ name
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address inferredTypes values definition
+      [ defHeaderView address inferredTypes valueViews definition
       , codeView address definition
       ]
 
-defHeaderView : S.Address Action -> List (VarName, Type) -> Values -> Definition -> Html
-defHeaderView address inferredTypes values (name, tipe, _) =
+defHeaderView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
+defHeaderView address inferredTypes valueViews (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name) ] [ FontAwesome.play Color.white 16 ]
+    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name ["Arrowsmith", "Views", "SimpleView"]) ] [ FontAwesome.play Color.white 16 ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]

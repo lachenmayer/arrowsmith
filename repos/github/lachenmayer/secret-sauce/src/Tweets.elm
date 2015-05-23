@@ -53,3 +53,5 @@ tweets =
 textbox : Int -> Int -> String -> String -> Element
 textbox width height background content =
   H.toElement width height <| H.div [ A.style [("background", background), ("padding", "20px")] ] [ H.text content ]
+
+someDiv = H.div [] [ H.text "foo" ]
