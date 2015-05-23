@@ -1,5 +1,7 @@
 module Arrowsmith.ModuleView (Model, Action(..), init, update, view) where
 
+import Debug
+
 import Color
 import Dict as D exposing (Dict)
 import FontAwesome
@@ -170,7 +172,10 @@ defHeaderView : S.Address Action -> List (VarName, Type) -> ValueViews -> Defini
 defHeaderView address inferredTypes valueViews (name, tipe, _) =
   let
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name ["Arrowsmith", "Views", "SimpleView"]) ] [ FontAwesome.play Color.white 16 ]
+    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name (valueView actualType)) ] [ FontAwesome.play Color.white 16 ]
+    actualType = case tipe of
+      Just t -> t
+      Nothing -> lookup name inferredTypes
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
@@ -179,6 +184,12 @@ defHeaderView address inferredTypes valueViews (name, tipe, _) =
   in
     H.table [ A.class "definition-header" ]
       [ H.tr [] header ]
+
+valueView : Type -> ModuleName
+valueView tipe =
+  case (Debug.log "type" tipe) of
+    "Color.Color" -> ["Arrowsmith", "Views", "ColorView"]
+    _ -> ["Arrowsmith", "Views", "SimpleView"]
 
 codeView : S.Address Action -> Definition -> Html
 codeView address (name, tipe, binding) =

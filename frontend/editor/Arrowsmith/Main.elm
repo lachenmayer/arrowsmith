@@ -10,6 +10,7 @@ import Arrowsmith.Types exposing (..)
 
 -- Views
 -- Not used anywhere here, but called from JS.
+import Arrowsmith.Views.ColorView
 import Arrowsmith.Views.SimpleView
 
 --
