@@ -36,6 +36,7 @@ empty =
   { name = ["Program"]
   , imports = []
   , types = []
+  , datatypes = []
   , defs = []
   , errors = []
   }

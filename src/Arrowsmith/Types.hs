@@ -53,11 +53,18 @@ data ImportMethod = ImportMethod
 $(deriveJSON defaultOptions ''ImportMethod)
 
 type Import = (ModuleName, ImportMethod)
+data AdtInfo = AdtInfo
+  { adtVars :: [String]
+  , constructors :: [(String, [Type])]
+  } deriving (Show, Eq)
+$(deriveJSON defaultOptions ''AdtInfo)
 
 data Module = Module
   { name :: ModuleName
   , imports :: [Import]
   , types :: [(VarName, Type)]
+  , datatypes :: [(VarName, AdtInfo)]
+  , aliases :: [(VarName, (ModuleName, Type))]
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)

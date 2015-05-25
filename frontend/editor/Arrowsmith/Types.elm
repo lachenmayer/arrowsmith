@@ -18,6 +18,7 @@ type alias Module =
   { name : ModuleName
   , imports : List Import
   , types : List (VarName, Type)
+  , datatypes : List (VarName, AdtInfo)
   , defs : List Definition
   , errors : List ElmError
   }
@@ -44,3 +45,8 @@ type alias ImportMethod =
 
 type alias Import =
   (ModuleName, ImportMethod)
+
+type alias AdtInfo =
+  { adtVars : List VarName
+  , constructors : List (String, List Type)
+  }

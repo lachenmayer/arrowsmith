@@ -57,7 +57,7 @@ view address {importViews} =
     row (id, model) = H.div [ A.class "import-row" ] [ removeButton address id, importView address (id, model) ]
     rows = List.map row <| Array.toIndexedList importViews
   in
-    H.div [ A.class "module-imports" ] <| rows ++ [addButton address]
+    H.div [ A.class "module-imports" ] <| rows ++ [ addButton address ]
 
 importView : Address Action -> (Int, ImportView.Model) -> Html
 importView address (id, model) =
@@ -65,7 +65,7 @@ importView address (id, model) =
 
 addButton : Address Action -> Html
 addButton address =
-  H.div [ E.onClick address Add ] [ FontAwesome.plus Color.white 16 ]
+  H.div [ A.class "import-row", E.onClick address Add ] [ FontAwesome.plus Color.white 16 ]
 
 removeButton : Address Action -> Int -> Html
 removeButton address id =

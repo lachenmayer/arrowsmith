@@ -13,6 +13,12 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    $moduleName = "Arrowsmith.Types",
    $Dict = Elm.Dict.make(_elm),
    $Maybe = Elm.Maybe.make(_elm);
+   var AdtInfo = F2(function (a,
+   b) {
+      return {_: {}
+             ,adtVars: a
+             ,constructors: b};
+   });
    var ImportMethod = F2(function (a,
    b) {
       return {_: {}
@@ -36,14 +42,16 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,project: c
              ,user: b};
    });
-   var Module = F5(function (a,
+   var Module = F6(function (a,
    b,
    c,
    d,
-   e) {
+   e,
+   f) {
       return {_: {}
-             ,defs: d
-             ,errors: e
+             ,datatypes: d
+             ,defs: e
+             ,errors: f
              ,imports: b
              ,name: a
              ,types: c};
@@ -54,6 +62,7 @@ Elm.Arrowsmith.Types.make = function (_elm) {
                                   ,Compiled: Compiled
                                   ,CompileError: CompileError
                                   ,Listing: Listing
-                                  ,ImportMethod: ImportMethod};
+                                  ,ImportMethod: ImportMethod
+                                  ,AdtInfo: AdtInfo};
    return _elm.Arrowsmith.Types.values;
 };

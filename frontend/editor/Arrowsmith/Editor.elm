@@ -16,6 +16,7 @@ import Signal as S exposing (Signal, (<~))
 import String
 
 import Arrowsmith.Definition as Def
+import Arrowsmith.DatatypesView as DatatypesView
 import Arrowsmith.ImportsView as ImportsView
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
@@ -43,6 +44,7 @@ type alias Model =
 
   , lastAction : Action
 
+  , datatypesViewModel : DatatypesView.Model
   , importsViewModel : ImportsView.Model
   }
 
@@ -63,6 +65,7 @@ type Action
   | ModuleCompiled Module
   | CompilationFailed ElmError
 
+  | ChangeDatatypes DatatypesView.Action
   | ChangeImports ImportsView.Action
 
 init : Module -> Model
@@ -79,6 +82,7 @@ init initialModule =
 
   , lastAction = NoOp
 
+  , datatypesViewModel = DatatypesView.init initialModule.datatypes
   , importsViewModel = ImportsView.init initialModule.imports
   }
 
@@ -218,11 +222,11 @@ port compileErrors : Signal ElmError
 --
 
 view : S.Address Action -> Model -> Html
-view address {modul, valueViews, compileStatus, importsViewModel} =
-  div "modules" [ moduleView address valueViews modul importsViewModel ]
+view address model =
+  div "modules" [ moduleView address model ]
 
-moduleView : S.Address Action -> ValueViews -> Module -> ImportsView.Model -> Html
-moduleView address valueViews modul importsViewModel =
+moduleView : S.Address Action -> Model -> Html
+moduleView address {valueViews, modul, importsViewModel, datatypesViewModel} =
   let
     {name, types, defs, errors} = modul
     moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
@@ -233,7 +237,7 @@ moduleView address valueViews modul importsViewModel =
         , H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
         ]
       , ImportsView.view (S.forwardTo address ChangeImports) importsViewModel
-      --, div "module-adts" <| List.map datatypeView datatypes
+      , DatatypesView.view (S.forwardTo address ChangeDatatypes) datatypesViewModel
       , div moduleDefsClass <| List.map (defView address types valueViews) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]

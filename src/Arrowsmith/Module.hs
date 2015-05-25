@@ -31,8 +31,8 @@ makeModule defTransform m =
     { name = AST.Module.names m
     , imports = moduleImports m
     , types = moduleTypes m
-    -- , datatypes = moduleDatatypes m
-    -- , aliases = moduleTypeAliases m
+    , datatypes = moduleDatatypes m
+    , aliases = moduleAliases m
     , defs = sortByLocation $ map defTransform (definitions m)
     , errors = []
     }
@@ -63,7 +63,10 @@ definitions modoole =
     letDefs (Annotation.A _ ds) =
       case ds of
         General.Var _ -> [] -- should be the "_save_the_environment!!!" variable.
-        General.Let [def] next -> def : letDefs next
+        -- Any "normal" definition (ie. not an alias/type definition) will look like this.
+        General.Let [def@(Canonical.Definition (Pattern.Var _) (Annotation.A (Annotation.Span _ _ _) _) _)] next -> def : letDefs next
+        -- Reject all others - they don't have location information.
+        General.Let [_def] next -> letDefs next
         _ -> error "unexpected AST structure. (letDefs)"
 
 -- Uses the built-in pretty printer to give a textual representation of the definition.
@@ -161,7 +164,16 @@ moduleTypes :: AST.Module.CanonicalModule -> [(VarName, Type)]
 moduleTypes modoole =
   map (\(n, tipe) -> (n, PP.renderPretty tipe)) . Map.toList $ AST.Module.types (AST.Module.body modoole)
 
--- moduleDatatypes :: AST.Module.CanonicalModule ->
+moduleDatatypes :: AST.Module.CanonicalModule -> [(VarName, AdtInfo)]
+moduleDatatypes modoole =
+  map (\(n, adtInfo) -> (n, pretty adtInfo)) . Map.toList $ AST.Module.datatypes (AST.Module.body modoole)
+  where
+    pretty (s, constructors') =
+      AdtInfo s $ map (\(v, ts) -> (v, map PP.renderPretty ts)) constructors'
+
+moduleAliases :: AST.Module.CanonicalModule -> [(VarName, (ModuleName, Type))]
+moduleAliases modoole =
+  map (\(n, (m, t)) -> (n, (m, PP.renderPretty t))) . Map.toList $ AST.Module.aliases (AST.Module.body modoole)
 
 moduleImports :: AST.Module.CanonicalModule -> [Import]
 moduleImports modoole =

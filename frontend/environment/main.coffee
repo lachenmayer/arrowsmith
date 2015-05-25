@@ -46,13 +46,13 @@ error = (errorMessage) ->
 
 projectRoute = ({user, project}) ->
   getProject user, project
-    .then initProject
     .catch error
+    .then initProject
 
 moduleRoute = ({user, project, module}) ->
   getModule user, project, module
-    .then initEditor
     .catch error
+    .then initEditor
 
 ready ->
   document.body.appendChild container
