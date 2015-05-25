@@ -30,6 +30,12 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,_0: a};
    };
    var Compiled = {ctor: "Compiled"};
+   var Repo = F3(function (a,b,c) {
+      return {_: {}
+             ,backend: a
+             ,project: c
+             ,user: b};
+   });
    var Module = F5(function (a,
    b,
    c,
@@ -44,6 +50,7 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    });
    _elm.Arrowsmith.Types.values = {_op: _op
                                   ,Module: Module
+                                  ,Repo: Repo
                                   ,Compiled: Compiled
                                   ,CompileError: CompileError
                                   ,Listing: Listing

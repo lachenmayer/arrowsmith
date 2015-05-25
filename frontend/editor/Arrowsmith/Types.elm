@@ -22,6 +22,12 @@ type alias Module =
   , errors : List ElmError
   }
 
+type alias Repo =
+  { backend : String
+  , user : String
+  , project : String
+  }
+
 type CompileStatus
   = Compiled
   | CompileError ElmError

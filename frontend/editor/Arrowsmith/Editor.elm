@@ -1,4 +1,4 @@
-module Arrowsmith.ModuleView (Model, Action(..), init, update, view) where
+module Arrowsmith.Editor where
 
 import Debug
 
@@ -19,6 +19,16 @@ import Arrowsmith.Definition as Def
 import Arrowsmith.ImportsView as ImportsView
 import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
+
+-- Value views
+-- Not used anywhere here, but called from JS.
+import Arrowsmith.Views.ColorView
+import Arrowsmith.Views.SimpleView
+
+
+--
+-- MAIUV
+--
 
 type alias Model =
   { modul : Module
@@ -71,6 +81,10 @@ init initialModule =
 
   , importsViewModel = ImportsView.init initialModule.imports
   }
+
+actions : S.Mailbox Action
+actions =
+  S.mailbox NoOp
 
 update : Action -> Model -> Model
 update action model =
@@ -128,13 +142,84 @@ update action model =
       , importsViewModel <- ImportsView.update action model.importsViewModel
       }
 
-view : S.Address Action -> Model -> Html
-view address {modul, valueViews, compileStatus, importsViewModel} =
-  div "modules" [ moduleView address valueViews modul importsViewModel ]
+model : Signal Model
+model =
+  let
+    events = S.mergeMany [ actions.signal
+                         , FinishEditing <~ editedValue
+                         , FinishEvaluating <~ finishEvaluating
+                         , ModuleCompiled <~ compiledModules
+                         , CompilationFailed <~ compileErrors
+                         ]
+  in
+    S.foldp update (init initialModule) events
+
+main : Signal Html
+main =
+  view actions.address <~ model
+
+--
+-- Ports
+--
+
+port editedValue : Signal (VarName, ElmCode)
+
+port editDefinition : Signal VarName
+port editDefinition =
+  let
+    extractValue a =
+      case a of
+        StopEditing v -> v
+        _ -> ""
+    isStopEditingAction a =
+      case a of
+        StopEditing _ -> True
+        _ -> False
+  in
+    extractValue <~ S.filter isStopEditingAction NoOp actions.signal
+
+--port editImport : Signal Import
+--port editImport =
+--  S.filter importActions (NoOp, ()) <| S.map (\{moduleView} -> (moduleView.lastAction, moduleView.importsView)) model
+
+-- Evaluation cycle:
+-- Elm:Evaluate --evaluate--> JS:do evaluation --evaluatedValue--> Elm:FinishEvaluating
+
+port finishEvaluating : Signal (ModuleName, VarName, ModuleName)
+
+port evaluate : Signal (ModuleName, List (VarName, ModuleName))
+port evaluate =
+  let
+    isEvaluateAction a =
+      case a of
+        Evaluate _ _ -> True
+        _ -> False
+    isModuleCompiledAction a =
+      case a of
+        ModuleCompiled _ -> True
+        _ -> False
+    evaluateActions (lastAction, _) =
+      isEvaluateAction lastAction || isModuleCompiledAction lastAction
+  in
+    S.map snd <| S.filter evaluateActions (NoOp, ([], [])) <| S.map (\{lastAction, modul, toEvaluate} -> (lastAction, (modul.name, toEvaluate))) model
+
+port evaluateMain : Signal (ModuleName)
+port evaluateMain =
+  S.map snd <| S.filter (fst >> (==) EvaluateMain) (NoOp, []) <| S.map (\{lastAction, modul} -> (lastAction, modul.name)) model
+
+port initialModule : Module
+
+port compiledModules : Signal Module
+
+port compileErrors : Signal ElmError
 
 --
 -- Views
 --
+
+view : S.Address Action -> Model -> Html
+view address {modul, valueViews, compileStatus, importsViewModel} =
+  div "modules" [ moduleView address valueViews modul importsViewModel ]
 
 moduleView : S.Address Action -> ValueViews -> Module -> ImportsView.Model -> Html
 moduleView address valueViews modul importsViewModel =

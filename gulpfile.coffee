@@ -10,8 +10,8 @@ stylesDir = 'frontend/styles'
 out = 'frontend/bin'
 
 gulp.task 'editor', ->
-  gulp.src ''
-    .pipe run "./.cabal-sandbox/bin/elm-make --yes #{editorDir}/Arrowsmith/Main.elm --output #{out}/editor.js"
+  gulp.src('')
+    .pipe run "./.cabal-sandbox/bin/elm-make --yes #{editorDir}/Arrowsmith/Editor.elm #{editorDir}/Arrowsmith/Project.elm --output #{out}/editor.js"
 
 gulp.task 'environment', ->
   gulp.src "#{environmentDir}/boot.js"
