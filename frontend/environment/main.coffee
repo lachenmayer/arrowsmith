@@ -1,9 +1,6 @@
 ready = require 'domready'
 {attachToEnvironment} = require './environment.coffee'
 
-# ready ->
-#   Elm.fullscreen Elm.Arrowsmith.ImportView, {}
-
 ready ->
   initialModule = document.querySelector('.initial-module')
   unless initialModule?

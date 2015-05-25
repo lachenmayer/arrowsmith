@@ -27,12 +27,15 @@ type ModuleTransform = AST.Module.CanonicalModule -> Module
 
 makeModule :: DefTransform -> ModuleTransform
 makeModule defTransform m =
-  Module { name = AST.Module.names m
-         , imports = moduleImports m
-         , types = moduleTypes m
-         , defs = sortByLocation $ map defTransform (definitions m)
-         , errors = []
-         }
+  Module
+    { name = AST.Module.names m
+    , imports = moduleImports m
+    , types = moduleTypes m
+    -- , datatypes = moduleDatatypes m
+    -- , aliases = moduleTypeAliases m
+    , defs = sortByLocation $ map defTransform (definitions m)
+    , errors = []
+    }
 
 modulePrettyPrintedDefs :: ModuleTransform
 modulePrettyPrintedDefs =
@@ -157,6 +160,8 @@ endLocation (startRow, _) def =
 moduleTypes :: AST.Module.CanonicalModule -> [(VarName, Type)]
 moduleTypes modoole =
   map (\(n, tipe) -> (n, PP.renderPretty tipe)) . Map.toList $ AST.Module.types (AST.Module.body modoole)
+
+-- moduleDatatypes :: AST.Module.CanonicalModule ->
 
 moduleImports :: AST.Module.CanonicalModule -> [Import]
 moduleImports modoole =

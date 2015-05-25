@@ -11,6 +11,8 @@ import Data.Hashable
 import Data.HashMap.Strict
 import Data.IORef
 import qualified Data.FileStore
+import Data.List (intercalate)
+import Data.List.Split (splitOn)
 import GHC.Generics (Generic)
 import Snap.Snaplet (Handler)
 
@@ -20,12 +22,21 @@ import Snap.Snaplet (Handler)
 type ElmCode = String
 type ElmError = String -- TODO add ranges
 type VarName = String
-type Name = [String]
 type Location = (Int {- line -}, Int {- column -}) -- 1-indexed
 type Definition = (VarName, Maybe Type, ElmCode)
 type PartialDefinition = (Maybe VarName, Maybe Type, Maybe ElmCode)
 type LocatedDefinition = (VarName, Maybe Type, ElmCode, Location {- start -}, Location {- end -})
 type Type = String
+
+type ModuleName = [String]
+
+nameToString :: ModuleName -> String
+nameToString =
+  intercalate "."
+
+stringToName :: String -> ModuleName
+stringToName =
+  splitOn "."
 
 -- Re-implementation of elm-compiler:AST.Variable.Listing
 data Listing a = Listing
@@ -41,23 +52,16 @@ data ImportMethod = ImportMethod
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ImportMethod)
 
-type Import = (Name, ImportMethod)
+type Import = (ModuleName, ImportMethod)
 
 data Module = Module
-  { name :: Name
+  { name :: ModuleName
   , imports :: [Import]
   , types :: [(VarName, Type)]
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
-
-data Action
-  = AddDefinition Definition
-  | ChangeDefinition VarName ElmCode
-  | RemoveDefinition VarName
-  deriving (Show, Read, Eq)
-$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Action)
 
 data RepoInfo = RepoInfo
   { backend :: String
@@ -72,14 +76,9 @@ type RevisionId = Data.FileStore.RevisionId
 
 data Repo = Repo { repoInfo :: RepoInfo }
 
-data Project = Project
-  { projectRepo :: RepoInfo
-  , elmFiles :: HashMap Name ElmFile
-  } deriving (Show, Eq)
-
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
-  , fileName :: Name
+  , fileName :: ModuleName
   , source :: String
   , compiledCode :: Maybe String
   , modul :: Maybe Module
@@ -87,7 +86,20 @@ data ElmFile = ElmFile
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ElmFile)
 
-type EditUpdate = (Name, Maybe RevisionId, Action)
+data Project = Project
+  { projectRepo :: RepoInfo
+  , elmFiles :: HashMap String ElmFile
+  } deriving (Show, Eq)
+$(deriveJSON defaultOptions ''Project)
+
+data EditAction
+  = AddDefinition Definition
+  | ChangeDefinition VarName ElmCode
+  | RemoveDefinition VarName
+  deriving (Show, Read, Eq)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''EditAction)
+
+type EditUpdate = (ModuleName, Maybe RevisionId, EditAction)
 
 data CompileResponse
   = CompileSuccess ElmFile

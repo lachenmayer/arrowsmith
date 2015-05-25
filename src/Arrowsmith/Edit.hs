@@ -48,8 +48,8 @@ removeDefinition varName elmFile' = do
     , modul = Just modul' { defs = delete def defs' }
     }
 
-performAction :: Action -> ElmFile -> Maybe ElmFile
-performAction action' =
+performEditAction :: EditAction -> ElmFile -> Maybe ElmFile
+performEditAction action' =
   case action' of
     AddDefinition def -> addDefinition def
     ChangeDefinition varName elmCode -> changeDefinition varName elmCode

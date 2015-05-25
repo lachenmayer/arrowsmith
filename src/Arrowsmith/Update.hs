@@ -16,4 +16,4 @@ getUpdateAnnotations repo elmFile' revision = do
 
 applyAnnotations :: ElmFile -> [EditUpdate] -> Maybe ElmFile
 applyAnnotations elmFile' annotations =
-  foldM (flip performAction) elmFile' (map (\(_, _, a) -> a) annotations)
+  foldM (flip performEditAction) elmFile' (map (\(_, _, a) -> a) annotations)

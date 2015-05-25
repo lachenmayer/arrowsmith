@@ -32,7 +32,7 @@ createProject repoInfo' = do
           elmFiles' <- getElmFiles repoInfo' description'
           return $ Right Project
             { projectRepo = repoInfo'
-            , elmFiles = HashMap.fromList $ map (\f -> (fileName f, f)) elmFiles'
+            , elmFiles = HashMap.fromList $ map (\f -> ((nameToString . fileName) f, f)) elmFiles'
             }
 
 -- Creates a new project if not found.
@@ -51,15 +51,15 @@ saveProject projectsRef project' =
   atomicModifyIORef' projectsRef $ \ps ->
     (HashMap.insert (projectRepo project') project' ps, ())
 
-getElmFile :: Project -> Name -> Maybe ElmFile
+getElmFile :: Project -> ModuleName -> Maybe ElmFile
 getElmFile project' name' =
-  HashMap.lookup name' (elmFiles project')
+  HashMap.lookup (nameToString name') (elmFiles project')
 
 -- saveElmFile :: IORef ProjectsMap -> ElmFile -> IO ()
 -- saveElmFile projectsRef elmFile' = do
 --   project' <- getProject projectsRef (inRepo elmFile')
 
-updateElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> Name -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
+updateElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> ModuleName -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
 updateElmFile projectsRef repoInfo' fileName' updateFn = do
   project' <- liftIO $ getProject projectsRef repoInfo'
   case project' of
@@ -69,7 +69,7 @@ updateElmFile projectsRef repoInfo' fileName' updateFn = do
       updated <- updateFn oldFile
       case updated of
         EditSuccess (CompileSuccess newFile) -> do
-          let insertFile file = HashMap.insert (fileName file) file
+          let insertFile file = HashMap.insert ((nameToString . fileName) file) file
               newProject = oldProject { elmFiles = insertFile newFile (elmFiles oldProject) }
           liftIO $ saveProject projectsRef newProject
           return updated

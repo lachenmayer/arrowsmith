@@ -12,7 +12,7 @@ main =
 
 clock t =
   collage 400 400
-    [ filled    lightGrey   (ngon 12 110)
+    [ filled    black   (ngon 12 110)
     , outlined (solid grey) (ngon 12 110)
     , hand orange   100  t
     , hand charcoal 100 (t/60)

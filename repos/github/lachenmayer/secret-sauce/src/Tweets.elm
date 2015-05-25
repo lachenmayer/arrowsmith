@@ -4,10 +4,10 @@ import Graphics.Element exposing (..)
 import Html as H
 import Html.Attributes as A
 
---type alias Tweet =
---  { author : String
---  , text : String
---  }
+type alias Tweet =
+  { author : String
+  , text : String
+  }
 
 fullTimeline =
   timelineView tweets

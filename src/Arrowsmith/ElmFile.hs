@@ -43,12 +43,12 @@ elmFile repoInfo' description' filePath' = do
   else
     return Nothing
 
-edit :: ElmFile -> Action -> IO (Maybe ElmFile)
+edit :: ElmFile -> EditAction -> IO (Maybe ElmFile)
 edit elmFile' action' = do
   let filePath' = filePath elmFile'
   Right repo <- getRepo (inRepo elmFile')
   latestRev <- latest repo filePath'
-  case performAction action' elmFile' of
+  case performEditAction action' elmFile' of
     Nothing -> return Nothing
     Just updatedElmFile -> do
       let editUpdate rev = (fileName elmFile', rev, action') :: EditUpdate
@@ -145,7 +145,7 @@ fullPath :: ElmFile -> FilePath
 fullPath elmFile' =
   repoPath (inRepo elmFile') </> filePath elmFile'
 
-fileNameFromPath :: [FilePath] -> FilePath -> Name
+fileNameFromPath :: [FilePath] -> FilePath -> ModuleName
 fileNameFromPath sourceDirs' filePath' =
   splitDirectories . dropExtension $ stripLongestPrefix sourceDirs' filePath'
 
@@ -171,7 +171,7 @@ getAstFile elmFile' = do
       ast <- (tryIOError . LazyBS.readFile) path'
       return $ either (Left . show) Right ast
 
-removeBuildArtifacts :: FilePath -> Name -> IO ()
+removeBuildArtifacts :: FilePath -> ModuleName -> IO ()
 removeBuildArtifacts projectRoot fileName' = do
   let fileName'' = hyphenate (Elm.Name fileName')
   stuffDirectory' <- getStuffDirectory projectRoot
