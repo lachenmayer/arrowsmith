@@ -65,10 +65,7 @@ moduleHandler = do
     Left err -> serverError err
     Right elmFile'' -> do
       compiled <- liftIO $ getLatest elmFile''
-      case compiled of
-        Left err -> serverError err
-        Right modul' -> do
-          writeJSON modul'
+      writeJSON compiled
 
 editHandler :: AppHandler ()
 editHandler = do
@@ -87,15 +84,12 @@ performEdit action' maybeElmFile = do
   case maybeElmFile of
     Nothing -> return $ EditFailure "Elm file not found."
     Just elmFile' -> do
-      compiled <- liftIO $ getLatest elmFile'
-      case compiled of
-        Left err -> return $ EditFailure err
-        Right compiledFile -> do
-          editResult <- liftIO $ edit compiledFile action'
-          case editResult of
-            Just editedFile -> do
-              return $ EditSuccess (toCompileResponse (Right editedFile)) -- TODO
-            Nothing -> return $ EditFailure "Probably couldn't compile the file."
+      latestFile <- liftIO $ getLatest elmFile'
+      editResult <- liftIO $ edit latestFile action'
+      case editResult of
+        Just editedFile -> do
+          return $ EditSuccess (toCompileResponse (Right editedFile)) -- TODO
+        Nothing -> return $ EditFailure "Probably couldn't compile the file."
 
 urlFragment :: MonadSnap m => BS.ByteString -> m String
 urlFragment paramName = do

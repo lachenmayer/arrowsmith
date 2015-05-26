@@ -48,9 +48,14 @@ removeDefinition varName elmFile' = do
     , modul = Just modul' { defs = delete def defs' }
     }
 
+replaceText :: String -> ElmFile -> Maybe ElmFile
+replaceText newSource elmFile' = do
+  return elmFile' { source = newSource, modul = Nothing, compiledCode = Nothing }
+
 performEditAction :: EditAction -> ElmFile -> Maybe ElmFile
 performEditAction action' =
   case action' of
     AddDefinition def -> addDefinition def
     ChangeDefinition varName elmCode -> changeDefinition varName elmCode
     RemoveDefinition varName -> removeDefinition varName
+    ReplaceText newSource -> replaceText newSource

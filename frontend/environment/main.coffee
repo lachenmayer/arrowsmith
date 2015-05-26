@@ -14,15 +14,15 @@ initEditor = (elmFile) ->
   clear container
 
   ports =
-    initialModule: elmFile.modul # : Module
+    initialElmFile: elmFile # : ElmFile
     editedValue: ["", ""] # : (Name, Value)
     finishEvaluating: [[], "", [""]] # : (ModuleName, Name, ModuleName)
-    compiledModules: elmFile.modul # : Module
-    compileErrors: "" # : ElmError(~ String)
+    compiledElmFiles: elmFile # : Signal ElmFile
   editor = Elm.embed Elm.Arrowsmith.Editor, container, ports
 
-  {editDefinition} = require('./edit.coffee')
-  editor.ports.editDefinition.subscribe editDefinition(editor.ports.editedValue.send, editor.ports.compiledModules.send, editor.ports.compileErrors.send)
+  {editDefinition, editText} = require('./edit.coffee')
+  editor.ports.editDefinition.subscribe editDefinition(editor.ports.editedValue.send, editor.ports.compiledElmFiles.send)
+  editor.ports.editText.subscribe editText(editor.ports.compiledElmFiles.send)
 
   {evaluate, evaluateMain} = require('./evaluate.coffee')
   editor.ports.evaluate.subscribe evaluate editor.ports.finishEvaluating.send

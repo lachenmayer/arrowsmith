@@ -55,10 +55,6 @@ getElmFile :: Project -> ModuleName -> Maybe ElmFile
 getElmFile project' name' =
   HashMap.lookup (nameToString name') (elmFiles project')
 
--- saveElmFile :: IORef ProjectsMap -> ElmFile -> IO ()
--- saveElmFile projectsRef elmFile' = do
---   project' <- getProject projectsRef (inRepo elmFile')
-
 updateElmFile :: (Applicative m, MonadIO m) => IORef ProjectsMap -> RepoInfo -> ModuleName -> (Maybe ElmFile -> m EditResponse) -> m EditResponse
 updateElmFile projectsRef repoInfo' fileName' updateFn = do
   project' <- liftIO $ getProject projectsRef repoInfo'

@@ -86,7 +86,7 @@ data Repo = Repo { repoInfo :: RepoInfo }
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
   , fileName :: ModuleName
-  , source :: String
+  , source :: ElmCode
   , compiledCode :: Maybe String
   , modul :: Maybe Module
   , inRepo :: RepoInfo
@@ -103,6 +103,7 @@ data EditAction
   = AddDefinition Definition
   | ChangeDefinition VarName ElmCode
   | RemoveDefinition VarName
+  | ReplaceText ElmCode
   deriving (Show, Read, Eq)
 $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''EditAction)
 

@@ -45,6 +45,11 @@ history :: Repo -> [FilePath] -> Data.FileStore.TimeRange -> Maybe Int -> IO [Da
 history repo' =
   Data.FileStore.history (gitFileStore repo')
 
+allRevisions :: Repo -> FilePath -> IO [RevisionId]
+allRevisions repo' file = do
+  revisions <- history repo' [file] (Data.FileStore.TimeRange Nothing Nothing) Nothing
+  return . map Data.FileStore.revId $ revisions
+
 commitMessage :: Repo -> RevisionId -> IO String
 commitMessage repo' revision =
   liftM Data.FileStore.revDescription (Data.FileStore.revision (gitFileStore repo') revision)

@@ -2,26 +2,30 @@
 
 newDefinitionName = '__arrowsmithNewDefinition__'
 
-addDefinition = (ports) ->
+addDefinition = (editedValue, compiledElmFiles) ->
   editField = document.querySelector '.new-definition'
   code = editField.querySelector('.definition-code').value
-  update ['AddDefinition', [newDefinitionName, null, code]], ports
+  update ['AddDefinition', [newDefinitionName, null, code]], compiledElmFiles
 
-changeDefinition = (name, ports) ->
+changeDefinition = (name, editedValue, compiledElmFiles) ->
   editField = document.querySelector ".defname-#{name}"
   code = editField.querySelector('.definition-code').value
-  ports.editedValue [name, code]
-  update ['ChangeDefinition', [name, code]], ports
+  # TODO: is this necessary?
+  # editedValue [name, code]
+  update ['ChangeDefinition', [name, code]], compiledElmFiles
 
-editDefinition = (editedValue, compiledModules, compileErrors) -> (name) ->
-  ports = {editedValue, compiledModules, compileErrors}
+editDefinition = (editedValue, compiledElmFiles) -> (name) ->
   if name is newDefinitionName
-    addDefinition ports
+    addDefinition editedValue, compiledElmFiles
   else
-    changeDefinition name, ports
+    changeDefinition name, editedValue, compiledElmFiles
 
-editImport = (editedValue, compiledModules, compileErrors) -> (import_) ->
+editText = (compiledElmFiles) -> ->
+  code = document.querySelector('.module-code').value
+  update ['ReplaceText', code], compiledElmFiles
+
+editImport = (editedValue, compiledElmFiles) -> (import_) ->
   console.log import_
 
 module.exports =
-  {editDefinition}
+  {editDefinition, editText}

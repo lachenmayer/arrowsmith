@@ -22,14 +22,11 @@ sendUpdateRequest = (editAction) ->
       "edit.coffee: Expected edit success message with successful response. Instead got: #{response.entity}"
     compileResponse
 
-handleCompileResponse = ({compiledModules, compileErrors}) ->
-  ([compileStatus, fileOrError]) ->
-    switch compileStatus
-      when 'CompileSuccess'
-        attachToEnvironment fileOrError.compiledCode
-        compiledModules fileOrError.modul
-      when 'CompileFailure'
-        compileErrors fileOrError
+handleCompileResponse = (compiledElmFiles) ->
+  ([compileStatus, newElmFile]) ->
+    if compileStatus is 'CompileSuccess'
+      attachToEnvironment newElmFile.compiledCode
+    compiledElmFiles newElmFile
 
 update = (action, ports) ->
   request = sendUpdateRequest action

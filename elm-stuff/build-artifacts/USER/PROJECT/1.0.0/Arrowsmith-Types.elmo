@@ -18,6 +18,20 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,_0: a};
    };
    var Compiled = {ctor: "Compiled"};
+   var ElmFile = F6(function (a,
+   b,
+   c,
+   d,
+   e,
+   f) {
+      return {_: {}
+             ,compiledCode: d
+             ,fileName: b
+             ,filePath: a
+             ,inRepo: f
+             ,modul: e
+             ,source: c};
+   });
    var Repo = F3(function (a,b,c) {
       return {_: {}
              ,backend: a
@@ -64,6 +78,7 @@ Elm.Arrowsmith.Types.make = function (_elm) {
                                   ,AdtInfo: AdtInfo
                                   ,Module: Module
                                   ,Repo: Repo
+                                  ,ElmFile: ElmFile
                                   ,Compiled: Compiled
                                   ,CompileError: CompileError};
    return _elm.Arrowsmith.Types.values;

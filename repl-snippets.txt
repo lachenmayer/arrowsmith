@@ -20,11 +20,10 @@ performEdit f (AddDefinition ("wateva", Just "String", "wateva = \"unoit\""))
 client = require('rest').wrap(require('rest/interceptor/mime')
 client(method: 'POST', path: 'http://localhost:8000/github/lachenmayer/secret-sauce/Foo/edit', entity: "[\"AddDefinition\",[\"wateva\",\"String\",\"wateva = \\\"unoit\\\"\"]]").then((x) -> console.log x)
 
-
 import Arrowsmith.Module
 import qualified Data.ByteString.Lazy as BS
-src <- readFile "repos/github/lachenmayer/secret-sauce/src/Tweets.elm"
-f <- BS.readFile "tmp/github/lachenmayer/secret-sauce/60d7b600a28de2c425dd4f14539c982319b7e17c/Tweets.elma"
+src <- readFile "repos/github/lachenmayer/secret-sauce/src/Alias.elm"
+f <- BS.readFile "tmp/github/lachenmayer/secret-sauce/daae43398ff8332f1226a8248369ebe22a8a08ad/Alias.elma"
 let Just ast = fromAstFile f
 
 moduleSourceDefs src ast

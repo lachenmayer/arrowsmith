@@ -2,9 +2,6 @@ module Arrowsmith.Editor where
 
 import Debug
 
-import Color
-import Dict as D exposing (Dict)
-import FontAwesome
 import Graphics.Element exposing (Element, flow, down)
 import Graphics.Input as Input
 import Html as H exposing (Html)
@@ -15,12 +12,11 @@ import Maybe
 import Signal as S exposing (Signal, (<~))
 import String
 
-import Arrowsmith.AliasesView as AliasesView
-import Arrowsmith.Definition as Def
-import Arrowsmith.DatatypesView as DatatypesView
-import Arrowsmith.ImportsView as ImportsView
 import Arrowsmith.Module as Module
+import Arrowsmith.ModuleView as ModuleView
+import Arrowsmith.PlainTextView as PlainTextView
 import Arrowsmith.Types exposing (..)
+import Arrowsmith.Util exposing (..)
 
 -- Value views
 -- Not used anywhere here, but called from JS.
@@ -29,65 +25,49 @@ import Arrowsmith.Views.SimpleView
 
 
 --
--- MAIUV
+-- Model, actions, update, main
 --
 
-type alias Model =
-  { modul : Module
+type EditorView
+  = PlainText PlainTextView.Model
+  | Structured ModuleView.Model
 
+makeEditorView : ElmFile -> EditorView
+makeEditorView elmFile =
+  case elmFile.modul of
+    Nothing -> PlainText <| PlainTextView.init elmFile.source
+    Just modul -> Structured <| ModuleView.init modul
+
+isStructuredView : Model -> Bool
+isStructuredView {editorView} =
+  case editorView of
+    Structured _ -> True
+    PlainText _ -> False
+
+type alias Model =
+  { elmFile : ElmFile
   , isCompiling : Bool
   , compileStatus : CompileStatus
-
-  , editing : Maybe VarName
-
-  , valueViews : ValueViews
-  , toEvaluate : List (VarName, ModuleName)
-
   , lastAction : Action
-
-  , aliasesViewModel : AliasesView.Model
-  , datatypesViewModel : DatatypesView.Model
-  , importsViewModel : ImportsView.Model
+  , editorView : EditorView
   }
 
 type Action
   = NoOp
 
-  | Edit VarName
-  | StopEditing VarName
-  | FinishEditing (VarName, String)
+  | PlainTextAction PlainTextView.Action
+  | ModuleAction ModuleView.Action
 
-  | Evaluate VarName ModuleName {- view module name -}
-  | EvaluateMain
-  | FinishEvaluating (ModuleName, VarName, ModuleName)
+  | CompiledElmFile ElmFile
 
-  | NewDefinition
-  | RemoveDefinition VarName
 
-  | ModuleCompiled Module
-  | CompilationFailed ElmError
-
-  | ChangeAliases AliasesView.Action
-  | ChangeDatatypes DatatypesView.Action
-  | ChangeImports ImportsView.Action
-
-init : Module -> Model
-init initialModule =
-  { modul = initialModule
-
+init : ElmFile -> Model
+init initialElmFile =
+  { elmFile = initialElmFile
   , isCompiling = False
   , compileStatus = Compiled
-
-  , editing = Nothing
-
-  , valueViews = D.empty
-  , toEvaluate = []
-
   , lastAction = NoOp
-
-  , aliasesViewModel = AliasesView.init initialModule.aliases
-  , datatypesViewModel = DatatypesView.init initialModule.datatypes
-  , importsViewModel = ImportsView.init initialModule.imports
+  , editorView = makeEditorView initialElmFile
   }
 
 actions : S.Mailbox Action
@@ -96,81 +76,44 @@ actions =
 
 update : Action -> Model -> Model
 update action model =
-  case action of
+  case Debug.log "Editor" action of
     NoOp ->
-      model
-
-    Edit name ->
       { model
-      | lastAction <- Edit name
-      , editing <- Just name
-      }
-    StopEditing name ->
-      { model -- Nothing happens, this is only used to call the JS "edit" function.
-      | lastAction <- StopEditing name
-      }
-    FinishEditing (name, newBinding) ->
-      { model
-      | lastAction <- FinishEditing (name, newBinding)
-      , editing <- Nothing
-      , modul <- Module.replaceDefinition model.modul name (name, Nothing, newBinding)
-      , toEvaluate <- D.toList model.valueViews
+      | lastAction <- NoOp
       }
 
-    Evaluate e view ->
+    PlainTextAction a ->
       { model
-      | lastAction <- Evaluate e view
-      , toEvaluate <- [(e, view)]
+      | lastAction <- PlainTextAction a
+      , editorView <- case model.editorView of
+          PlainText m -> PlainText <| PlainTextView.update a m
+          Structured _ -> Debug.crash "Should never receive a plain text action when in structured mode!"
       }
-    EvaluateMain ->
+    ModuleAction a ->
       { model
-      | lastAction <- EvaluateMain
-      }
-    FinishEvaluating (moduleName, name, view) ->
-      { model
-      | lastAction <- FinishEvaluating (moduleName, name, view)
-      , valueViews <- D.insert name view model.valueViews
-      }
-
-    ModuleCompiled newModule ->
-      { model
-      | lastAction <- ModuleCompiled newModule
-      , compileStatus <- Compiled
-      , modul <- newModule
-      }
-    CompilationFailed error ->
-      { model
-      | lastAction <- CompilationFailed error
-      , compileStatus <- CompileError error
+      | lastAction <- ModuleAction a
+      , editorView <- case model.editorView of
+          Structured m -> Structured <| ModuleView.update a m
+          PlainText _ -> Debug.crash "Should never receive a structured action when in plain text mode!"
       }
 
-    ChangeAliases action ->
+    CompiledElmFile newElmFile ->
       { model
-      | lastAction <- ChangeAliases action
-      , aliasesViewModel <- AliasesView.update action model.aliasesViewModel
-      }
-    ChangeDatatypes action ->
-      { model
-      | lastAction <- ChangeDatatypes action
-      , datatypesViewModel <- DatatypesView.update action model.datatypesViewModel
-      }
-    ChangeImports action ->
-      { model
-      | lastAction <- ChangeImports action
-      , importsViewModel <- ImportsView.update action model.importsViewModel
+      | lastAction <- CompiledElmFile newElmFile
+      , elmFile <- newElmFile
+      , editorView <- makeEditorView newElmFile
       }
 
 model : Signal Model
 model =
   let
     events = S.mergeMany [ actions.signal
-                         , FinishEditing <~ editedValue
-                         , FinishEvaluating <~ finishEvaluating
-                         , ModuleCompiled <~ compiledModules
-                         , CompilationFailed <~ compileErrors
+                         , ModuleAction << ModuleView.FinishEditing <~ editedValue
+                         , ModuleAction << ModuleView.FinishEvaluating <~ finishEvaluating
+                         , CompiledElmFile <~ compiledElmFiles
                          ]
   in
-    S.foldp update (init initialModule) events
+    S.foldp update (init initialElmFile) events
 
 main : Signal Html
 main =
@@ -187,14 +130,20 @@ port editDefinition =
   let
     extractValue a =
       case a of
-        StopEditing v -> v
+        ModuleAction (ModuleView.StopEditing v) -> v
         _ -> ""
     isStopEditingAction a =
       case a of
-        StopEditing _ -> True
+        ModuleAction (ModuleView.StopEditing _) -> True
         _ -> False
   in
-    extractValue <~ S.filter isStopEditingAction NoOp actions.signal
+    S.map extractValue
+      <| S.filter isStopEditingAction NoOp actions.signal
+
+port editText : Signal ()
+port editText =
+  S.map (\_ -> ())
+    <| S.filter ((==) (PlainTextAction PlainTextView.StopEditing)) NoOp actions.signal
 
 --port editImport : Signal Import
 --port editImport =
@@ -205,31 +154,39 @@ port editDefinition =
 
 port finishEvaluating : Signal (ModuleName, VarName, ModuleName)
 
-port evaluate : Signal (ModuleName, List (VarName, ModuleName))
+port evaluate : Signal (ModuleName, List (VarName, List VarName))
 port evaluate =
   let
     isEvaluateAction a =
       case a of
-        Evaluate _ _ -> True
+        ModuleAction (ModuleView.Evaluate _ _) -> True
         _ -> False
     isModuleCompiledAction a =
       case a of
-        ModuleCompiled _ -> True
+        ModuleAction (ModuleView.ModuleCompiled _) -> True
         _ -> False
     evaluateActions (lastAction, _) =
       isEvaluateAction lastAction || isModuleCompiledAction lastAction
+
+
+
+    toEvaluate editorView =
+      case editorView of
+        Structured m -> m.toEvaluate
+        PlainText _ -> []
   in
-    S.map snd <| S.filter evaluateActions (NoOp, ([], [])) <| S.map (\{lastAction, modul, toEvaluate} -> (lastAction, (modul.name, toEvaluate))) model
+    S.map snd
+      <| S.filter evaluateActions (NoOp, ([], []))
+      <| S.map (\{lastAction, elmFile, editorView} -> (lastAction, (elmFile.fileName, toEvaluate editorView)))
+      <| S.filter isStructuredView (init initialElmFile) model
 
 port evaluateMain : Signal (ModuleName)
 port evaluateMain =
-  S.map snd <| S.filter (fst >> (==) EvaluateMain) (NoOp, []) <| S.map (\{lastAction, modul} -> (lastAction, modul.name)) model
+  S.map snd <| S.filter (fst >> (==) (ModuleAction ModuleView.EvaluateMain)) (NoOp, []) <| S.map (\{lastAction, elmFile} -> (lastAction, elmFile.fileName)) model
 
-port initialModule : Module
+port initialElmFile : ElmFile
 
-port compiledModules : Signal Module
-
-port compileErrors : Signal ElmError
+port compiledElmFiles : Signal ElmFile
 
 --
 -- Views
@@ -240,93 +197,23 @@ view address model =
   div "modules" [ moduleView address model ]
 
 moduleView : S.Address Action -> Model -> Html
-moduleView address {valueViews, modul, importsViewModel, datatypesViewModel, aliasesViewModel} =
+moduleView address model =
   let
-    {name, types, defs, errors} = modul
-    moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
+    name = model.elmFile.fileName
   in
     div ("module module-" ++ (String.join "-" name))
       [ div "module-header"
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ]
-        , H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
+        --, H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
         ]
-      , ImportsView.view (S.forwardTo address ChangeImports) importsViewModel
-      , AliasesView.view (S.forwardTo address ChangeAliases) aliasesViewModel
-      , DatatypesView.view (S.forwardTo address ChangeDatatypes) datatypesViewModel
-      , div moduleDefsClass <| List.map (defView address types valueViews) defs ++ [newDefView address]
-      , div "module-errors" <| List.map errorView errors
+      , editorView address model
       ]
 
-typeView : ElmCode -> Html
-typeView code =
-  div "datatype" [ H.code [] [ H.text code ] ]
-
-defView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
-defView address inferredTypes valueViews definition =
-  let
-    (name, tipe, binding) = definition
-    class = "definition defname-" ++ name
-  in
-    H.div [ A.class class ] <|
-      [ defHeaderView address inferredTypes valueViews definition
-      , codeView address definition
-      ]
-
-defHeaderView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
-defHeaderView address inferredTypes valueViews (name, tipe, _) =
-  let
-    nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name (valueView actualType)) ] [ FontAwesome.play Color.white 16 ]
-    actualType = case tipe of
-      Just t -> t
-      Nothing -> lookup name inferredTypes
-    header = case tipe of
-      Just t ->
-        [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
-      Nothing ->
-        [ nameTag, tag "definition-type-inferred" [] [ H.text <| lookup name inferredTypes ], evalTag ]
-  in
-    H.table [ A.class "definition-header" ]
-      [ H.tr [] header ]
-
-valueView : Type -> ModuleName
-valueView tipe =
-  case (Debug.log "type" tipe) of
-    "Color.Color" -> ["Arrowsmith", "Views", "ColorView"]
-    _ -> ["Arrowsmith", "Views", "SimpleView"]
-
-codeView : S.Address Action -> Definition -> Html
-codeView address (name, tipe, binding) =
-  let
-    lineCount = List.length (String.lines binding)
-  in
-    editable address name "textarea"
-      [ A.class "definition-code", A.rows lineCount ]
-      [ H.text binding ]
-
-newDefView : S.Address Action -> Html
-newDefView address =
-  H.div [ A.class "definition new-definition" ] <|
-    [ codeView address Def.newDefinition ]
-
-errorView : ElmError -> Html
-errorView error =
-  div "error" [ H.pre [] [ H.text error ] ]
-
-button : S.Address Action -> String -> String -> Action -> Html
-button address className buttonText act =
-  H.div
-    [ A.class className
-    , E.onClick address act
-    ]
-    [ H.text buttonText ]
-
-editable : S.Address Action -> VarName -> String -> List H.Attribute -> List Html -> Html
-editable address name tagName additionalAttrs contents =
-  let
-    attrs = A.contenteditable True :: editActions address name ++ additionalAttrs
-  in
-    H.node tagName attrs contents
+editorView : S.Address Action -> Model -> Html
+editorView address {editorView} =
+  case editorView of
+    PlainText model -> PlainTextView.view (S.forwardTo address PlainTextAction) model
+    Structured model -> ModuleView.view (S.forwardTo address ModuleAction) model
 
 --
 -- Util
@@ -342,22 +229,3 @@ keepJust maybes default =
   in
     snd <~ S.filter fst (False, default) (decorate <~ maybes)
 
-editActions : S.Address Action -> VarName -> List H.Attribute
-editActions address name =
-  [ E.onFocus address (Edit name), E.onBlur address (StopEditing name) ]
-
-visible : Bool -> H.Attribute
-visible v =
-  A.style [ ("visibility", if v then "visible" else "hidden") ]
-
-div : String -> List Html -> Html
-div class =
-  H.div [ A.class class ]
-
-tag : String -> List H.Attribute -> List Html -> Html
-tag class attrs =
-  H.td (A.class ("tag " ++ class) :: attrs)
-
---lookup : a -> List (a, b) -> b
-lookup x xs =
-  snd << Maybe.withDefault ("","") << List.head <| List.filter (fst >> (==) x) xs

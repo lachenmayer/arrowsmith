@@ -7,6 +7,7 @@ import Dict exposing (Dict)
 type alias CompileResponse = String
 type alias ElmCode = String
 type alias ElmError = String
+type alias FilePath = String
 type alias VarName = String
 type alias ModuleName = List VarName
 type alias ValueViews = Dict VarName ModuleName
@@ -48,6 +49,15 @@ type alias Repo =
   { backend : String
   , user : String
   , project : String
+  }
+
+type alias ElmFile =
+  { filePath : FilePath -- relative to project root
+  , fileName : ModuleName
+  , source : ElmCode
+  , compiledCode : Maybe String
+  , modul : Maybe Module
+  , inRepo : Repo
   }
 
 type CompileStatus

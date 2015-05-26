@@ -98,14 +98,14 @@ compile elmFile' outPath = do
       err <- hGetContents compilerErr
       return $ Left (unlines . drop 2 . lines $ err)
 
-getLatest :: ElmFile -> IO (Either String ElmFile)
+getLatest :: ElmFile -> IO ElmFile
 getLatest elmFile' = do
   Right repo <- getRepo (inRepo elmFile')
   headRev <- repoHead repo
   headFileOrErrors <- compile elmFile' headRev
   case headFileOrErrors of
     -- The file at HEAD compiles.
-    Right file -> return $ Right file
+    Right file -> return file
     -- The file at HEAD does not compile, look at the last change made to the file.
     Left headErrors -> do
       latestRev <- latest repo (filePath elmFile')
@@ -113,33 +113,38 @@ getLatest elmFile' = do
       case readMaybe message :: Maybe EditUpdate of
         -- The file has a valid Arrowsmith annotation.
         Just (updatedFile, lastWorking, _action) -> do
-          if updatedFile /= fileName elmFile' then
-            return . Left $ "update annotation in commit:\n"
+          if updatedFile /= fileName elmFile' then do
+            print $ "update annotation in commit:\n"
               ++ message
               ++ "\ndoes not refer to expected file:\n"
               ++ show elmFile'
+            return plainTextFile
           else
             maybe (recoverLastWorking latestRev) recoverLastWorking lastWorking
         -- The file doesn't have a valid annotation.
         Nothing ->
-          recoverLastWorking latestRev
+          return plainTextFile
       where
+        plainTextFile = elmFile' { modul = Nothing }
+
         recoverLastWorking lastWorkingRev = do
           lastWorkingFileOrErrors <- repoRunAtRevision repo lastWorkingRev (compile elmFile' lastWorkingRev)
           case lastWorkingFileOrErrors of
-            Left lastWorkingErrors ->
-              return . Left $ "Last working revision "
+            Left lastWorkingErrors -> do
+              print $ "Last working revision "
                 ++ lastWorkingRev
                 ++ " doesn't actually compile: "
                 ++ lastWorkingErrors
+              return plainTextFile
             Right lastWorkingFile -> do
               annotations <- getUpdateAnnotations repo lastWorkingFile lastWorkingRev
-              return $ case applyAnnotations lastWorkingFile annotations of
+              case applyAnnotations lastWorkingFile annotations of
                 Just latestElmFile ->
-                  Right latestElmFile
+                  return latestElmFile
                     { modul = modul latestElmFile >>= \m -> Just m { errors = [headErrors] } }
-                Nothing ->
-                  Left "Updates applied unsuccessfully (ElmFile:getLatest)"
+                Nothing -> do
+                  print "Updates applied unsuccessfully (ElmFile:getLatest)"
+                  return plainTextFile
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =
