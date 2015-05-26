@@ -16,6 +16,7 @@ Elm.Arrowsmith.Module.make = function (_elm) {
    $List = Elm.List.make(_elm),
    $String = Elm.String.make(_elm);
    var empty = {_: {}
+               ,aliases: _L.fromArray([])
                ,datatypes: _L.fromArray([])
                ,defs: _L.fromArray([])
                ,errors: _L.fromArray([])

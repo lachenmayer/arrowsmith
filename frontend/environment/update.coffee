@@ -7,7 +7,7 @@ updateClient = require 'rest'
   .wrap require('rest/interceptor/errorCode')
   .wrap require('rest/interceptor/defaultRequest'),
     method: 'POST'
-    path: "/api/github/#{document.location.pathname}"
+    path: "/api/github#{document.location.pathname}" # TODO properly
 
 updateRequest = (update) ->
   updateClient entity: update

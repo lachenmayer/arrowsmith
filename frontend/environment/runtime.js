@@ -155,12 +155,8 @@ function init(display, container, module, args, moduleToReplace, fieldName, cust
   var elm = makeRuntime(display, container, args);
   initWithRuntime(elm, module, moduleToReplace, fieldName, customRenderer);
 
-  return {
-    swap: elm.swap,
-    ports: elm.ports,
-    dispose: elm.dispose
-  };
-};
+  return elm;
+}
 
 function checkInputs(argsTracker)
 {
@@ -283,6 +279,21 @@ function trimDeadNodes(node)
 // ie. somewhere, SomeModule.make(elm) should have been called.
 function initGraphics(elm, Module, fieldName, customRenderer)
 {
+  // Enables rendering of any value, not just Element.
+  function makeElement(scene) {
+    var view;
+    if (typeof customRenderer !== 'undefined')
+    {
+      view = customRenderer.view;
+    }
+    else
+    {
+      var Element = Elm.Graphics.Element.make(elm);
+      view = Element.show;
+    }
+    return view(scene);
+  }
+
   // The default behaviour is to render "main".
   if (typeof fieldName == 'undefined')
   {
@@ -297,36 +308,25 @@ function initGraphics(elm, Module, fieldName, customRenderer)
   }
   var initialScene = signalGraph.value;
 
+  // The value being rendered is not actually an element - make it one.
+  if (!initialScene.props && !initialScene.tagName && !initialScene.element) {
+    initialScene = makeElement(initialScene);
+  }
+
   // Figure out what the render functions should be
   var render;
   var update;
-  if (initialScene.props && initialScene.element)
+  if (initialScene.props)
   {
     var Element = Elm.Native.Graphics.Element.make(elm);
     render = Element.render;
     update = Element.updateAndReplace;
   }
-  else if (initialScene.tagName)
+  else
   {
     var VirtualDom = Elm.Native.VirtualDom.make(elm);
     render = VirtualDom.render;
     update = VirtualDom.updateAndReplace;
-  }
-  else
-  {
-    var NativeElement = Elm.Native.Graphics.Element.make(elm);
-    var view;
-    if (typeof customRenderer !== 'undefined')
-    {
-      view = customRenderer.view;
-    }
-    else
-    {
-      var Element = Elm.Graphics.Element.make(elm);
-      view = Element.show;
-    }
-    render = function(x) { return NativeElement.render(view(x)); }
-    update = NativeElement.updateAndReplace;
   }
 
   // Add the initialScene to the DOM
@@ -510,7 +510,7 @@ module.exports = {
   // init: function(elm, module, fieldName, customRenderer) {
   //   return initWithRuntime(elm, module, undefined /* moduleToReplace */, fieldName, customRenderer);
   // }
-  run: function(container, module, args, fieldName, customRenderer) {
-    return init(Display.COMPONENT, container, module, args, undefined, fieldName, customRenderer);
+  run: function(container, module, args, moduleToReplace, fieldName, customRenderer) {
+    return init(Display.COMPONENT, container, module, args, moduleToReplace, fieldName, customRenderer);
   }
 }

@@ -15,6 +15,7 @@ import Maybe
 import Signal as S exposing (Signal, (<~))
 import String
 
+import Arrowsmith.AliasesView as AliasesView
 import Arrowsmith.Definition as Def
 import Arrowsmith.DatatypesView as DatatypesView
 import Arrowsmith.ImportsView as ImportsView
@@ -44,6 +45,7 @@ type alias Model =
 
   , lastAction : Action
 
+  , aliasesViewModel : AliasesView.Model
   , datatypesViewModel : DatatypesView.Model
   , importsViewModel : ImportsView.Model
   }
@@ -65,6 +67,7 @@ type Action
   | ModuleCompiled Module
   | CompilationFailed ElmError
 
+  | ChangeAliases AliasesView.Action
   | ChangeDatatypes DatatypesView.Action
   | ChangeImports ImportsView.Action
 
@@ -82,6 +85,7 @@ init initialModule =
 
   , lastAction = NoOp
 
+  , aliasesViewModel = AliasesView.init initialModule.aliases
   , datatypesViewModel = DatatypesView.init initialModule.datatypes
   , importsViewModel = ImportsView.init initialModule.imports
   }
@@ -140,6 +144,16 @@ update action model =
       , compileStatus <- CompileError error
       }
 
+    ChangeAliases action ->
+      { model
+      | lastAction <- ChangeAliases action
+      , aliasesViewModel <- AliasesView.update action model.aliasesViewModel
+      }
+    ChangeDatatypes action ->
+      { model
+      | lastAction <- ChangeDatatypes action
+      , datatypesViewModel <- DatatypesView.update action model.datatypesViewModel
+      }
     ChangeImports action ->
       { model
       | lastAction <- ChangeImports action
@@ -226,7 +240,7 @@ view address model =
   div "modules" [ moduleView address model ]
 
 moduleView : S.Address Action -> Model -> Html
-moduleView address {valueViews, modul, importsViewModel, datatypesViewModel} =
+moduleView address {valueViews, modul, importsViewModel, datatypesViewModel, aliasesViewModel} =
   let
     {name, types, defs, errors} = modul
     moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
@@ -237,6 +251,7 @@ moduleView address {valueViews, modul, importsViewModel, datatypesViewModel} =
         , H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
         ]
       , ImportsView.view (S.forwardTo address ChangeImports) importsViewModel
+      , AliasesView.view (S.forwardTo address ChangeAliases) aliasesViewModel
       , DatatypesView.view (S.forwardTo address ChangeDatatypes) datatypesViewModel
       , div moduleDefsClass <| List.map (defView address types valueViews) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors

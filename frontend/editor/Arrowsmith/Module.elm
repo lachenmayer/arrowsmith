@@ -37,6 +37,7 @@ empty =
   , imports = []
   , types = []
   , datatypes = []
+  , aliases = []
   , defs = []
   , errors = []
   }

@@ -13,6 +13,33 @@ Elm.Arrowsmith.Types.make = function (_elm) {
    $moduleName = "Arrowsmith.Types",
    $Dict = Elm.Dict.make(_elm),
    $Maybe = Elm.Maybe.make(_elm);
+   var CompileError = function (a) {
+      return {ctor: "CompileError"
+             ,_0: a};
+   };
+   var Compiled = {ctor: "Compiled"};
+   var Repo = F3(function (a,b,c) {
+      return {_: {}
+             ,backend: a
+             ,project: c
+             ,user: b};
+   });
+   var Module = F7(function (a,
+   b,
+   c,
+   d,
+   e,
+   f,
+   g) {
+      return {_: {}
+             ,aliases: e
+             ,datatypes: d
+             ,defs: f
+             ,errors: g
+             ,imports: b
+             ,name: a
+             ,types: c};
+   });
    var AdtInfo = F2(function (a,
    b) {
       return {_: {}
@@ -31,38 +58,13 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,explicits: a
              ,open: b};
    });
-   var CompileError = function (a) {
-      return {ctor: "CompileError"
-             ,_0: a};
-   };
-   var Compiled = {ctor: "Compiled"};
-   var Repo = F3(function (a,b,c) {
-      return {_: {}
-             ,backend: a
-             ,project: c
-             ,user: b};
-   });
-   var Module = F6(function (a,
-   b,
-   c,
-   d,
-   e,
-   f) {
-      return {_: {}
-             ,datatypes: d
-             ,defs: e
-             ,errors: f
-             ,imports: b
-             ,name: a
-             ,types: c};
-   });
    _elm.Arrowsmith.Types.values = {_op: _op
+                                  ,Listing: Listing
+                                  ,ImportMethod: ImportMethod
+                                  ,AdtInfo: AdtInfo
                                   ,Module: Module
                                   ,Repo: Repo
                                   ,Compiled: Compiled
-                                  ,CompileError: CompileError
-                                  ,Listing: Listing
-                                  ,ImportMethod: ImportMethod
-                                  ,AdtInfo: AdtInfo};
+                                  ,CompileError: CompileError};
    return _elm.Arrowsmith.Types.values;
 };

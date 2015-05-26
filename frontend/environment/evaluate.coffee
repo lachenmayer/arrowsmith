@@ -24,6 +24,8 @@ makeView = (resultNode, viewName) ->
   ViewModule = get Elm, viewName
   ViewModule.make viewRuntime
 
+cachedModule = undefined
+
 evaluate = (done) -> ([moduleName, names]) ->
   console.log "evaluate", names
   if names.length is 0
@@ -40,9 +42,15 @@ evaluate = (done) -> ([moduleName, names]) ->
     console.log name, viewName
     resultNode = document.createElement 'div'
     view = makeView resultNode, viewName
-    run resultNode, modul, {}, name, view
-    appendToDefinition name, resultNode
 
+    # try to hotswap with the old view - won't work if not an element
+    # try
+    #   cachedModule = run resultNode, modul, {}, cachedModule, name, view
+    # catch e
+    #   console.log e
+    cachedModule = run resultNode, modul, {}, undefined, name, view
+
+    appendToDefinition name, resultNode
     result = [moduleName, name, viewName]
     console.log "evaluate: #{result[1]}: #{result[2]}"
     done result
@@ -65,11 +73,7 @@ evaluateMain = (moduleName) ->
   script.text = executionFrame.contentDocument.querySelector('script').text
   resultFrame.contentDocument.body.appendChild script
 
-  modul = resultFrame.contentWindow.Elm
-  for nameSegment in moduleName
-    modul = modul[nameSegment]
-    if not modul?
-      console.log "evaluate: undefined name #{moduleName}"
+  modul = get resultFrame.contentWindow.Elm, moduleName
   resultFrame.contentWindow.Elm.fullscreen modul, {}
 
   resultFrame.height = resultFrame.contentDocument.body.scrollHeight

@@ -64,7 +64,7 @@ data Module = Module
   , imports :: [Import]
   , types :: [(VarName, Type)]
   , datatypes :: [(VarName, AdtInfo)]
-  , aliases :: [(VarName, (ModuleName, Type))]
+  , aliases :: [(VarName, ([VarName], Type))]
   , defs :: [LocatedDefinition]
   , errors :: [ElmError]
   } deriving (Show, Eq)

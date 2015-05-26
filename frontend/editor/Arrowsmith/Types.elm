@@ -14,24 +14,7 @@ type alias Type = String -- TODO...
 
 type alias Definition = (VarName, Maybe Type, ElmCode)
 
-type alias Module =
-  { name : ModuleName
-  , imports : List Import
-  , types : List (VarName, Type)
-  , datatypes : List (VarName, AdtInfo)
-  , defs : List Definition
-  , errors : List ElmError
-  }
-
-type alias Repo =
-  { backend : String
-  , user : String
-  , project : String
-  }
-
-type CompileStatus
-  = Compiled
-  | CompileError ElmError
+type alias Alias = (List VarName, Type)
 
 type alias Listing a =
   { explicits : List a
@@ -50,3 +33,23 @@ type alias AdtInfo =
   { adtVars : List VarName
   , constructors : List (String, List Type)
   }
+
+type alias Module =
+  { name : ModuleName
+  , imports : List Import
+  , types : List (VarName, Type)
+  , datatypes : List (VarName, AdtInfo)
+  , aliases : List (VarName, Alias)
+  , defs : List Definition
+  , errors : List ElmError
+  }
+
+type alias Repo =
+  { backend : String
+  , user : String
+  , project : String
+  }
+
+type CompileStatus
+  = Compiled
+  | CompileError ElmError
