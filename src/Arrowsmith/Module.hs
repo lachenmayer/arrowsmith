@@ -14,6 +14,7 @@ import qualified AST.JSON ()
 import qualified AST.Module
 import qualified AST.Pattern as Pattern
 import qualified AST.PrettyPrint as PP
+import qualified AST.Type
 import qualified AST.Variable as Var
 
 import Arrowsmith.Types
@@ -72,36 +73,36 @@ definitions modoole =
 -- Uses the built-in pretty printer to give a textual representation of the definition.
 defPrettyPrinted :: DefTransform
 defPrettyPrinted def =
-  ( varName
-  , tipe >>= Just . PP.renderPretty
+  ( varName'
+  , tipe >>= Just . convertType
   , PP.renderPretty binding
   , startLocation
   , endLocation'
   )
   where
-    Canonical.Definition (Pattern.Var varName) binding tipe = def
+    Canonical.Definition (Pattern.Var varName') binding tipe = def
     (startLocation, endLocation') = sourceRange def
 
 -- Looks up the regions in the code itself to match the style the code was written in originally.
 defFromSource :: String -> DefTransform
 defFromSource source' def =
-  ( varName
-  , tipe >>= Just . PP.renderPretty
+  ( varName'
+  , tipe >>= Just . convertType
   , sourceRegion source' lhsStartLocation eolEndLocation
   , lhsStartLocation
   , eolEndLocation
   )
   where
-    Canonical.Definition (Pattern.Var varName) _ tipe = def
+    Canonical.Definition (Pattern.Var varName') _ tipe = def
     (startLocation, endLocation') = sourceRange def
-    lhsStartLocation = expandToLhs source' varName startLocation
+    lhsStartLocation = expandToLhs source' varName' startLocation
     eolEndLocation = expandToEndOfLine source' endLocation'
 
 -- Returns the start position of a definition including the left hand side.
 -- expandToLhs "foo\n  baz\nbal = baz\nbar" "baz" (3, 6) == (2, 3)
 expandToLhs :: String -> String -> Location -> Location
-expandToLhs source' varName (startLine, startColumn) =
-  case indexOf (take startColumn firstDefLine) varName of
+expandToLhs source' varName' (startLine, startColumn) =
+  case indexOf (take startColumn firstDefLine) varName' of
     Just i -> (startLine, i)
     Nothing -> findInPrevious previousLines (startLine - 1)
   where
@@ -109,7 +110,7 @@ expandToLhs source' varName (startLine, startColumn) =
     findInPrevious _ 0 = error "couldn't find def (expandToLhs:1)"
     findInPrevious [] _ = error "couldn't find def (expandToLhs:2)"
     findInPrevious (line:previous) lineCount =
-      case indexOf line varName of
+      case indexOf line varName' of
         Just i -> (lineCount, i)
         Nothing -> findInPrevious previous (lineCount - 1)
 
@@ -162,18 +163,18 @@ endLocation (startRow, _) def =
 
 moduleTypes :: AST.Module.CanonicalModule -> [(VarName, Type)]
 moduleTypes modoole =
-  map (\(n, tipe) -> (n, PP.renderPretty tipe)) . Map.toList $ AST.Module.types (AST.Module.body modoole)
+  map (\(n, tipe) -> (n, convertType tipe)) . Map.toList $ AST.Module.types (AST.Module.body modoole)
 
 moduleDatatypes :: AST.Module.CanonicalModule -> [(VarName, AdtInfo)]
 moduleDatatypes modoole =
   map (\(n, adtInfo) -> (n, pretty adtInfo)) . Map.toList $ AST.Module.datatypes (AST.Module.body modoole)
   where
     pretty (s, constructors') =
-      AdtInfo s $ map (\(v, ts) -> (v, map PP.renderPretty ts)) constructors'
+      AdtInfo s $ map (\(v, ts) -> (v, map convertType ts)) constructors'
 
 moduleAliases :: AST.Module.CanonicalModule -> [(VarName, (ModuleName, Type))]
 moduleAliases modoole =
-  map (\(n, (m, t)) -> (n, (m, PP.renderPretty t))) . Map.toList $ AST.Module.aliases (AST.Module.body modoole)
+  map (\(n, (m, t)) -> (n, (m, convertType t))) . Map.toList $ AST.Module.aliases (AST.Module.body modoole)
 
 moduleImports :: AST.Module.CanonicalModule -> [Import]
 moduleImports modoole =
@@ -191,3 +192,32 @@ moduleImports modoole =
       str ++ "(" ++ (intercalate ", " $ explicits' ++ [openDots]) ++ ")"
       where
         openDots = if open' then ".." else ""
+
+convertType :: AST.Type.CanonicalType -> Type
+convertType tipe =
+  case tipe of
+    AST.Type.Lambda t1 t2 -> Lambda (convertType t1) (convertType t2)
+    AST.Type.Var s -> Var s
+    AST.Type.Type v -> Type (convertCanonical v)
+    AST.Type.App t ts -> TypeApp (convertType t) (map convertType ts)
+    AST.Type.Record fs maybeType -> Record (convertNamed fs) (fmap convertType maybeType)
+    AST.Type.Aliased v fs a -> Aliased (convertCanonical v) (convertNamed fs) (convertAliasType a)
+  where
+    convertNamed = map (\(n, t) -> (n, convertType t))
+
+convertCanonical :: Var.Canonical -> CanonicalVar
+convertCanonical (Var.Canonical h n) =
+  CanonicalVar (convertHome h) n
+
+convertHome :: Var.Home -> Home
+convertHome h =
+  case h of
+    Var.BuiltIn -> BuiltIn
+    Var.Module m -> ModuleHome m
+    Var.Local -> Local
+
+convertAliasType :: AST.Type.AliasType Var.Canonical -> AliasType
+convertAliasType a =
+  case a of
+    AST.Type.Holey t -> Holey (convertType t)
+    AST.Type.Filled t -> Filled (convertType t)

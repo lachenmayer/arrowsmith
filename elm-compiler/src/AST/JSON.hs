@@ -4,7 +4,7 @@ module AST.JSON where
 
 import Control.Applicative ((<$>),empty)
 import Data.Aeson
-import Data.Aeson.TH (deriveJSON,defaultOptions)
+import Data.Aeson.TH
 import Text.PrettyPrint hiding (empty)
 
 import qualified AST.Annotation
@@ -37,14 +37,14 @@ $(deriveJSON defaultOptions ''AST.Module.CanonicalBody)
 
 $(deriveJSON defaultOptions ''AST.Pattern.Pattern)
 
-$(deriveJSON defaultOptions ''AST.Variable.Canonical)
-$(deriveJSON defaultOptions ''AST.Variable.Home)
-$(deriveJSON defaultOptions ''AST.Variable.Value)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AST.Variable.Canonical)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AST.Variable.Home)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AST.Variable.Value)
 $(deriveJSON defaultOptions ''AST.Variable.Listing)
 
-$(deriveJSON defaultOptions ''AST.Type.AliasType)
-$(deriveJSON defaultOptions ''AST.Type.PortType)
-$(deriveJSON defaultOptions ''AST.Type.Type)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AST.Type.AliasType)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AST.Type.PortType)
+$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AST.Type.Type)
 
 instance ToJSON Doc where
   toJSON doc = object ["doc" .= toJSON (render doc)]

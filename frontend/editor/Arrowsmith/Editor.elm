@@ -52,14 +52,17 @@ type Action
   | CompiledElmFile ElmFile
 
 
-init : ElmFile -> Model
-init initialElmFile =
-  { elmFile = initialElmFile
-  , isCompiling = False
-  , compileStatus = Compiled
-  , lastAction = NoOp
-  , editorView = makeEditorView initialElmFile
-  }
+init : Model
+init =
+  let
+    elmFile = convertElmFile initialElmFile
+  in
+    { elmFile = elmFile
+    , isCompiling = False
+    , compileStatus = Compiled
+    , lastAction = NoOp
+    , editorView = makeEditorView elmFile
+    }
 
 actions : S.Mailbox Action
 actions =
@@ -110,7 +113,7 @@ model =
                          , CompiledElmFile <~ compiledElmFiles
                          ]
   in
-    S.foldp update (init initialElmFile) events
+    S.foldp update init events
 
 main : Signal Html
 main =
@@ -168,15 +171,32 @@ port evaluate =
     S.map snd
       <| S.filter evaluateActions (NoOp, ([], []))
       <| S.map (\{lastAction, elmFile, editorView} -> (lastAction, (elmFile.fileName, toEvaluate editorView)))
-      <| S.filter isStructuredView (init initialElmFile) model
+      <| S.filter isStructuredView init model
 
 port evaluateMain : Signal (ModuleName)
 port evaluateMain =
   S.map snd <| S.filter (fst >> (==) (ModuleAction ModuleView.EvaluateMain)) (NoOp, []) <| S.map (\{lastAction, elmFile} -> (lastAction, elmFile.fileName)) model
 
-port initialElmFile : ElmFile
+port initialElmFile : PortElmFile
 
-port compiledElmFiles : Signal ElmFile
+port compiledElmFiles : Signal PortElmFile
+
+convertElmFile : PortElmFile -> ElmFile
+convertElmFile {filePath, fileName, source, compiledCode, modul, inRepo} =
+  { filePath = filePath
+  , fileName = fileName
+  , source = source
+  , compiledCode = compiledCode
+  , modul = convertModule modul
+  , inRepo = inRepo
+  }
+
+convertModule : PortModule -> Module
+convertModule {name, imports, types, datatypes, aliases, defs, errors} =
+  { name = name
+  , imports = imports
+  , types = List.map ...
+  }
 
 --
 -- Views
