@@ -25,7 +25,6 @@ type Action
 
   | Edit VarName
   | StopEditing VarName
-  | FinishEditing (VarName, String)
 
   | Evaluate VarName ModuleName {- view module name -}
   | EvaluateMain
@@ -34,9 +33,7 @@ type Action
   | NewDefinition
   | RemoveDefinition VarName
 
-  | ModuleCompiled Module
-  | CompilationFailed ElmError
-
+  | ChangeModule Module
   | ChangeAliases AliasesView.Action
   | ChangeDatatypes DatatypesView.Action
   | ChangeImports ImportsView.Action
@@ -68,7 +65,7 @@ actions =
 
 update : Action -> Model -> Model
 update action model =
-  case action of
+  Debug.log "model" <| case action of
     NoOp -> model
 
     Edit name ->
@@ -76,11 +73,8 @@ update action model =
       | editing <- Just name
       }
     StopEditing name ->
-      model -- Nothing happens, this is only used to call the JS "edit" function.
-    FinishEditing (name, newBinding) ->
       { model
       | editing <- Nothing
-      , modul <- Module.replaceDefinition model.modul name (name, Nothing, newBinding)
       , toEvaluate <- D.toList model.valueViews
       }
 
@@ -95,13 +89,10 @@ update action model =
       | valueViews <- D.insert name view model.valueViews
       }
 
-    ModuleCompiled newModule ->
+    ChangeModule modul ->
       { model
-      | modul <- newModule
+      | modul <- modul
       }
-    CompilationFailed error ->
-      model
-
     ChangeAliases action ->
       { model
       | aliasesViewModel <- AliasesView.update action model.aliasesViewModel
@@ -162,12 +153,11 @@ defHeaderView address inferredTypes valueViews (name, tipe, _) =
       Nothing ->
         [ nameTag, tag "definition-type-inferred" [] [ H.text <| lookup name inferredTypes ], evalTag ]
   in
-    H.table [ A.class "definition-header" ]
-      [ H.tr [] header ]
+    div "definition-header" header
 
 valueView : Type -> ModuleName
 valueView tipe =
-  case (Debug.log "type" tipe) of
+  case tipe of
     "Color.Color" -> ["Arrowsmith", "Views", "ColorView"]
     _ -> ["Arrowsmith", "Views", "SimpleView"]
 

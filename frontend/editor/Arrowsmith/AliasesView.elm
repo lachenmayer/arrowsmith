@@ -6,6 +6,7 @@ import Html.Events as E
 import Signal as S exposing (Signal, Mailbox, Address, (<~))
 
 import Arrowsmith.Types exposing (..)
+import Arrowsmith.Util exposing (..)
 
 type Action
   = NoOp
@@ -32,15 +33,12 @@ model a =
 
 view : Address Action -> Model -> Html
 view address {aliases} =
-  H.div [ A.class "module-aliases" ] <| List.map aliasView aliases
+  div "module-aliases" <| List.map aliasView aliases
 
 aliasView : (VarName, Alias) -> Html
 aliasView (name, (vars, tipe)) =
-  H.div [ A.class "module-alias" ] <| [ span "alias-name" name ] ++ List.map (span "alias-var") vars ++ [ span "alias-type" tipe ]
-
-span : String -> String -> Html
-span class content =
-  H.span [ A.class class ] [ H.text content ]
+  div "module-alias"
+    [ H.span [ A.class "alias" ] ([ span "alias-name" name ] ++ List.map (span "alias-var") vars ++ [ span "alias-type" tipe ]) ]
 
 main : Signal Html
 main =

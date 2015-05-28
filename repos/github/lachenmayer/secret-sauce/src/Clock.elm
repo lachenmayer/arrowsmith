@@ -12,7 +12,7 @@ main =
 
 clock t =
   collage 400 400
-    [ filled    black   (ngon 12 110)
+    [ filled    red   (ngon 12 110)
     , outlined (solid grey) (ngon 12 110)
     , hand orange   100  t
     , hand charcoal 100 (t/60)
@@ -25,3 +25,7 @@ hand clr len time =
   in
       segment (0,0) (fromPolar (len,angle))
         |> traced (solid clr)
+
+foo x y = if x > y then x else y
+
+bar = foo 2 3

@@ -13,11 +13,15 @@ div class =
 
 tag : String -> List H.Attribute -> List Html -> Html
 tag class attrs =
-  H.td (A.class ("tag " ++ class) :: attrs)
+  H.div (A.class ("tag " ++ class) :: attrs)
 
 editable : String -> List H.Attribute -> List Html -> Html
 editable tagName attributes contents =
   H.node tagName (A.contenteditable True :: attributes) contents
+
+span : String -> String -> Html
+span class content =
+  H.span [ A.class class ] [ H.text content ]
 
 --lookup : a -> List (a, b) -> b
 lookup x xs =

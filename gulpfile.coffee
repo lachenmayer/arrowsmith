@@ -28,6 +28,7 @@ gulp.task 'environment', ->
 gulp.task 'styles', ->
   gulp.src "#{stylesDir}/*.styl"
     .pipe stylus
+      'include css': true
       use: nib()
     .pipe gulp.dest out
 

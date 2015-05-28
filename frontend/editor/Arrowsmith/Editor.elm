@@ -2,6 +2,8 @@ module Arrowsmith.Editor where
 
 import Debug
 
+import Color
+import FontAwesome
 import Graphics.Element exposing (Element, flow, down)
 import Graphics.Input as Input
 import Html as H exposing (Html)
@@ -32,18 +34,6 @@ type EditorView
   = PlainText PlainTextView.Model
   | Structured ModuleView.Model
 
-makeEditorView : ElmFile -> EditorView
-makeEditorView elmFile =
-  case elmFile.modul of
-    Nothing -> PlainText <| PlainTextView.init elmFile.source
-    Just modul -> Structured <| ModuleView.init modul
-
-isStructuredView : Model -> Bool
-isStructuredView {editorView} =
-  case editorView of
-    Structured _ -> True
-    PlainText _ -> False
-
 type alias Model =
   { elmFile : ElmFile
   , isCompiling : Bool
@@ -58,6 +48,7 @@ type Action
   | PlainTextAction PlainTextView.Action
   | ModuleAction ModuleView.Action
 
+  | ToggleEditorView
   | CompiledElmFile ElmFile
 
 
@@ -97,6 +88,13 @@ update action model =
           PlainText _ -> Debug.crash "Should never receive a structured action when in plain text mode!"
       }
 
+    ToggleEditorView ->
+      { model
+      | lastAction <- ToggleEditorView
+      , editorView <- case model.editorView of
+          Structured m -> PlainText <| PlainTextView.init model.elmFile.source
+          PlainText m -> makeEditorView model.elmFile
+      }
     CompiledElmFile newElmFile ->
       { model
       | lastAction <- CompiledElmFile newElmFile
@@ -108,7 +106,6 @@ model : Signal Model
 model =
   let
     events = S.mergeMany [ actions.signal
-                         , ModuleAction << ModuleView.FinishEditing <~ editedValue
                          , ModuleAction << ModuleView.FinishEvaluating <~ finishEvaluating
                          , CompiledElmFile <~ compiledElmFiles
                          ]
@@ -122,8 +119,6 @@ main =
 --
 -- Ports
 --
-
-port editedValue : Signal (VarName, ElmCode)
 
 port editDefinition : Signal VarName
 port editDefinition =
@@ -149,9 +144,6 @@ port editText =
 --port editImport =
 --  S.filter importActions (NoOp, ()) <| S.map (\{moduleView} -> (moduleView.lastAction, moduleView.importsView)) model
 
--- Evaluation cycle:
--- Elm:Evaluate --evaluate--> JS:do evaluation --evaluatedValue--> Elm:FinishEvaluating
-
 port finishEvaluating : Signal (ModuleName, VarName, ModuleName)
 
 port evaluate : Signal (ModuleName, List (VarName, List VarName))
@@ -161,14 +153,12 @@ port evaluate =
       case a of
         ModuleAction (ModuleView.Evaluate _ _) -> True
         _ -> False
-    isModuleCompiledAction a =
+    isCompiledElmFileAction a =
       case a of
-        ModuleAction (ModuleView.ModuleCompiled _) -> True
+        CompiledElmFile _ -> True
         _ -> False
     evaluateActions (lastAction, _) =
-      isEvaluateAction lastAction || isModuleCompiledAction lastAction
-
-
+      isEvaluateAction lastAction || isCompiledElmFileAction lastAction
 
     toEvaluate editorView =
       case editorView of
@@ -204,7 +194,8 @@ moduleView address model =
     div ("module module-" ++ (String.join "-" name))
       [ div "module-header"
         [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ]
-        --, H.span [ A.class "module-evaluate", E.onClick address EvaluateMain ] [ FontAwesome.play Color.white 16 ]
+        , H.span [ A.class "module-buttons" ]
+          [ H.span [ A.class "module-text-button", E.onClick address ToggleEditorView ] [ FontAwesome.file_text Color.white 24 ] ]
         ]
       , editorView address model
       ]
@@ -214,6 +205,26 @@ editorView address {editorView} =
   case editorView of
     PlainText model -> PlainTextView.view (S.forwardTo address PlainTextAction) model
     Structured model -> ModuleView.view (S.forwardTo address ModuleAction) model
+
+makeEditorView : ElmFile -> EditorView
+makeEditorView elmFile =
+  case elmFile.modul of
+    Nothing -> PlainText <| PlainTextView.init elmFile.source
+    Just modul -> Structured <| ModuleView.init modul
+
+updateEditorView : EditorView -> ElmFile -> EditorView
+updateEditorView editorView elmFile =
+  case editorView of
+    PlainText model -> makeEditorView elmFile
+    Structured model -> case elmFile.modul of
+      Nothing -> makeEditorView elmFile
+      Just modul -> Structured <| ModuleView.update (ModuleView.ChangeModule modul) model
+
+isStructuredView : Model -> Bool
+isStructuredView {editorView} =
+  case editorView of
+    Structured _ -> True
+    PlainText _ -> False
 
 --
 -- Util

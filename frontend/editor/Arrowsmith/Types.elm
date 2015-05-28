@@ -11,7 +11,28 @@ type alias FilePath = String
 type alias VarName = String
 type alias ModuleName = List VarName
 type alias ValueViews = Dict VarName ModuleName
-type alias Type = String -- TODO...
+
+type Home
+  = BuiltIn
+  | ModuleHome (List String)
+  | Local
+
+type alias CanonicalVar =
+  { home : Home
+  , varName : String
+  }
+
+type Type
+  = Lambda Type Type
+  | Var String
+  | Type CanonicalVar
+  | TypeApp Type (List Type)
+  | Record (List (String, Type)) (Maybe Type)
+  | Aliased CanonicalVar (List (String, Type)) AliasType
+
+type AliasType
+  = Holey Type
+  | Filled Type
 
 type alias Definition = (VarName, Maybe Type, ElmCode)
 

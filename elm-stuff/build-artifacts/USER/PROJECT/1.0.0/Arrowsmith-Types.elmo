@@ -72,7 +72,68 @@ Elm.Arrowsmith.Types.make = function (_elm) {
              ,explicits: a
              ,open: b};
    });
+   var Filled = function (a) {
+      return {ctor: "Filled"
+             ,_0: a};
+   };
+   var Holey = function (a) {
+      return {ctor: "Holey",_0: a};
+   };
+   var Aliased = F3(function (a,
+   b,
+   c) {
+      return {ctor: "Aliased"
+             ,_0: a
+             ,_1: b
+             ,_2: c};
+   });
+   var Record = F2(function (a,b) {
+      return {ctor: "Record"
+             ,_0: a
+             ,_1: b};
+   });
+   var TypeApp = F2(function (a,
+   b) {
+      return {ctor: "TypeApp"
+             ,_0: a
+             ,_1: b};
+   });
+   var Type = function (a) {
+      return {ctor: "Type",_0: a};
+   };
+   var Var = function (a) {
+      return {ctor: "Var",_0: a};
+   };
+   var Lambda = F2(function (a,b) {
+      return {ctor: "Lambda"
+             ,_0: a
+             ,_1: b};
+   });
+   var CanonicalVar = F2(function (a,
+   b) {
+      return {_: {}
+             ,home: a
+             ,varName: b};
+   });
+   var Local = {ctor: "Local"};
+   var ModuleHome = function (a) {
+      return {ctor: "ModuleHome"
+             ,_0: a};
+   };
+   var BuiltIn = {ctor: "BuiltIn"};
    _elm.Arrowsmith.Types.values = {_op: _op
+                                  ,BuiltIn: BuiltIn
+                                  ,ModuleHome: ModuleHome
+                                  ,Local: Local
+                                  ,CanonicalVar: CanonicalVar
+                                  ,Lambda: Lambda
+                                  ,Var: Var
+                                  ,Type: Type
+                                  ,TypeApp: TypeApp
+                                  ,Record: Record
+                                  ,Aliased: Aliased
+                                  ,Holey: Holey
+                                  ,Filled: Filled
                                   ,Listing: Listing
                                   ,ImportMethod: ImportMethod
                                   ,AdtInfo: AdtInfo

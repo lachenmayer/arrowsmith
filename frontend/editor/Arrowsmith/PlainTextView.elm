@@ -4,6 +4,7 @@ import Html as H exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
 import Signal as S exposing (Signal, Mailbox, Address, (<~))
+import String
 
 import Arrowsmith.Types exposing (..)
 import Arrowsmith.Util exposing (..)
@@ -35,13 +36,16 @@ model source =
 
 view : Address Action -> Model -> Html
 view address {source} =
-  H.div
-    [ A.class "module-editor plaintext-editor" ]
-    [ editable "textarea"
-      [ A.class "module-code" ]
-      [ H.text source ]
-    , doneButton address
-    ]
+  let
+    lineCount = List.length (String.lines source)
+  in
+    H.div
+      [ A.class "module-editor plaintext-editor" ]
+      [ editable "textarea"
+        [ A.class "module-code", A.rows lineCount ]
+        [ H.text source ]
+      , doneButton address
+      ]
 
 doneButton : Address Action -> Html
 doneButton address =

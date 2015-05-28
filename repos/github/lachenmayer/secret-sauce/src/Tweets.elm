@@ -19,27 +19,27 @@ userTimeline : String -> Element
 userTimeline user =
   timelineView (userTweets user)
 
-timelineView : List { author : String, text : String } -> Element
+timelineView : List Tweet -> Element
 timelineView tweets =
   flow down <| List.map tweetView tweets
 
-tweetView : { author : String, text : String } -> Element
+tweetView : Tweet -> Element
 tweetView {author, text} =
   flow right <| [authorView author, textView text]
 
 authorView : String -> Element
 authorView contents =
-  textbox 200 50 "#ccf" contents
+  textbox 200 50 "#ccc" contents
 
 textView : String -> Element
 textView contents =
-  textbox 800 50 "#cfc" contents
+  textbox 800 50 "#fcc" contents
 
-userTweets : String -> List { author : String, text : String }
+userTweets : String -> List Tweet
 userTweets user =
   List.filter (\x -> x.author == user) tweets
 
-tweets : List { author : String, text : String }
+tweets : List Tweet
 tweets =
   [ { author="lachenmayer", text="hello world." }
   , { author="foobar", text="barbaz" }

@@ -1,4 +1,6 @@
 module Alias where
 
-foo : String
+type alias Foomblebee = String
+
+foo : Foomblebee
 foo = "bar."
