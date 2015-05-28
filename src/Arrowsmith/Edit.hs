@@ -23,24 +23,24 @@ addDefinition def@(defName, defType, defBinding) elmFile' = do
     }
 
 changeDefinition :: VarName -> ElmCode -> ElmFile -> Maybe ElmFile
-changeDefinition varName' elmCode elmFile' = do
+changeDefinition varName elmCode elmFile' = do
   modul' <- modul elmFile'
   let defs' = defs modul'
-  def <- definitionWithName defs' varName'
+  def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
       (before, _, after) = breakSource (source elmFile') defStart defEnd
       defSource = prettyPrintLocated newDef
-      newDef = (varName', Nothing, elmCode, defStart, endLocation defStart defSource)
+      newDef = (varName, Nothing, elmCode, defStart, endLocation defStart defSource)
   return elmFile'
     { source = before ++ defSource ++ after
     , modul = Just modul' { defs = update def newDef defs' }
     }
 
 removeDefinition :: VarName -> ElmFile -> Maybe ElmFile
-removeDefinition varName' elmFile' = do
+removeDefinition varName elmFile' = do
   modul' <- modul elmFile'
   let defs' = defs modul'
-  def <- definitionWithName defs' varName'
+  def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
       (before, _, after) = breakSource (source elmFile') defStart defEnd
   return elmFile'
@@ -56,6 +56,6 @@ performEditAction :: EditAction -> ElmFile -> Maybe ElmFile
 performEditAction action' =
   case action' of
     AddDefinition def -> addDefinition def
-    ChangeDefinition varName' elmCode -> changeDefinition varName' elmCode
-    RemoveDefinition varName' -> removeDefinition varName'
+    ChangeDefinition varName elmCode -> changeDefinition varName elmCode
+    RemoveDefinition varName -> removeDefinition varName
     ReplaceText newSource -> replaceText newSource

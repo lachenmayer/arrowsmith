@@ -13,7 +13,7 @@ prettyPrint :: Definition -> String
 prettyPrint (name', maybeType, binding) =
   case maybeType of
     Nothing -> binding -- contains lhs
-    Just tipe -> name' ++ " : " ++ (show tipe) ++ "\n" ++ binding
+    Just tipe -> name' ++ " : " ++ tipe ++ "\n" ++ binding
 
 definitionWithName :: [LocatedDefinition] -> VarName -> Maybe LocatedDefinition
 definitionWithName defs' defName =

@@ -2,7 +2,6 @@
 {-# LANGUAGE ExistentialQuantification #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeSynonymInstances #-}
 module Arrowsmith.Types where
 
 import Control.Lens.TH
@@ -20,46 +19,16 @@ import Snap.Snaplet (Handler)
 
 -- Editor
 
-
-data Home
-  = BuiltIn
-  | ModuleHome [String]
-  | Local
-  deriving (Eq, Ord, Show, Read)
-$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Home)
-
-data CanonicalVar = CanonicalVar
-  { home :: !Home
-  , varName :: !String
-  }
-  deriving (Eq, Ord, Show, Read)
-$(deriveJSON defaultOptions ''CanonicalVar)
-
-data Type
-  = Lambda Type Type
-  | Var String
-  | Type CanonicalVar
-  | TypeApp Type [Type]
-  | Record [(String, Type)] (Maybe Type)
-  | Aliased CanonicalVar [(String, Type)] (AliasType)
-  deriving (Eq, Ord, Show, Read)
-
-data AliasType
-  = Holey Type
-  | Filled Type
-  deriving (Eq, Ord, Show, Read)
-
-$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''Type)
-$(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''AliasType)
-
 type ElmCode = String
 type ElmError = String -- TODO add ranges
 type VarName = String
-type ModuleName = [String]
 type Location = (Int {- line -}, Int {- column -}) -- 1-indexed
 type Definition = (VarName, Maybe Type, ElmCode)
 type PartialDefinition = (Maybe VarName, Maybe Type, Maybe ElmCode)
 type LocatedDefinition = (VarName, Maybe Type, ElmCode, Location {- start -}, Location {- end -})
+type Type = String
+
+type ModuleName = [String]
 
 nameToString :: ModuleName -> String
 nameToString =
