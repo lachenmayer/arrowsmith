@@ -2,3 +2,4 @@ dist/
 elm-stuff/
 log/access.log
 log/error.log
+cabal.sandbox.config
