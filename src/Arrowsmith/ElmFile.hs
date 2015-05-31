@@ -125,7 +125,7 @@ getLatest elmFile' = do
         Nothing ->
           return plainTextFile
       where
-        plainTextFile = elmFile' { modul = Nothing, errors = [headErrors] }
+        plainTextFile = elmFile' { modul = Nothing }
 
         recoverLastWorking lastWorkingRev = do
           lastWorkingFileOrErrors <- repoRunAtRevision repo lastWorkingRev (compile elmFile' lastWorkingRev)

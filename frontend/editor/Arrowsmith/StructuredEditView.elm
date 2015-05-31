@@ -138,8 +138,7 @@ view address model =
   div "module-editor structured-editor" <|
     [ actionsView address model.playing
     , infoViews address model
-    , definitionsView address model.modul model.valueViews
-    ]
+    ] ++ if model.playing then [] else [ definitionsView address model.modul model.valueViews ]
 
 actionsView : Address Action -> Bool -> Html
 actionsView address playing =
