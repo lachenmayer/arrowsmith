@@ -1,4 +1,4 @@
-module Arrowsmith.ModuleView (Action(..), Model, init, update, view) where
+module Arrowsmith.StructuredEditView (Action(..), Model, init, update, view) where
 
 import Debug
 
@@ -27,8 +27,10 @@ type Action
   | StopEditing VarName
 
   | Evaluate VarName ModuleName {- view module name -}
-  | EvaluateMain
   | FinishEvaluating (ModuleName, VarName, ModuleName)
+
+  | EvaluateMain
+  | StopPlaying
 
   | NewDefinition
   | RemoveDefinition VarName
@@ -44,6 +46,7 @@ type Action
 type alias Model =
   { modul : Module
   , editing : Maybe VarName
+  , playing : Bool
   , valueViews : ValueViews
   , toEvaluate : List (VarName, ModuleName)
   , infoViewsExpanded : Bool
@@ -56,6 +59,7 @@ init : Module -> Model
 init initialModule =
   { modul = initialModule
   , editing = Nothing
+  , playing = False
   , valueViews = D.empty
   , toEvaluate = []
   , infoViewsExpanded = False
@@ -87,11 +91,18 @@ update action model =
       { model
       | toEvaluate <- [(e, view)]
       }
-    EvaluateMain ->
-      model
     FinishEvaluating (moduleName, name, view) ->
       { model
       | valueViews <- D.insert name view model.valueViews
+      }
+
+    EvaluateMain ->
+      { model
+      | playing <- True
+      }
+    StopPlaying ->
+      { model
+      | playing <- False
       }
 
     ChangeModule modul ->
@@ -124,15 +135,24 @@ model initialModule =
 
 view : Address Action -> Model -> Html
 view address model =
+  div "module-editor structured-editor" <|
+    [ actionsView address model.playing
+    , infoViews address model
+    , definitionsView address model.modul model.valueViews
+    ]
+
+actionsView : Address Action -> Bool -> Html
+actionsView address playing =
   let
-    {name, types, defs, errors} = model.modul
-    moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
+    button action icon =
+      H.span [ A.class "action-button", E.onClick address action ] [ icon (Color.rgb 33 33 33) 24 ]
   in
-    div "module-editor structured-editor" <|
-      [ actionsView address
-      , infoViews address model
-      , div moduleDefsClass <| List.map (defView address types model.valueViews) defs ++ [newDefView address]
-      , div "module-errors" <| List.map errorView errors
+    div "module-actions"
+      [ div "action-buttons"
+        [ button ExpandInfoViews FontAwesome.info
+        , button ChangeEditorView FontAwesome.file_text
+        , if playing then button StopPlaying FontAwesome.pause else button EvaluateMain FontAwesome.play
+        ]
       ]
 
 infoViews : Address Action -> Model -> Html
@@ -143,24 +163,16 @@ infoViews address model =
     , DatatypesView.view (S.forwardTo address ChangeDatatypes) model.datatypesViewModel
     ]
 
-actionsView : Address Action -> Html
-actionsView address =
-  let
-    button action icon =
-      H.span [ A.class "action-button", E.onClick address action ] [ icon (Color.rgb 33 33 33) 24 ]
-  in
-    div "module-actions"
-      [ div "action-buttons"
-        [ button ExpandInfoViews FontAwesome.info
-        , button ChangeEditorView FontAwesome.file_text
-        , button EvaluateMain FontAwesome.play
-        ]
-      ]
-
-
 typeView : ElmCode -> Html
 typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
+
+definitionsView : Address Action -> Module -> ValueViews -> Html
+definitionsView address modul valueViews =
+  let
+    {name, types, defs} = modul
+  in
+    div "module-defs" <| List.map (defView address types valueViews) defs ++ [newDefView address]
 
 defView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
 defView address inferredTypes valueViews definition =
@@ -212,15 +224,3 @@ newDefView : S.Address Action -> Html
 newDefView address =
   H.div [ A.class "definition new-definition" ] <|
     [ codeView address Def.newDefinition ]
-
-errorView : ElmError -> Html
-errorView error =
-  div "error" [ H.pre [] [ H.text error ] ]
-
-button : S.Address Action -> String -> String -> Action -> Html
-button address className buttonText act =
-  H.div
-    [ A.class className
-    , E.onClick address act
-    ]
-    [ H.text buttonText ]

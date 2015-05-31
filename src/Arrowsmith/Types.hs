@@ -66,7 +66,6 @@ data Module = Module
   , datatypes :: [(VarName, AdtInfo)]
   , aliases :: [(VarName, ([VarName], Type))]
   , defs :: [LocatedDefinition]
-  , errors :: [ElmError]
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''Module)
 
@@ -86,10 +85,11 @@ data Repo = Repo { repoInfo :: RepoInfo }
 data ElmFile = ElmFile
   { filePath :: FilePath -- relative to project root
   , fileName :: ModuleName
+  , inRepo :: RepoInfo
   , source :: ElmCode
   , compiledCode :: Maybe String
   , modul :: Maybe Module
-  , inRepo :: RepoInfo
+  , errors :: [ElmError]
   } deriving (Show, Eq)
 $(deriveJSON defaultOptions ''ElmFile)
 

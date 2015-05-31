@@ -43,7 +43,6 @@ type alias Module =
   , datatypes : List (VarName, AdtInfo)
   , aliases : List (VarName, Alias)
   , defs : List Definition
-  , errors : List ElmError
   }
 
 type alias Repo =
@@ -59,6 +58,7 @@ type alias ElmFile =
   , compiledCode : Maybe String
   , modul : Maybe Module
   , inRepo : Repo
+  , errors : List ElmError
   }
 
 type CompileStatus

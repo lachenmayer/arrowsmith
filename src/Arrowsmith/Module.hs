@@ -34,7 +34,6 @@ makeModule defTransform m =
     , datatypes = moduleDatatypes m
     , aliases = moduleAliases m
     , defs = sortByLocation $ map defTransform (definitions m)
-    , errors = []
     }
 
 modulePrettyPrintedDefs :: ModuleTransform

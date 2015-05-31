@@ -39,6 +39,7 @@ elmFile repoInfo' description' filePath' = do
       , compiledCode = Nothing
       , modul = Nothing
       , inRepo = repoInfo'
+      , errors = []
       }
   else
     return Nothing
@@ -57,8 +58,7 @@ edit elmFile' action' = do
       compiledFileOrError <- compile updatedElmFile newRev
       case compiledFileOrError of
         Left err ->
-          let newModule = modul updatedElmFile >>= \m -> Just m { errors = [err] }
-          in return $ Just updatedElmFile { modul = newModule, compiledCode = Nothing }
+          return $ Just updatedElmFile { compiledCode = Nothing, errors = [err] }
         Right compiledElmFile -> do
           amendCommitMessage repo (show (editUpdate Nothing)) -- The current revision is the last working.
           return $ Just compiledElmFile
@@ -125,7 +125,7 @@ getLatest elmFile' = do
         Nothing ->
           return plainTextFile
       where
-        plainTextFile = elmFile' { modul = Nothing }
+        plainTextFile = elmFile' { modul = Nothing, errors = [headErrors] }
 
         recoverLastWorking lastWorkingRev = do
           lastWorkingFileOrErrors <- repoRunAtRevision repo lastWorkingRev (compile elmFile' lastWorkingRev)
@@ -140,8 +140,7 @@ getLatest elmFile' = do
               annotations <- getUpdateAnnotations repo lastWorkingFile lastWorkingRev
               case applyAnnotations lastWorkingFile annotations of
                 Just latestElmFile ->
-                  return latestElmFile
-                    { modul = modul latestElmFile >>= \m -> Just m { errors = [headErrors] } }
+                  return latestElmFile { errors = [headErrors] }
                 Nothing -> do
                   print "Updates applied unsuccessfully (ElmFile:getLatest)"
                   return plainTextFile

@@ -39,5 +39,4 @@ empty =
   , datatypes = []
   , aliases = []
   , defs = []
-  , errors = []
   }
