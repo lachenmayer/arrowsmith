@@ -41,8 +41,19 @@ body
   padding 0 16px
   z-index 100
 
+.module-info-views
+  overflow hidden
+  background $clr-grey-200
+  color $clr-grey-900
+  transition max-height 0.8s
+
+.module-info-views.hidden
+  max-height 0
+
+.module-info-views.visible
+  max-height 9999px
+
 .module-imports, .module-datatypes, .module-aliases
-  background $clr-red-500
   padding 16px
 
 .module-defs
@@ -56,11 +67,22 @@ body
   color white
   font-size 24px
 
-.module-buttons
+.module-actions
+  z-depth-1()
+  overflow auto
+  height 64px
+  line-height 48px
+  padding 16px
+  box-sizing border-box
+  background-color $clr-grey-200
+
+.action-buttons
   float right
-  span
-    width 24px
-    height 24px
+
+.action-button
+  width 24px
+  height 24px
+  margin 8px
 
 .module-result
   border none
@@ -140,18 +162,19 @@ textarea
 .import-name
   z-depth-1()
   padding 10px
-  background-color $clr-grey-200
+  background-color white
   color $clr-grey-900
 
 .import-alias
   z-depth-1()
   padding 10px
   background-color $clr-blue-600
+  color white
 
 .import-exposing
   z-depth-1()
   padding 10px
-  background-color $clr-grey-200
+  background-color white
   color $clr-grey-900
 
 .import-remove-button

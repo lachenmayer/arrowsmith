@@ -1,5 +1,7 @@
 module Arrowsmith.PlainTextView (Action(..), Model, init, update, view) where
 
+import Color
+import FontAwesome
 import Html as H exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
@@ -39,16 +41,20 @@ view address {source} =
   let
     lineCount = List.length (String.lines source)
   in
-    H.div
-      [ A.class "module-editor plaintext-editor" ]
-      [ editable "textarea"
+    div "module-editor plaintext-editor"
+      [ actionsView address
+      , editable "textarea"
         [ A.class "module-code", A.rows lineCount ]
         [ H.text source ]
-      , doneButton address
       ]
 
-doneButton : Address Action -> Html
-doneButton address =
-  H.div
-    [ A.class "done-button", E.onClick address StopEditing ]
-    [ H.text "Done" ]
+actionsView : Address Action -> Html
+actionsView address =
+  let
+    button action icon =
+      H.span [ A.class "action-button", E.onClick address action ] [ icon (Color.rgb 33 33 33) 24 ]
+  in
+    div "module-actions"
+      [ div "action-buttons"
+        [ button StopEditing FontAwesome.check ]
+      ]

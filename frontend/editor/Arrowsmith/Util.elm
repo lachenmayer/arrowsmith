@@ -26,3 +26,7 @@ span class content =
 --lookup : a -> List (a, b) -> b
 lookup x xs =
   snd << Maybe.withDefault ("","") << List.head <| List.filter (fst >> (==) x) xs
+
+toggle : Bool -> Bool
+toggle =
+  xor True

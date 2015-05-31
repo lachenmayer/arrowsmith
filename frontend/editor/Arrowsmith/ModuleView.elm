@@ -38,11 +38,15 @@ type Action
   | ChangeDatatypes DatatypesView.Action
   | ChangeImports ImportsView.Action
 
+  | ExpandInfoViews
+  | ChangeEditorView
+
 type alias Model =
   { modul : Module
   , editing : Maybe VarName
   , valueViews : ValueViews
   , toEvaluate : List (VarName, ModuleName)
+  , infoViewsExpanded : Bool
   , aliasesViewModel : AliasesView.Model
   , datatypesViewModel : DatatypesView.Model
   , importsViewModel : ImportsView.Model
@@ -54,6 +58,7 @@ init initialModule =
   , editing = Nothing
   , valueViews = D.empty
   , toEvaluate = []
+  , infoViewsExpanded = False
   , aliasesViewModel = AliasesView.init initialModule.aliases
   , datatypesViewModel = DatatypesView.init initialModule.datatypes
   , importsViewModel = ImportsView.init initialModule.imports
@@ -65,7 +70,7 @@ actions =
 
 update : Action -> Model -> Model
 update action model =
-  Debug.log "model" <| case action of
+  case action of
     NoOp -> model
 
     Edit name ->
@@ -106,23 +111,52 @@ update action model =
       | importsViewModel <- ImportsView.update action model.importsViewModel
       }
 
+    ExpandInfoViews ->
+      { model
+      | infoViewsExpanded <- toggle model.infoViewsExpanded
+      }
+    ChangeEditorView ->
+      model
+
 model : Module -> Signal Model
 model initialModule =
   S.foldp update (init initialModule) actions.signal
 
 view : Address Action -> Model -> Html
-view address {valueViews, modul, importsViewModel, datatypesViewModel, aliasesViewModel} =
+view address model =
   let
-    {name, types, defs, errors} = modul
+    {name, types, defs, errors} = model.modul
     moduleDefsClass = if errors == [] then "module-defs" else "module-defs module-has-error"
   in
-    H.div [ A.class "module-editor structured-editor" ]
-      [ ImportsView.view (S.forwardTo address ChangeImports) importsViewModel
-      , AliasesView.view (S.forwardTo address ChangeAliases) aliasesViewModel
-      , DatatypesView.view (S.forwardTo address ChangeDatatypes) datatypesViewModel
-      , div moduleDefsClass <| List.map (defView address types valueViews) defs ++ [newDefView address]
+    div "module-editor structured-editor" <|
+      [ actionsView address
+      , infoViews address model
+      , div moduleDefsClass <| List.map (defView address types model.valueViews) defs ++ [newDefView address]
       , div "module-errors" <| List.map errorView errors
       ]
+
+infoViews : Address Action -> Model -> Html
+infoViews address model =
+  div (if model.infoViewsExpanded then "module-info-views visible" else "module-info-views hidden")
+    [ ImportsView.view (S.forwardTo address ChangeImports) model.importsViewModel
+    , AliasesView.view (S.forwardTo address ChangeAliases) model.aliasesViewModel
+    , DatatypesView.view (S.forwardTo address ChangeDatatypes) model.datatypesViewModel
+    ]
+
+actionsView : Address Action -> Html
+actionsView address =
+  let
+    button action icon =
+      H.span [ A.class "action-button", E.onClick address action ] [ icon (Color.rgb 33 33 33) 24 ]
+  in
+    div "module-actions"
+      [ div "action-buttons"
+        [ button ExpandInfoViews FontAwesome.info
+        , button ChangeEditorView FontAwesome.file_text
+        , button EvaluateMain FontAwesome.play
+        ]
+      ]
+
 
 typeView : ElmCode -> Html
 typeView code =

@@ -6,3 +6,4 @@ cabal.sandbox.config
 repos/github
 .cabal-sandbox/
 node_modules/
+tmp/

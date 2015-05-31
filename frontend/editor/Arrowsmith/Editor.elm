@@ -15,7 +15,7 @@ import Signal as S exposing (Signal, (<~))
 import String
 
 import Arrowsmith.Module as Module
-import Arrowsmith.ModuleView as ModuleView
+import Arrowsmith.ModuleView as ModuleView exposing (Action(ChangeEditorView)) -- https://github.com/elm-lang/elm-compiler/issues/951
 import Arrowsmith.PlainTextView as PlainTextView
 import Arrowsmith.Types exposing (..)
 import Arrowsmith.Util exposing (..)
@@ -73,6 +73,12 @@ update action model =
       | lastAction <- NoOp
       }
 
+    ModuleAction ChangeEditorView ->
+      { model
+      | lastAction <- ModuleAction ChangeEditorView
+      , editorView <- PlainText <| PlainTextView.init model.elmFile.source
+      }
+
     PlainTextAction a ->
       { model
       | lastAction <- PlainTextAction a
@@ -88,13 +94,6 @@ update action model =
           PlainText _ -> Debug.crash "Should never receive a structured action when in plain text mode!"
       }
 
-    ToggleEditorView ->
-      { model
-      | lastAction <- ToggleEditorView
-      , editorView <- case model.editorView of
-          Structured m -> PlainText <| PlainTextView.init model.elmFile.source
-          PlainText m -> makeEditorView model.elmFile
-      }
     CompiledElmFile newElmFile ->
       { model
       | lastAction <- CompiledElmFile newElmFile
@@ -193,10 +192,7 @@ moduleView address model =
   in
     div ("module module-" ++ (String.join "-" name))
       [ div "module-header"
-        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ]
-        , H.span [ A.class "module-buttons" ]
-          [ H.span [ A.class "module-text-button", E.onClick address ToggleEditorView ] [ FontAwesome.file_text Color.white 24 ] ]
-        ]
+        [ H.span [ A.class "module-name" ] [ H.text <| Module.nameToString name ] ]
       , editorView address model
       ]
 

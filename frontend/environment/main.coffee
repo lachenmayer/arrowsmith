@@ -13,8 +13,6 @@ initEditor = (elmFile) ->
   attachToEnvironment elmFile.compiledCode
   clear container
 
-  console.log elmFile.modul
-  debugger
   ports =
     initialElmFile: elmFile # : ElmFile
     finishEvaluating: [[], "", [""]] # : (ModuleName, Name, ModuleName)
