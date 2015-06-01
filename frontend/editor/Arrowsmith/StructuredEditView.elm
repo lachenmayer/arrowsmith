@@ -89,7 +89,7 @@ update action model =
 
     Evaluate e view ->
       { model
-      | toEvaluate <- [(e, view)]
+      | toEvaluate <- D.toList <| D.insert e view model.valueViews
       }
     FinishEvaluating (moduleName, name, view) ->
       { model

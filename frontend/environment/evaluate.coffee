@@ -27,7 +27,7 @@ makeView = (resultNode, viewName) ->
 cachedModule = undefined
 
 evaluate = (done) -> ([moduleName, names]) ->
-  console.log "evaluate", names
+  console.log "evaluate.coffee:", names
   if names.length is 0
     console.log "nothing to evaluate"
     return
@@ -39,7 +39,6 @@ evaluate = (done) -> ([moduleName, names]) ->
   modul = get executionFrame.contentWindow.Elm, moduleName
 
   for [name, viewName] in names
-    console.log name, viewName
     resultNode = document.createElement 'div'
     view = makeView resultNode, viewName
 
@@ -52,13 +51,12 @@ evaluate = (done) -> ([moduleName, names]) ->
 
     appendToDefinition name, resultNode
     result = [moduleName, name, viewName]
-    console.log "evaluate: #{result[1]}: #{result[2]}"
     done result
 
 evaluateMain = (moduleName) ->
   executionFrame = document.getElementById 'elm-script'
   unless executionFrame?
-    console.log 'evaluate: execution frame does not exist'
+    console.error 'evaluate.coffee: execution frame does not exist'
     return # TODO error handling...
 
   resultFrame = document.createElement 'iframe'

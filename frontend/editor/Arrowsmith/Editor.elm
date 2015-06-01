@@ -67,7 +67,7 @@ actions =
 
 update : Action -> Model -> Model
 update action model =
-  case Debug.log "Editor" action of
+  case action of
     NoOp ->
       { model
       | lastAction <- NoOp
@@ -98,7 +98,7 @@ update action model =
       { model
       | lastAction <- CompiledElmFile newElmFile
       , elmFile <- newElmFile
-      , editorView <- makeEditorView newElmFile
+      , editorView <- updateEditorView newElmFile model.editorView
       }
 
 model : Signal Model
@@ -211,6 +211,14 @@ makeEditorView elmFile =
   case elmFile.modul of
     Nothing -> PlainText <| PlainTextView.init elmFile.source
     Just modul -> Structured <| StructuredEditView.init modul
+
+updateEditorView : ElmFile -> EditorView -> EditorView
+updateEditorView elmFile editorView =
+  case elmFile.modul of
+    Nothing -> PlainText <| PlainTextView.init elmFile.source
+    Just modul -> case editorView of
+      Structured s -> Structured <| StructuredEditView.update (StructuredEditView.ChangeModule modul) s
+      PlainText _ -> Structured <| StructuredEditView.init modul
 
 isStructuredView : Model -> Bool
 isStructuredView {editorView} =
