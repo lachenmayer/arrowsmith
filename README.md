@@ -6,19 +6,22 @@ Arrowsmith is an augmented editor for the functional reactive programming langua
 
 Arrowsmith loads your Elm project directly from a GitHub repository, and compiles your Elm files for you. It shows you each of the definitions in your Elm file separately. Each definition has a type (either a type you defined yourself, or an inferred type), and a little "play" button. Clicking the "play" button evaluates that definition, displaying it just below the definition. If you change any part of your code, the values will update immediately.
 
-Some values have special representations: values of type `Color` show the color, rather than a textual representations. Signals show you their current value. Other special representations are planned, but currently not implemented.
+Some values have special representations: values of type `Color` show the color, rather than a textual representations. `List`s and `Dict`s display each item individually. Other special representations are planned, but currently not implemented.
 
 ## Installation
 
 Installation is ~~instant~~ ~~easy~~ not impossible.
 
-Since the project has some non-trivial dependencies (GHC 7.8.4, Cabal 1.22, Node.js), you're best off building it with Docker.
+Since the project requires exact versions of GHC (7.8.4) and Cabal (1.22)—don't ask me why, unless you want me to rant at you—you're best off building it with Docker.
 
 I have only tested this on OS X 10.9. Please let me know if this doesn't work in an [issue](https://github.com/lachenmayer/arrowsmith/issues), and I'll see if there's any hope fixing it.
 
 ### 0. Install Docker
 
-**On OS X**: `brew install docker boot2docker`
+**On OS X**:
+
+1. Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+2. `brew install docker boot2docker`
 (Install [Homebrew](http://brew.sh/) first if you don't have it already.)
 
 **On Linux**: Use your favourite package manager to install Docker. If you don't know how to do that, `apt-get install docker` will probably do the trick.
