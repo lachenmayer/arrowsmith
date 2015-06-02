@@ -279,8 +279,14 @@ function trimDeadNodes(node)
 // ie. somewhere, SomeModule.make(elm) should have been called.
 function initGraphics(elm, Module, fieldName, customRenderer)
 {
+  function isElementLike(x) {
+    return !!x.props || !!x.tagName || !!x.element;
+  }
+
   // Enables rendering of any value, not just Element.
   function makeElement(scene) {
+    if (isElementLike(scene)) return scene;
+
     var view;
     if (typeof customRenderer !== 'undefined')
     {
@@ -294,7 +300,7 @@ function initGraphics(elm, Module, fieldName, customRenderer)
     return view(scene);
   }
 
-  // The default behaviour is to render "main".
+  // Render "main" if no custom field was specified.
   if (typeof fieldName == 'undefined')
   {
     fieldName = 'main';
@@ -308,10 +314,8 @@ function initGraphics(elm, Module, fieldName, customRenderer)
   }
   var initialScene = signalGraph.value;
 
-  // The value being rendered is not actually an element - make it one.
-  if (!initialScene.props && !initialScene.tagName && !initialScene.element) {
-    initialScene = makeElement(initialScene);
-  }
+  // The value being rendered might not actually be an element - make it one.
+  initialScene = makeElement(initialScene);
 
   // Figure out what the render functions should be
   var render;

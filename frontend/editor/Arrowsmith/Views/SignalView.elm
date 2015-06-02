@@ -11,7 +11,7 @@ view = Signal.map show
 
 matches : Type -> Bool
 matches tipe =
-  contains (regex "^Signal ") tipe && (not <| contains (regex "(.+?->.+?)*") tipe)
+  contains (regex "^Signal\\.Signal (?!Graphics\\.Element\\.Element)") tipe && (not <| contains (regex "(.+?->.+?)*") tipe)
 
 info : ViewInfo
 info =
