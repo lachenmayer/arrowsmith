@@ -6,7 +6,7 @@ Arrowsmith is an augmented editor for the functional reactive programming langua
 
 Arrowsmith loads your Elm project directly from a GitHub repository, and compiles your Elm files for you. It shows you each of the definitions in your Elm file separately. Each definition has a type (either a type you defined yourself, or an inferred type), and a little "play" button. Clicking the "play" button evaluates that definition, displaying it just below the definition. If you change any part of your code, the values will update immediately.
 
-Some values have special representations: values of type `Color` show the color, rather than a textual representations. Other special representations are planned, but currently not implemented.
+Some values have special representations: values of type `Color` show the color, rather than a textual representations. Signals show you their current value. Other special representations are planned, but currently not implemented.
 
 ## Installation
 

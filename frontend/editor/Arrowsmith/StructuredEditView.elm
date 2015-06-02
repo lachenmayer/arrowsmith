@@ -21,7 +21,7 @@ import Arrowsmith.Util exposing (..)
 
 -- Value views
 import Arrowsmith.Views.ColorView
-import Arrowsmith.Views.SignalView
+import Arrowsmith.Views.ListView
 import Arrowsmith.Views.SimpleView
 
 
@@ -76,7 +76,7 @@ init initialModule =
 specialViews : List ViewInfo
 specialViews =
   [ Arrowsmith.Views.ColorView.info
-  , Arrowsmith.Views.SignalView.info
+  , Arrowsmith.Views.ListView.info
   ]
 
 actions : Mailbox Action
@@ -213,7 +213,8 @@ defHeaderView address inferredTypes valueViews (name, tipe, _) =
 
 valueView : Type -> ModuleName
 valueView tipe =
-  List.filter (\i -> i.matches tipe) specialViews
+  specialViews
+    |> List.filter (\i -> i.matches tipe)
     |> List.head
     |> Maybe.withDefault Arrowsmith.Views.SimpleView.info
     |> .name
