@@ -21,6 +21,7 @@ import Arrowsmith.Util exposing (..)
 
 -- Value views
 import Arrowsmith.Views.ColorView
+import Arrowsmith.Views.DictView
 import Arrowsmith.Views.ListView
 import Arrowsmith.Views.SimpleView
 
@@ -76,6 +77,7 @@ init initialModule =
 specialViews : List ViewInfo
 specialViews =
   [ Arrowsmith.Views.ColorView.info
+  , Arrowsmith.Views.DictView.info
   , Arrowsmith.Views.ListView.info
   ]
 

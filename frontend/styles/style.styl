@@ -207,3 +207,31 @@ textarea
   display inline-block
   padding 10px
   margin 10px
+
+.dict-item
+  z-depth-1()
+  margin 10px
+  display inline-block
+
+.dict-value
+  display inline-block
+  padding 10px 10px 10px 20px // for arrow
+
+.dict-key
+  display inline-block
+  padding 10px
+  position relative
+  background-color $clr-blue-600
+  color white
+  &:after
+    left 100%
+    top 50%
+    border solid transparent
+    content " "
+    height 0
+    width 0
+    position absolute
+    pointer-events none
+    border-left-color $clr-blue-600
+    border-width 10px
+    margin-top -10px
