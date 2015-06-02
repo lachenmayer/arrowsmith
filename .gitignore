@@ -7,3 +7,4 @@ repos/github
 .cabal-sandbox/
 node_modules/
 tmp/
+frontend/bin/
