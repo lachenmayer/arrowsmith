@@ -1,7 +1,8 @@
 {
   "name": "Arrowsmith",
   "version": "0.0.0",
-  "description": "none",
+  "description": "Augmented editor for Elm.",
+  "repository": "https://github.com/lachenmayer/arrowsmith",
   "author": "harry lachenmayer (at gmail dot com)",
   "dependencies": {
     "bluebird": "^2.9.24",
