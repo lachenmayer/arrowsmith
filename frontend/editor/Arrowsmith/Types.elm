@@ -64,3 +64,8 @@ type alias ElmFile =
 type CompileStatus
   = Compiled
   | CompileError ElmError
+
+type alias ViewInfo =
+  { matches : Type -> Bool
+  , name : ModuleName
+  }

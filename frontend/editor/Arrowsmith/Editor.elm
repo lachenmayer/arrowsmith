@@ -20,11 +20,6 @@ import Arrowsmith.PlainTextView as PlainTextView
 import Arrowsmith.Types exposing (..)
 import Arrowsmith.Util exposing (..)
 
--- Value views
--- Not used anywhere here, but called from JS.
-import Arrowsmith.Views.ColorView
-import Arrowsmith.Views.SimpleView
-
 
 --
 -- Model, actions, update, main

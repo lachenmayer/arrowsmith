@@ -368,7 +368,7 @@ function initGraphics(elm, Module, fieldName, customRenderer)
 
   function domUpdate(newScene)
   {
-    scheduledScene = newScene;
+    scheduledScene = makeElement(newScene);
 
     switch (state)
     {

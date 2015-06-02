@@ -19,6 +19,11 @@ import Arrowsmith.Module as Module
 import Arrowsmith.Types exposing (..)
 import Arrowsmith.Util exposing (..)
 
+-- Value views
+import Arrowsmith.Views.ColorView
+import Arrowsmith.Views.SignalView
+import Arrowsmith.Views.SimpleView
+
 
 type Action
   = NoOp
@@ -67,6 +72,12 @@ init initialModule =
   , datatypesViewModel = DatatypesView.init initialModule.datatypes
   , importsViewModel = ImportsView.init initialModule.imports
   }
+
+specialViews : List ViewInfo
+specialViews =
+  [ Arrowsmith.Views.ColorView.info
+  , Arrowsmith.Views.SignalView.info
+  ]
 
 actions : Mailbox Action
 actions =
@@ -202,9 +213,10 @@ defHeaderView address inferredTypes valueViews (name, tipe, _) =
 
 valueView : Type -> ModuleName
 valueView tipe =
-  case tipe of
-    "Color.Color" -> ["Arrowsmith", "Views", "ColorView"]
-    _ -> ["Arrowsmith", "Views", "SimpleView"]
+  List.filter (\i -> i.matches tipe) specialViews
+    |> List.head
+    |> Maybe.withDefault Arrowsmith.Views.SimpleView.info
+    |> .name
 
 codeView : S.Address Action -> Definition -> Html
 codeView address (name, tipe, binding) =
