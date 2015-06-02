@@ -23,6 +23,13 @@ z-depth-4()
 z-depth-5()
   box-shadow 0 27px 24px 0 rgba(0, 0, 0, 0.2), 0 40px 77px 0 rgba(0, 0, 0, 0.22)
 
+fade-in()
+  opacity 0
+  animation fade-in 0.3s linear forwards
+
+@keyframes fade-in
+  to
+    opacity 1
 
 body
   margin 0
@@ -103,6 +110,7 @@ body
 
 .definition
   z-depth-1()
+  fade-in()
   background-color $clr-grey-800
   margin 32px 0
 
@@ -126,6 +134,9 @@ pre
 .definition-code, .module-code
   background-color $clr-grey-800
 
+.module-code
+  fade-in()
+
 textarea
   color $clr-grey-200
   border none
@@ -145,6 +156,7 @@ textarea
   font-size 16px
 
 .definition-value
+  fade-in()
   color $clr-grey-900
   background-color $clr-grey-200
   padding 16px
