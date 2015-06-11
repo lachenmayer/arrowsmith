@@ -229,6 +229,7 @@ codeView address (name, tipe, binding) =
     editable "textarea"
       [ A.class "definition-code"
       , A.rows lineCount
+      , A.spellcheck False
       , E.onFocus address (Edit name)
       , E.onBlur address (StopEditing name)
       ]

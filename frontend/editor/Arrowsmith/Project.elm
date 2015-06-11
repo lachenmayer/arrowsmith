@@ -6,6 +6,7 @@ import Json.Decode as Json
 import Signal as S exposing (Signal, Mailbox, Address, (<~))
 
 import Arrowsmith.Types exposing (..)
+import Arrowsmith.Util exposing (..)
 
 port repo : Repo
 port files : List String
@@ -49,18 +50,20 @@ view address {repo, files, expanded} =
   let
     maybeFileList = if expanded then [ fileList repo files ] else []
   in
-    H.div [] <| [ repoHeader repo ] ++ maybeFileList
+    div "project" <| [ repoHeader repo ] ++ maybeFileList
 
 repoHeader : Repo -> Html
 repoHeader {backend, user, project} =
-  H.div [] [ H.text (backend ++ "/" ++ user ++ "/" ++ project)]
+  div "project-header"
+    [ span "project-header-name" (user ++ "/" ++ project)
+    ]
 
 fileList : Repo -> List String -> Html
 fileList {user, project} files =
   let
     fileUrl file = "/" ++ user ++ "/" ++ project ++ "/" ++ file
   in
-    H.div [] <| List.map (\f -> H.div [] [ H.a [ A.href (fileUrl f) ] [ H.text f ] ]) files
+    div "project-modules" <| List.map (\f -> H.a [ A.href (fileUrl f), A.class "project-module-link" ] [ div "project-module"  [ H.text f ] ]) files
 
 main : Signal Html
 main =

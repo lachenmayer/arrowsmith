@@ -2,7 +2,7 @@ module Arrowsmith.ImportsView (Action, Model, init, update, view) where
 
 import Array exposing (Array)
 import Array.Focus exposing (updateAt)
-import Color
+import Color exposing (Color)
 import FontAwesome
 import Html as H exposing (Html)
 import Html.Attributes as A
@@ -56,8 +56,9 @@ view address {importViews} =
   let
     row (id, model) = H.div [ A.class "import-row" ] [ removeButton address id, importView address (id, model) ]
     rows = List.map row <| Array.toIndexedList importViews
+    add =  H.div [ A.class "import-row" ] [ addButton address ]
   in
-    H.div [ A.class "module-imports" ] <| rows ++ [ addButton address ]
+    H.div [ A.class "module-imports" ] <| rows ++ [ add ]
 
 importView : Address Action -> (Int, ImportView.Model) -> Html
 importView address (id, model) =
@@ -65,11 +66,15 @@ importView address (id, model) =
 
 addButton : Address Action -> Html
 addButton address =
-  H.div [ A.class "import-row", E.onClick address Add ] [ FontAwesome.plus Color.white 16 ]
+  H.div [ A.class "import-add-button", E.onClick address Add ] [ fontAwesomeButton FontAwesome.plus ]
 
 removeButton : Address Action -> Int -> Html
 removeButton address id =
-  H.div [ A.class "import-remove-button", E.onClick address (Remove id) ] [ FontAwesome.times Color.white 16 ]
+  H.div [ A.class "import-remove-button", E.onClick address (Remove id) ] [ fontAwesomeButton FontAwesome.times ]
+
+fontAwesomeButton : (Color -> number -> Html) -> Html
+fontAwesomeButton button =
+  button (Color.rgb 33 33 33) 16
 
 main : Signal Html
 main =

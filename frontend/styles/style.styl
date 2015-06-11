@@ -39,7 +39,8 @@ body
   cursor pointer
   -webkit-font-smoothing antialiased
 
-.module-header
+
+.module-header, .project-header
   z-depth-1()
   overflow auto
   background $clr-red-500
@@ -76,7 +77,7 @@ body
 
 .module-actions
   z-depth-1()
-  overflow auto
+  overflow hidden
   height 64px
   line-height 48px
   padding 16px
@@ -97,8 +98,6 @@ body
   background white
   overflow visible
 
-.compile-button
-  float right
 
 .tag
   display inline-block
@@ -107,6 +106,10 @@ body
   font-size 16px
   padding 0 16px
   vertical-align center
+
+.compile-button
+  float right
+
 
 .definition
   z-depth-1()
@@ -161,15 +164,17 @@ textarea
   background-color $clr-grey-200
   padding 16px
 
+
 .error
   background $clr-red-900
   color white
 
-.import-row
-  padding 16px
 
 .import
   display inline
+
+.import-row
+  padding 16px
 
 .import-name
   z-depth-1()
@@ -190,35 +195,53 @@ textarea
   color $clr-grey-900
 
 .import-remove-button
+  padding 10px
   display inline
 
+.import-add-button
+  padding 10px
+
+
 .datatype
+  z-depth-1()
   div
     padding 5px
   span
     padding 5px
+  border-collapse collapse
+
+.datatype-lhs
+  background-color white
+
+.datatype-constructors
+  background-color $clr-blue-500
+  color white
+
+.datatype-constructor
+  border-bottom 1px solid $clr-blue-600
 
 .alias
   z-depth-1()
+  padding 10px 0
 
 .alias-name, .alias-type
   padding 10px
 
-.datatype-constructor-name
-  font-weight bold
-
 .alias-name
-  background-color $clr-grey-200
+  background-color white
   color $clr-grey-900
 
 .alias-type
-  background-color $clr-blue-600
+  color white
+  background-color $clr-blue-500
+
 
 .list-element
   z-depth-1()
   display inline-block
   padding 10px
   margin 10px
+
 
 .dict-item
   z-depth-1()
@@ -247,3 +270,15 @@ textarea
     border-left-color $clr-blue-600
     border-width 10px
     margin-top -10px
+
+.project-module
+  padding 16px
+  background-color $clr-grey-200
+  border-bottom 1px solid darken($clr-grey-200, 3)
+
+.project-module-link
+  color $clr-grey-900
+  text-decoration none
+.project-module-link:visited
+    color $clr-grey-900
+    text-decoration none
