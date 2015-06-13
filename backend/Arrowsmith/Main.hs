@@ -15,7 +15,7 @@ import Text.Blaze.Html.Renderer.Text (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
-import Arrowsmith.Editor as Editor
+import Arrowsmith.Api as Api
 import Arrowsmith.Types
 
 
@@ -45,7 +45,7 @@ appInit :: SnapletInit App App
 appInit = makeSnaplet "arrowsmith" "Arrowsmith" Nothing $ do
   addRoutes [indexRoute]
   addRoutes staticRoutes
-  addRoutes Editor.routes
+  addRoutes Api.routes
 
   projects' <- liftIO $ newIORef HashMap.empty
   return $ App projects'

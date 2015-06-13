@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module Arrowsmith.Editor (routes) where
+module Arrowsmith.Api (routes) where
 
 import Control.Monad.IO.Class
 import Control.Monad.State.Class
