@@ -18,12 +18,9 @@ itemView (key, value) =
     , div "dict-value" [ H.fromElement (show value) ]
     ]
 
-view : Dict comparable a -> Html
-view xs =
-  xs
-    |> Dict.toList
-    |> List.map itemView
-    |> div "value-dict"
+view : Signal (Dict comparable a) -> Signal Html
+view =
+  Signal.map <| div "value-dict" << List.map itemView << Dict.toList
 
 matches : Type -> Bool
 matches tipe =

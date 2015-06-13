@@ -19,11 +19,11 @@ initEditor = (elmFile) ->
     compiledElmFiles: elmFile # : Signal ElmFile
   editor = Elm.embed Elm.Arrowsmith.Editor, container, ports
 
-  {editDefinition, editText} = require('./edit.coffee')
+  {editDefinition, editText} = require './edit.coffee'
   editor.ports.editDefinition.subscribe editDefinition editor.ports.compiledElmFiles.send
   editor.ports.editText.subscribe editText editor.ports.compiledElmFiles.send
 
-  {evaluate, evaluateMain} = require('./evaluate.coffee')
+  {evaluate, evaluateMain} = require './evaluate.coffee'
   editor.ports.evaluate.subscribe evaluate editor.ports.finishEvaluating.send
   editor.ports.evaluateMain.subscribe evaluateMain
 

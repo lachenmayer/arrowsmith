@@ -11,10 +11,11 @@ import Arrowsmith.Types exposing (Type, ViewInfo)
 import Arrowsmith.Util exposing (..)
 
 
-view : List a -> Html
-view xs =
-  div "value-list" <|
-    List.map (show >> \e -> div "list-element" [ H.fromElement e ]) xs
+view : Signal (List a) -> Signal Html
+view =
+  Signal.map <| \xs ->
+    div "value-list" <|
+      List.map (show >> \e -> div "list-element" [ H.fromElement e ]) xs
 
 matches : Type -> Bool
 matches tipe =

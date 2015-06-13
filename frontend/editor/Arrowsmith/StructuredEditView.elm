@@ -22,6 +22,8 @@ import Arrowsmith.Util exposing (..)
 -- Value views
 import Arrowsmith.Views.ColorView
 import Arrowsmith.Views.DictView
+import Arrowsmith.Views.FormView
+import Arrowsmith.Views.GraphView
 import Arrowsmith.Views.ListView
 import Arrowsmith.Views.SimpleView
 
@@ -74,10 +76,12 @@ init initialModule =
   , importsViewModel = ImportsView.init initialModule.imports
   }
 
-specialViews : List ViewInfo
-specialViews =
+valueViews : List ViewInfo
+valueViews =
   [ Arrowsmith.Views.ColorView.info
   , Arrowsmith.Views.DictView.info
+  , Arrowsmith.Views.FormView.info
+  , Arrowsmith.Views.GraphView.info
   , Arrowsmith.Views.ListView.info
   ]
 
@@ -215,7 +219,7 @@ defHeaderView address inferredTypes valueViews (name, tipe, _) =
 
 valueView : Type -> ModuleName
 valueView tipe =
-  specialViews
+  valueViews
     |> List.filter (\i -> i.matches tipe)
     |> List.head
     |> Maybe.withDefault Arrowsmith.Views.SimpleView.info

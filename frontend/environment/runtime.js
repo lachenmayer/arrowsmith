@@ -284,8 +284,8 @@ function initGraphics(elm, Module, fieldName, customRenderer)
   }
 
   // Enables rendering of any value, not just Element.
-  function makeElement(scene) {
-    if (isElementLike(scene)) return scene;
+  function makeElement(signalGraph) {
+    if (isElementLike(signalGraph.value)) return signalGraph;
 
     var view;
     if (typeof customRenderer !== 'undefined')
@@ -297,7 +297,7 @@ function initGraphics(elm, Module, fieldName, customRenderer)
       var Element = Elm.Graphics.Element.make(elm);
       view = Element.show;
     }
-    return view(scene);
+    return view(signalGraph);
   }
 
   // Render "main" if no custom field was specified.
@@ -312,10 +312,10 @@ function initGraphics(elm, Module, fieldName, customRenderer)
   {
     signalGraph = Elm.Signal.make(elm).constant(signalGraph);
   }
-  var initialScene = signalGraph.value;
-
   // The value being rendered might not actually be an element - make it one.
-  initialScene = makeElement(initialScene);
+  signalGraph = makeElement(signalGraph);
+
+  var initialScene = signalGraph.value;
 
   // Figure out what the render functions should be
   var render;
@@ -372,7 +372,7 @@ function initGraphics(elm, Module, fieldName, customRenderer)
 
   function domUpdate(newScene)
   {
-    scheduledScene = makeElement(newScene);
+    scheduledScene = newScene;
 
     switch (state)
     {

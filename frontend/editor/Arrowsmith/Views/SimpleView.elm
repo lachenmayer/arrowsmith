@@ -5,9 +5,9 @@ import Graphics.Element exposing (..)
 import Arrowsmith.Types exposing (ViewInfo)
 
 
-view : a -> Element
+view : Signal a -> Signal Element
 view =
-  show
+  Signal.map show
 
 info : ViewInfo
 info =
