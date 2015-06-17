@@ -4,12 +4,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Arrowsmith.Types where
 
-import Control.Lens.TH
 import Data.Aeson.TH
 import qualified Data.ByteString as BS
 import Data.Hashable
 import Data.HashMap.Strict
-import Data.IORef
 import qualified Data.FileStore
 import Data.List (intercalate)
 import Data.List.Split (splitOn)
@@ -131,9 +129,9 @@ $(deriveJSON defaultOptions { sumEncoding = TwoElemArray } ''EditResponse)
 type ProjectsMap = HashMap RepoInfo Project
 
 data App = App
-  { _projects :: IORef ProjectsMap
-  }
-makeLenses ''App
+--   { _projects :: IORef ProjectsMap
+--   }
+-- makeLenses ''App
 
 type AppHandler = Handler App App
 type Route = (BS.ByteString, AppHandler ())

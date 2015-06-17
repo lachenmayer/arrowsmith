@@ -2,9 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
-import Control.Monad.IO.Class (liftIO)
-import qualified Data.HashMap.Strict as HashMap
-import Data.IORef (newIORef)
 import Data.Text.Lazy (toStrict)
 import Snap.Core (writeText)
 import Snap.Http.Server
@@ -47,8 +44,7 @@ appInit = makeSnaplet "arrowsmith" "Arrowsmith" Nothing $ do
   addRoutes staticRoutes
   addRoutes Api.routes
 
-  projects' <- liftIO $ newIORef HashMap.empty
-  return $ App projects'
+  return App
 
 main :: IO ()
 main =

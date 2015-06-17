@@ -4,7 +4,6 @@
 module Arrowsmith.Api (routes) where
 
 import Control.Monad.IO.Class
-import Control.Monad.State.Class
 import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.UTF8 as UTF8BS
@@ -39,8 +38,7 @@ getReqModuleName = do
 getReqProject :: AppHandler (Either String Project)
 getReqProject = do
   repoInfo' <- getReqRepoInfo
-  projectsRef <- gets _projects
-  liftIO $ getProject projectsRef repoInfo'
+  liftIO $ getProject repoInfo'
 
 readElmFile :: AppHandler (Either String ElmFile)
 readElmFile = do
@@ -70,13 +68,12 @@ moduleHandler = do
 editHandler :: AppHandler ()
 editHandler = do
   repoInfo' <- getReqRepoInfo
-  projectsRef <- gets _projects
   moduleName <- getReqModuleName
   action' <- getJSON
   case action' of
     Left err -> badRequest err
     Right action'' -> do
-      editResponse <- liftIO $ updateElmFile projectsRef repoInfo' moduleName (performEdit action'')
+      editResponse <- liftIO $ updateElmFile repoInfo' moduleName (performEdit action'')
       writeJSON editResponse
 
 performEdit :: EditAction -> Maybe ElmFile -> IO EditResponse
