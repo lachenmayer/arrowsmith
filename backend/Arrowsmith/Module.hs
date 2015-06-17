@@ -46,7 +46,7 @@ moduleSourceDefs source' =
 
 sortByLocation :: [LocatedDefinition] -> [LocatedDefinition]
 sortByLocation =
-  sortBy (compare `on` (\x -> let (_, _, _, (startLine, _), _) = x in startLine))
+  sortBy (compare `on` (\(_, _, _, (startLine, _), _) -> startLine))
 
 fromAstFile :: LazyBS.ByteString -> Maybe AST.Module.CanonicalModule
 fromAstFile astFile =
