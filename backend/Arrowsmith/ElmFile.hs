@@ -44,24 +44,19 @@ elmFile repoInfo' description' filePath' = do
   else
     return Nothing
 
-edit :: ElmFile -> EditAction -> IO (Maybe ElmFile)
+edit :: ElmFile -> EditAction -> IO Bool
 edit elmFile' action' = do
   let filePath' = filePath elmFile'
   Right repo <- getRepo (inRepo elmFile')
-  latestRev <- latest repo filePath'
+  previousRevision <- latest repo filePath'
+  previousEditUpdate <- getEditUpdate repo previousRevision
   case performEditAction action' elmFile' of
-    Nothing -> return Nothing
+    Nothing -> return False
     Just updatedElmFile -> do
-      let editUpdate rev = (fileName elmFile', rev, action') :: EditUpdate
-      save repo filePath' (show (editUpdate (Just latestRev))) (source updatedElmFile)
-      newRev <- latest repo filePath'
-      compiledFileOrError <- compile updatedElmFile newRev
-      case compiledFileOrError of
-        Left err ->
-          return $ Just updatedElmFile { compiledCode = Nothing, errors = [err] }
-        Right compiledElmFile -> do
-          amendCommitMessage repo (show (editUpdate Nothing)) -- The current revision is the last working.
-          return $ Just compiledElmFile
+      save repo filePath' "editing..." (source updatedElmFile)
+      editUpdate <- makeEditUpdate updatedElmFile action' previousRevision previousEditUpdate
+      amendCommitMessage repo (show editUpdate)
+      return True
 
 compile :: ElmFile -> FilePath -> IO (Either String ElmFile)
 compile elmFile' outPath = do
@@ -90,6 +85,7 @@ compile elmFile' outPath = do
               newFile = elmFile' { compiledCode = Just compiledCode'
                                  , source = source'
                                  , modul = modul'
+                                 , errors = []
                                  }
           return $ Right newFile
         Left err ->
@@ -109,13 +105,13 @@ getLatest elmFile' = do
     -- The file at HEAD does not compile, look at the last change made to the file.
     Left headErrors -> do
       latestRev <- latest repo (filePath elmFile')
-      message <- commitMessage repo latestRev
-      case readMaybe message :: Maybe EditUpdate of
+      editUpdate <- getEditUpdate repo latestRev
+      case editUpdate of
         -- The file has a valid Arrowsmith annotation.
         Just (updatedFile, lastWorking, _action) -> do
           if updatedFile /= fileName elmFile' then do
             print $ "update annotation in commit:\n"
-              ++ message
+              ++ latestRev
               ++ "\ndoes not refer to expected file:\n"
               ++ show elmFile'
             return plainTextFile
@@ -124,18 +120,18 @@ getLatest elmFile' = do
         -- The file doesn't have a valid annotation.
         Nothing ->
           return plainTextFile
-      where
-        plainTextFile = elmFile' { modul = Nothing }
 
+      where
+        plainTextFile = elmFile' { modul = Nothing, errors = [headErrors] }
+
+        recoverLastWorking :: RevisionId -> IO ElmFile
         recoverLastWorking lastWorkingRev = do
           lastWorkingFileOrErrors <- repoRunAtRevision repo lastWorkingRev (compile elmFile' lastWorkingRev)
           case lastWorkingFileOrErrors of
-            Left lastWorkingErrors -> do
-              print $ "Last working revision "
-                ++ lastWorkingRev
-                ++ " doesn't actually compile: "
-                ++ lastWorkingErrors
+            -- There's nothing else we can do: the "last working" revision doesn't compile.
+            Left _lastWorkingErrors -> do
               return plainTextFile
+            -- We managed to compile at that revision. Let's update it to the latest state.
             Right lastWorkingFile -> do
               annotations <- getUpdateAnnotations repo lastWorkingFile lastWorkingRev
               case applyAnnotations lastWorkingFile annotations of
@@ -144,6 +140,26 @@ getLatest elmFile' = do
                 Nothing -> do
                   print "Updates applied unsuccessfully (ElmFile:getLatest)"
                   return plainTextFile
+
+getEditUpdate :: Repo -> RevisionId -> IO (Maybe EditUpdate)
+getEditUpdate repo revision = do
+  message <- commitMessage repo revision
+  return $ readMaybe message
+
+makeEditUpdate :: ElmFile -> EditAction -> RevisionId -> Maybe EditUpdate -> IO EditUpdate
+makeEditUpdate elmFile' action previousRevision previousEditUpdate = do
+  Right repo <- getRepo (inRepo elmFile')
+  latestRevision <- latest repo (filePath elmFile')
+  latestFileOrError <- compile elmFile' latestRevision
+  let editUpdate rev = (fileName elmFile', rev, action)
+  return . editUpdate $ case latestFileOrError of
+    Right _compiledFile -> Nothing
+    Left _error -> case previousEditUpdate of
+      Nothing -> Nothing
+      -- Previous edit update compiles / "don't know"
+      Just (_, Nothing, _) -> Just previousRevision
+      -- Previous edit update definitely doesn't compile
+      Just (_, Just lastWorking, _) -> Just lastWorking
 
 fullPath :: ElmFile -> FilePath
 fullPath elmFile' =

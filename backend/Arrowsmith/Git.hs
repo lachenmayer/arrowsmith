@@ -44,7 +44,7 @@ gitClone repoInfo'
 
 amendCommitMessage :: FilePath -> String -> IO ExitCode
 amendCommitMessage repo message = do
-  (status, _err, _out) <- runGitCommand repo "commit" ["--amend", "-o", "-m", show message]
+  (status, _err, _out) <- runGitCommand repo "commit" ["--amend", "-o", "-m", message]
   return status
 
 -- TODO very optimistic.

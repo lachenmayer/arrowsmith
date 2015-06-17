@@ -81,12 +81,13 @@ performEdit action' maybeElmFile = do
   case maybeElmFile of
     Nothing -> return $ EditFailure "Elm file not found."
     Just elmFile' -> do
-      latestFile <- liftIO $ getLatest elmFile'
-      editResult <- liftIO $ edit latestFile action'
-      case editResult of
-        Just editedFile -> do
-          return $ EditSuccess (toCompileResponse (Right editedFile)) -- TODO
-        Nothing -> return $ EditFailure "Probably couldn't compile the file."
+      previousFile <- liftIO $ getLatest elmFile'
+      editSuccess <- liftIO $ edit previousFile action'
+      if editSuccess then do
+        newFile <- liftIO $ getLatest previousFile
+        return $ EditSuccess (toCompileResponse (Right newFile))
+      else
+        return $ EditFailure "Probably couldn't compile the file."
 
 urlFragment :: MonadSnap m => BS.ByteString -> m String
 urlFragment paramName = do
