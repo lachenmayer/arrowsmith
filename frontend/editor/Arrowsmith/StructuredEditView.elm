@@ -71,6 +71,7 @@ type alias DefinitionViewModel =
   , inferredType : Type
   , valueView : ModuleName
   , hasValue : Bool
+  , isEditing : Bool
   , isCollapsed : Bool
   }
 
@@ -213,9 +214,9 @@ typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
 definitionsView : Address Action -> Model -> Html
-definitionsView address {modul, valueViews, collapsedDefinitions} =
+definitionsView address {modul, valueViews, collapsedDefinitions, editing} =
   let
-    {name, types, defs} = modul
+    {types, defs} = modul
     defViewModel (name, tipe, binding) =
       let
         inferredType = lookup name types
@@ -224,6 +225,7 @@ definitionsView address {modul, valueViews, collapsedDefinitions} =
         , inferredType = inferredType
         , valueView = valueView inferredType
         , hasValue = D.member name valueViews
+        , isEditing = editing == Just name
         , isCollapsed = D.member name collapsedDefinitions
         }
   in
@@ -236,9 +238,10 @@ defView address definition =
     (name, _, _) = definition.def
     class = "definition defname-" ++ name ++ if definition.isCollapsed then " collapsed" else " expanded"
     code = if definition.isCollapsed then [] else [ codeView address definition.def ]
+    doneButton = if definition.isEditing then [ div "definition-done-button" [ FontAwesome.check Color.white 24 ] ] else []
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address definition ] ++ code
+      [ defHeaderView address definition ] ++ code ++ doneButton
 
 defHeaderView : S.Address Action -> DefinitionViewModel -> Html
 defHeaderView address {def, inferredType, valueView, hasValue, isCollapsed} =
