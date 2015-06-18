@@ -63,6 +63,13 @@ type alias Model =
   , importsViewModel : ImportsView.Model
   }
 
+type alias DefinitionViewModel =
+  { def : Definition
+  , inferredType : Type
+  , valueView : ModuleName
+  , hasValue : Bool
+  }
+
 init : Module -> Model
 init initialModule =
   { modul = initialModule
@@ -104,13 +111,17 @@ update action model =
       , toEvaluate <- D.toList model.valueViews
       }
 
-    Evaluate e view ->
-      { model
-      | toEvaluate <- D.toList <| D.insert e view model.valueViews
-      }
+    Evaluate name view ->
+      let
+        newValueViews = D.insert name view model.valueViews
+      in
+        { model
+        | toEvaluate <- D.toList newValueViews
+        , valueViews <- newValueViews
+        }
     FinishEvaluating (moduleName, name, view) ->
       { model
-      | valueViews <- D.insert name view model.valueViews
+      | toEvaluate <- []
       }
 
     EvaluateMain ->
@@ -187,33 +198,41 @@ definitionsView : Address Action -> Module -> ValueViews -> Html
 definitionsView address modul valueViews =
   let
     {name, types, defs} = modul
+    defViewModel (name, tipe, binding) =
+      let
+        inferredType = lookup name types
+      in
+        { def = (name, tipe, binding)
+        , inferredType = inferredType
+        , valueView = valueView inferredType
+        , hasValue = D.member name valueViews
+        }
   in
-    div "module-defs" <| List.map (defView address types valueViews) defs ++ [newDefView address]
+    div "module-defs" <|
+      List.map (defView address << defViewModel) defs ++ [newDefView address]
 
-defView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
-defView address inferredTypes valueViews definition =
+defView : S.Address Action -> DefinitionViewModel -> Html
+defView address definition =
   let
-    (name, tipe, binding) = definition
+    (name, _, _) = definition.def
     class = "definition defname-" ++ name
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address inferredTypes valueViews definition
-      , codeView address definition
+      [ defHeaderView address definition
+      , codeView address definition.def
       ]
 
-defHeaderView : S.Address Action -> List (VarName, Type) -> ValueViews -> Definition -> Html
-defHeaderView address inferredTypes valueViews (name, tipe, _) =
+defHeaderView : S.Address Action -> DefinitionViewModel -> Html
+defHeaderView address {def, inferredType, valueView} =
   let
+    (name, tipe, _) = def
     nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name (valueView actualType)) ] [ FontAwesome.play Color.white 16 ]
-    actualType = case tipe of
-      Just t -> t
-      Nothing -> lookup name inferredTypes
+    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name valueView) ] [ FontAwesome.play Color.white 16 ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]
       Nothing ->
-        [ nameTag, tag "definition-type-inferred" [] [ H.text <| lookup name inferredTypes ], evalTag ]
+        [ nameTag, tag "definition-type-inferred" [] [ H.text inferredType ], evalTag ]
   in
     div "definition-header" header
 
