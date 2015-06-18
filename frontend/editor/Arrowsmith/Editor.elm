@@ -165,9 +165,17 @@ port evaluate =
       <| S.map (\{lastAction, elmFile, editorView} -> (lastAction, (elmFile.fileName, toEvaluate editorView)))
       <| S.filter isStructuredView (init initialElmFile) model
 
-port evaluateMain : Signal (ModuleName)
+port stopEvaluating : Signal VarName
+port stopEvaluating =
+  model
+    |> S.map .lastAction
+    |> S.filter (\action -> case action of {ModuleAction (StructuredEditView.StopEvaluating _) -> True; _ -> False}) NoOp
+    |> S.map (\action -> case action of {ModuleAction (StructuredEditView.StopEvaluating name) -> name; _ -> ""})
+
+port evaluateMain : Signal ModuleName
 port evaluateMain =
   S.map snd <| S.filter (fst >> (==) (ModuleAction StructuredEditView.EvaluateMain)) (NoOp, []) <| S.map (\{lastAction, elmFile} -> (lastAction, elmFile.fileName)) model
+
 
 port initialElmFile : ElmFile
 

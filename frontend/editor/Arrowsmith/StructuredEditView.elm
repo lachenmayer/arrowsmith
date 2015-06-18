@@ -8,6 +8,7 @@ import FontAwesome
 import Html as H exposing (Html)
 import Html.Attributes as A
 import Html.Events as E
+import Set exposing (Set)
 import Signal as S exposing (Signal, Mailbox, Address, (<~))
 import String
 
@@ -36,12 +37,13 @@ type Action
 
   | Evaluate VarName ModuleName {- view module name -}
   | FinishEvaluating (ModuleName, VarName, ModuleName)
+  | StopEvaluating VarName
 
   | EvaluateMain
   | StopPlaying
 
-  | NewDefinition
-  | RemoveDefinition VarName
+  | CollapseDefinition VarName
+  | ExpandDefinition VarName
 
   | ChangeModule Module
   | ChangeAliases AliasesView.Action
@@ -57,6 +59,7 @@ type alias Model =
   , playing : Bool
   , valueViews : ValueViews
   , toEvaluate : List (VarName, ModuleName)
+  , collapsedDefinitions : Set VarName
   , infoViewsExpanded : Bool
   , aliasesViewModel : AliasesView.Model
   , datatypesViewModel : DatatypesView.Model
@@ -68,6 +71,7 @@ type alias DefinitionViewModel =
   , inferredType : Type
   , valueView : ModuleName
   , hasValue : Bool
+  , isCollapsed : Bool
   }
 
 init : Module -> Model
@@ -77,6 +81,7 @@ init initialModule =
   , playing = False
   , valueViews = D.empty
   , toEvaluate = []
+  , collapsedDefinitions = Set.empty
   , infoViewsExpanded = False
   , aliasesViewModel = AliasesView.init initialModule.aliases
   , datatypesViewModel = DatatypesView.init initialModule.datatypes
@@ -123,6 +128,10 @@ update action model =
       { model
       | toEvaluate <- []
       }
+    StopEvaluating name ->
+      { model
+      | valueViews <- D.remove name model.valueViews
+      }
 
     EvaluateMain ->
       { model
@@ -131,6 +140,15 @@ update action model =
     StopPlaying ->
       { model
       | playing <- False
+      }
+
+    CollapseDefinition varName ->
+      { model
+      | collapsedDefinitions <- Set.insert varName model.collapsedDefinitions
+      }
+    ExpandDefinition varName ->
+      { model
+      | collapsedDefinitions <- Set.remove varName model.collapsedDefinitions
       }
 
     ChangeModule modul ->
@@ -166,7 +184,7 @@ view address model =
   div "module-editor structured-editor" <|
     [ actionsView address model.playing
     , infoViews address model
-    ] ++ if model.playing then [] else [ definitionsView address model.modul model.valueViews ]
+    ] ++ if model.playing then [] else [ definitionsView address model ]
 
 actionsView : Address Action -> Bool -> Html
 actionsView address playing =
@@ -194,8 +212,8 @@ typeView : ElmCode -> Html
 typeView code =
   div "datatype" [ H.code [] [ H.text code ] ]
 
-definitionsView : Address Action -> Module -> ValueViews -> Html
-definitionsView address modul valueViews =
+definitionsView : Address Action -> Model -> Html
+definitionsView address {modul, valueViews, collapsedDefinitions} =
   let
     {name, types, defs} = modul
     defViewModel (name, tipe, binding) =
@@ -206,6 +224,7 @@ definitionsView address modul valueViews =
         , inferredType = inferredType
         , valueView = valueView inferredType
         , hasValue = D.member name valueViews
+        , isCollapsed = D.member name collapsedDefinitions
         }
   in
     div "module-defs" <|
@@ -215,19 +234,22 @@ defView : S.Address Action -> DefinitionViewModel -> Html
 defView address definition =
   let
     (name, _, _) = definition.def
-    class = "definition defname-" ++ name
+    class = "definition defname-" ++ name ++ if definition.isCollapsed then " collapsed" else " expanded"
+    code = if definition.isCollapsed then [] else [ codeView address definition.def ]
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address definition
-      , codeView address definition.def
-      ]
+      [ defHeaderView address definition ] ++ code
 
 defHeaderView : S.Address Action -> DefinitionViewModel -> Html
-defHeaderView address {def, inferredType, valueView} =
+defHeaderView address {def, inferredType, valueView, hasValue, isCollapsed} =
   let
     (name, tipe, _) = def
-    nameTag = tag "definition-name" [] [ H.text name ]
-    evalTag = tag "definition-evaluate" [ E.onClick address (Evaluate name valueView) ] [ FontAwesome.play Color.white 16 ]
+    collapseAction = if isCollapsed then ExpandDefinition name else CollapseDefinition name
+    nameTag = tag "definition-name" [ E.onClick address collapseAction ] [ H.text name ]
+    evalTag = if hasValue then
+      tag "definition-evaluate" [ E.onClick address (StopEvaluating name) ] [ FontAwesome.pause Color.white 16 ]
+    else
+      tag "definition-evaluate" [ E.onClick address (Evaluate name valueView) ] [ FontAwesome.play Color.white 16 ]
     header = case tipe of
       Just t ->
         [ nameTag, tag "definition-type" [] [ H.text t ], evalTag ]

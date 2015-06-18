@@ -23,9 +23,10 @@ initEditor = (elmFile) ->
   editor.ports.editDefinition.subscribe editDefinition editor.ports.compiledElmFiles.send
   editor.ports.editText.subscribe editText editor.ports.compiledElmFiles.send
 
-  {evaluate, evaluateMain} = require './evaluate.coffee'
+  {evaluate, evaluateMain, stopEvaluating} = require './evaluate.coffee'
   editor.ports.evaluate.subscribe evaluate editor.ports.finishEvaluating.send
   editor.ports.evaluateMain.subscribe evaluateMain
+  editor.ports.stopEvaluating.subscribe stopEvaluating
 
 initProject = ({elmFiles, projectRepo}) ->
   clear container

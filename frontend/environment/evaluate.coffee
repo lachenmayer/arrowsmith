@@ -78,5 +78,9 @@ evaluateMain = (moduleName) ->
 
   console.log "evaluateMain done"
 
+stopEvaluating = (varName) ->
+  def = document.querySelector ".defname-#{varName}"
+  def.querySelector('.definition-value').remove()
+
 module.exports =
-  {evaluate, evaluateMain}
+  {evaluate, evaluateMain, stopEvaluating}

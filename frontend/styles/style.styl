@@ -26,12 +26,12 @@ z-depth-5()
 fade-in()
   opacity 0
   animation fade-in 0.3s linear forwards
-
 @keyframes fade-in
   to
     opacity 1
 
 body
+  user-select none
   margin 0
   background black
   color white
@@ -98,7 +98,6 @@ body
   background white
   overflow visible
 
-
 .tag
   display inline-block
   height 40px
@@ -112,10 +111,17 @@ body
 
 
 .definition
-  z-depth-1()
-  fade-in()
-  background-color $clr-grey-800
   margin 32px 0
+
+.definition.expanded
+  z-depth-1()
+  background-color $clr-grey-800
+
+.definition.collapsed
+  background-color $clr-grey-900
+  .definition-header
+    display inline-block
+    background-color $clr-grey-800
 
 .definition-name
   color $clr-grey-900
@@ -163,7 +169,6 @@ textarea
   color $clr-grey-900
   background-color $clr-grey-200
   padding 16px
-
 
 .error
   background $clr-red-900

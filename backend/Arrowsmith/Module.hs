@@ -155,11 +155,13 @@ breakSource source' (startLine, startCol) (endLine, endCol) =
     (lastDefLine, lastLineAfter) = splitAt endCol (last defLines)
 
 endLocation :: Location -> String -> Location
-endLocation (startRow, _) def =
-  (startRow + length defLines - 1, length lastLine)
-  where
-    defLines = lines def
-    lastLine = last defLines
+endLocation (startRow, startColumn) definition =
+  case definition of
+    "" -> (startRow, startColumn)
+    def -> (startRow + length defLines - 1, length lastLine)
+      where
+        defLines = lines def
+        lastLine = last defLines
 
 moduleTypes :: AST.Module.CanonicalModule -> [(VarName, Type)]
 moduleTypes modoole =
