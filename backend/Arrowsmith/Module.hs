@@ -143,7 +143,9 @@ sourceRegion source' (startLine, startColumn) (endLine, endColumn) =
 -- (before, definition (bounded by locations), after)
 breakSource :: String -> Location -> Location -> (String, String, String)
 breakSource source' (startLine, startCol) (endLine, endCol) =
-  (unlines linesBefore ++ firstLineBefore, (unlines . init) defLines ++ lastDefLine, lastLineAfter ++ unlines linesAfter)
+  ( unlines linesBefore ++ firstLineBefore
+  , (unlines . init) defLines ++ lastDefLine
+  , unlines (lastLineAfter : linesAfter))
   where
     idx x = max 0 (x - 1)
     sourceLines = lines source'

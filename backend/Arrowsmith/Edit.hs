@@ -29,10 +29,10 @@ changeDefinition varName elmCode elmFile' = do
   def <- definitionWithName defs' varName
   let (_, _, _, defStart, defEnd) = def
       (before, _, after) = breakSource (source elmFile') defStart defEnd
-      defSource = prettyPrintLocated newDef
-      newDef = (varName, Nothing, elmCode, defStart, endLocation defStart defSource)
+      newDefSource = prettyPrintLocated newDef
+      newDef = (varName, Nothing, elmCode, defStart, endLocation defStart newDefSource)
   return elmFile'
-    { source = before ++ defSource ++ after
+    { source = before ++ newDefSource ++ after
     , modul = Just modul' { defs = update def newDef defs' }
     }
 
