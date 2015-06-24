@@ -97,6 +97,8 @@ body
   width 100%
   background white
   overflow visible
+  min-height 100%
+  position absolute
 
 .tag
   display inline-block
@@ -104,7 +106,6 @@ body
   line-height 40px
   font-size 16px
   padding 0 16px
-  vertical-align center
 
 .compile-button
   float right
@@ -128,14 +129,17 @@ body
   background-color $clr-grey-200
 
 .definition-type
-  background-color $clr-blue-600
+  background-color $clr-grey-600
 
 .definition-type-inferred
-  background-color $clr-grey-600
+  background-color $clr-blue-600
 
 .definition-code, pre, .module-code
   font-family Inconsolata, monospace
   padding 16px
+
+.module-code
+  min-height 300px
 
 pre
   margin 0

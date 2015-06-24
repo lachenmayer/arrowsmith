@@ -241,7 +241,7 @@ defView address definition =
     doneButton = if definition.isEditing then [ div "definition-done-button" [ FontAwesome.check Color.white 24 ] ] else []
   in
     H.div [ A.class class ] <|
-      [ defHeaderView address definition ] ++ code ++ doneButton
+      [ defHeaderView address definition ] ++ code -- ++ doneButton
 
 defHeaderView : S.Address Action -> DefinitionViewModel -> Html
 defHeaderView address {def, inferredType, valueView, hasValue, isCollapsed} =

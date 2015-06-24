@@ -58,4 +58,5 @@ ready ->
   document.body.appendChild container
   page '/:user/:project', ({params}) -> projectRoute params
   page '/:user/:project/:module', ({params}) -> moduleRoute params
+  page '/', '/lachenmayer/arrowsmith-demo'
   page()

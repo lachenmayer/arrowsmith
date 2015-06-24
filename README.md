@@ -60,11 +60,11 @@ If it does, bingo! Nearly ready to go.
 
 **On OS X**: The IP address `0.0.0.0` inside the Docker VM does not correspond to `0.0.0.0` on your machine, so you'll have to find out the fake IP that boot2docker creates, using `boot2docker ip`.
 
-Or just copy & paste the following into your terminal, which will open up the "Clock" module from the [sample repo](https://github.com/lachenmayer/secret-sauce).
+Or just copy & paste the following into your terminal, which will open up the "Clock" module from the [sample repo](https://github.com/lachenmayer/arrowsmith-example).
 
-    open http://$(boot2docker ip):8000/lachenmayer/secret-sauce/Clock
+    open http://$(boot2docker ip):8000/lachenmayer/arrowsmith-example/Clock
 
-**On Linux**: You should be able just to use your localhost IP address. If you're lazy, just click this. [http://0.0.0.0:8000/lachenmayer/secret-sauce/Clock](http://0.0.0.0:8000/lachenmayer/secret-sauce/Clock)
+**On Linux**: You should be able just to use your localhost IP address. If you're lazy, just click this. [http://0.0.0.0:8000/lachenmayer/arrowsmith-example/Clock](http://0.0.0.0:8000/lachenmayer/arrowsmith-example/Clock)
 
 ### 4. PROFIT! (kinda)
 

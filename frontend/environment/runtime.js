@@ -280,7 +280,7 @@ function trimDeadNodes(node)
 function initGraphics(elm, Module, fieldName, customRenderer)
 {
   function isElementLike(x) {
-    return !!x.props || !!x.tagName || !!x.element;
+    return (x == null) ? false : !!x.props || !!x.tagName || !!x.element;
   }
 
   // Enables rendering of any value, not just Element.
